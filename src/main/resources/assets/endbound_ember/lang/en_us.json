@@ -1,0 +1,13 @@
+{
+  "itemGroup.endbound_ember": "Example Mod Tab",
+  "block.endbound_ember.example_block": "Example Block",
+  "item.endbound_ember.example_item": "Example Item",
+
+  "endbound_ember.configuration.title": "Endbound-Ember Configs",
+  "endbound_ember.configuration.section.endbound_ember.common.toml": "Endbound-Ember Configs",
+  "endbound_ember.configuration.section.endbound_ember.common.toml.title": "Endbound-Ember Configs",
+  "endbound_ember.configuration.items": "Item List",
+  "endbound_ember.configuration.logDirtBlock": "Log Dirt Block",
+  "endbound_ember.configuration.magicNumberIntroduction": "Magic Number Text",
+  "endbound_ember.configuration.magicNumber": "Magic Number"
+}
