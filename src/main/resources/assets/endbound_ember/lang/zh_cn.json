@@ -1,0 +1,17 @@
+{
+  "entity.endbound_ember.zombie_girl": "丧尸娘",
+  "entity.endbound_ember.drowned_girl": "溺尸娘",
+  "item.endbound_ember.drowned_girl_spawn_egg": "溺尸娘刷怪蛋",
+  "entity.endbound_ember.companion_inventory": "伙伴装备与背包",
+  "item.endbound_ember.zombie_girl_spawn_egg": "丧尸娘刷怪蛋",
+  "itemGroup.endbound_ember": "Endbound Ember",
+  "block.endbound_ember.example_block": "Example Block",
+  "item.endbound_ember.example_item": "Example Item",
+  "endbound_ember.configuration.title": "Endbound-Ember Configs",
+  "endbound_ember.configuration.section.endbound_ember.common.toml": "Endbound-Ember Configs",
+  "endbound_ember.configuration.section.endbound_ember.common.toml.title": "Endbound-Ember Configs",
+  "endbound_ember.configuration.items": "Item List",
+  "endbound_ember.configuration.logDirtBlock": "Log Dirt Block",
+  "endbound_ember.configuration.magicNumberIntroduction": "Magic Number Text",
+  "endbound_ember.configuration.magicNumber": "Magic Number"
+}

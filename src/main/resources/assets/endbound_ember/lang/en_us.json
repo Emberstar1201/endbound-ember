@@ -2,6 +2,11 @@
   "itemGroup.endbound_ember": "Example Mod Tab",
   "block.endbound_ember.example_block": "Example Block",
   "item.endbound_ember.example_item": "Example Item",
+  "item.endbound_ember.zombie_girl_spawn_egg": "Zombie Girl Spawn Egg",
+  "entity.endbound_ember.zombie_girl": "Zombie Girl",
+  "entity.endbound_ember.drowned_girl": "Drowned Girl",
+  "item.endbound_ember.drowned_girl_spawn_egg": "Drowned Girl Spawn Egg",
+  "entity.endbound_ember.companion_inventory": "Companion Equipment and Backpack",
 
   "endbound_ember.configuration.title": "Endbound-Ember Configs",
   "endbound_ember.configuration.section.endbound_ember.common.toml": "Endbound-Ember Configs",

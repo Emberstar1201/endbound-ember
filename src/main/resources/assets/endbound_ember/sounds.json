@@ -1,0 +1,20 @@
+{
+  "husk_girl_idle_1": {
+    "sounds": ["endbound_ember:husk_girl_idle_1"]
+  },
+  "husk_girl_idle_2": {
+    "sounds": ["endbound_ember:husk_girl_idle_2"]
+  },
+  "husk_girl_idle_3": {
+    "sounds": ["endbound_ember:husk_girl_idle_3"]
+  },
+  "husk_girl_hust_1": {
+    "sounds": ["endbound_ember:husk_girl_hust_1"]
+  },
+  "husk_girl_hust_2": {
+    "sounds": ["endbound_ember:husk_girl_hust_2"]
+  },
+  "husk_girl_farewell_1": {
+    "sounds": ["endbound_ember:husk_girl_farewell_1"]
+  }
+}

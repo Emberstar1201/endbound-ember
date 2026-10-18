@@ -1,0 +1,14 @@
+{
+  "entity.endbound_ember.zombie_girl": "喪屍娘",
+  "item.endbound_ember.zombie_girl_spawn_egg": "喪屍娘刷怪蛋",
+  "itemGroup.endbound_ember": "Endbound Ember",
+  "block.endbound_ember.example_block": "Example Block",
+  "item.endbound_ember.example_item": "Example Item",
+  "endbound_ember.configuration.title": "Endbound-Ember 設定",
+  "endbound_ember.configuration.section.endbound_ember.common.toml": "Endbound-Ember 設定",
+  "endbound_ember.configuration.section.endbound_ember.common.toml.title": "Endbound-Ember 設定",
+  "endbound_ember.configuration.items": "物品清單",
+  "endbound_ember.configuration.logDirtBlock": "記錄泥土地板",
+  "endbound_ember.configuration.magicNumberIntroduction": "神奇數字描述",
+  "endbound_ember.configuration.magicNumber": "神奇數字"
+}
