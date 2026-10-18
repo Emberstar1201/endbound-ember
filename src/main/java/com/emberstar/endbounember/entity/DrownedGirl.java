@@ -11,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,11 +22,39 @@ public class DrownedGirl extends ZombieGirl {
         super(entityType, level);
         // 无敌人时四处游动或漫步，避免站在原地不动
         this.goalSelector.addGoal(5, new RandomSwimmingGoal(this, 1.0D, 20));
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        // 只有在水中且没有敌人时下沉，避免与陆地漫步目标互相抢占。
+        this.goalSelector.addGoal(6, new net.minecraft.world.entity.ai.goal.RandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new WildLandWanderGoal(this));
+        // 优先寻找岸边；上岸后不再被水下游泳目标抢回水中。
+        this.goalSelector.addGoal(4, new SurfaceWaterGoal(this));
+        // 水下无目标时缓慢下沉，避免漂浮在水面。
         this.goalSelector.addGoal(7, new SinkInWaterGoal(this));
-        // 只在水中且眼睛没出水时寻找岸边；上岸后交给漫步目标。
-        this.goalSelector.addGoal(7, new SurfaceWaterGoal(this));
+    }
+
+    private static final class WildLandWanderGoal extends Goal {
+        private final DrownedGirl mob;
+        private int cooldown;
+        WildLandWanderGoal(DrownedGirl mob) {
+            this.mob = mob;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+        @Override public boolean canUse() {
+            return !mob.isTamed() && !mob.isInWater() && mob.getTarget() == null && --cooldown <= 0;
+        }
+        @Override public boolean canContinueToUse() {
+            return !mob.isTamed() && !mob.isInWater() && mob.getTarget() == null
+                    && mob.getNavigation().isInProgress();
+        }
+        @Override public void start() {
+            cooldown = 30 + mob.getRandom().nextInt(60);
+            for (int i = 0; i < 12; i++) {
+                double x = mob.getX() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
+                double z = mob.getZ() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
+                BlockPos pos = BlockPos.containing(x, mob.getY(), z);
+                if (mob.level().getFluidState(pos).isEmpty()
+                        && mob.level().getBlockState(pos.below()).blocksMotion()
+                        && mob.getNavigation().moveTo(x, pos.getY(), z, 1.0D)) return;
+            }
+        }
     }
 
     /** 生成即携带三叉戟，满耐久，未驯服时也可以从背包中取出。 */

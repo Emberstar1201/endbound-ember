@@ -24,7 +24,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class ZombieGirlSpawnEvents {
     private static final int CHECK_INTERVAL = 100;
-    private static final int PLAYER_RANGE = 64;
+    private static final int PLAYER_RANGE = 32;
     private static final int SPAWN_ATTEMPTS = 8;
     private static final int MAX_NEARBY = 12;
 

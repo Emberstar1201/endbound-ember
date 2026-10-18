@@ -1,8 +1,12 @@
 {
   "entity.endbound_ember.zombie_girl": "丧尸娘",
   "entity.endbound_ember.drowned_girl": "溺尸娘",
+  "entity.endbound_ember.human_girl": "人类娘",
+  "item.endbound_ember.life_star": "生命之星",
   "item.endbound_ember.drowned_girl_spawn_egg": "溺尸娘刷怪蛋",
   "entity.endbound_ember.companion_inventory": "伙伴装备与背包",
+  "container.endbound_ember.companion_equipment": "装备栏",
+  "container.endbound_ember.companion_inventory": "伙伴背包",
   "item.endbound_ember.zombie_girl_spawn_egg": "丧尸娘刷怪蛋",
   "itemGroup.endbound_ember": "Endbound Ember",
   "block.endbound_ember.example_block": "Example Block",

@@ -7,6 +7,8 @@
   "entity.endbound_ember.drowned_girl": "Drowned Girl",
   "item.endbound_ember.drowned_girl_spawn_egg": "Drowned Girl Spawn Egg",
   "entity.endbound_ember.companion_inventory": "Companion Equipment and Backpack",
+  "container.endbound_ember.companion_equipment": "Equipment",
+  "container.endbound_ember.companion_inventory": "Companion Backpack",
 
   "endbound_ember.configuration.title": "Endbound-Ember Configs",
   "endbound_ember.configuration.section.endbound_ember.common.toml": "Endbound-Ember Configs",

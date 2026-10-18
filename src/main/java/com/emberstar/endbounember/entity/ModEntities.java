@@ -28,4 +28,10 @@ public class ModEntities {
                     .sized(0.6F, 1.95F)
                     .eyeHeight(1.74F)
                     .build("drowned_girl"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<HumanGirl>> HUMAN_GIRL = ENTITY_TYPES.register("human_girl",
+            () -> EntityType.Builder.of(HumanGirl::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.95F)
+                    .eyeHeight(1.74F)
+                    .build("human_girl"));
 }

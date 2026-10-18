@@ -24,9 +24,8 @@ import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -37,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
@@ -78,13 +78,15 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         this.goalSelector.addGoal(0, new LowHealthEscapeGoal(this));
         this.goalSelector.addGoal(1, new TamedFollowOwnerGoal(this, 1.15D));
         this.goalSelector.addGoal(2, new ConditionalMeleeAttackGoal(this));
+        this.goalSelector.addGoal(2, new ArrowRecoveryGoal(this));
         this.goalSelector.addGoal(2, new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F));
         this.goalSelector.addGoal(2, new RangedCrossbowAttackGoal<>(this, 1.0D, 8.0F));
         this.goalSelector.addGoal(2, new TridentAttackGoal(this));
         // 无敌时可移动目标，野生与驯服状态都会四处走动
         this.goalSelector.addGoal(6, new SafeRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new WildWanderGoal(this));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new ZombieGirlTargetingGoal(this));
     }
 
@@ -151,6 +153,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
 
     public boolean isTamed() { return this.owner != null; }
     @Nullable public UUID getOwnerUUID() { return this.owner; }
+    public void setOwnerUUID(@Nullable UUID owner) { this.owner = owner; }
     @Nullable
     public Player getOwnerPlayer() {
         return this.owner == null ? null : this.level().getPlayerByUUID(this.owner);
@@ -233,6 +236,38 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         this.companionInventory.setStackInSlot(index, stack);
     }
 
+    private ItemStack takeCompanionProjectile() {
+        for (int i = 0; i < this.companionInventory.getSlots(); i++) {
+            ItemStack stack = this.companionInventory.getStackInSlot(i);
+            if (stack.is(Items.TIPPED_ARROW) || stack.is(Items.SPECTRAL_ARROW) || stack.is(Items.ARROW)) {
+                ItemStack result = stack.copyWithCount(1);
+                stack.shrink(1);
+                return result;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public void addArrowToCompanionInventory(ItemStack recovered) {
+        if (recovered.isEmpty()) return;
+        for (int i = 0; i < this.companionInventory.getSlots(); i++) {
+            ItemStack stack = this.companionInventory.getStackInSlot(i);
+            if (ItemStack.isSameItemSameComponents(stack, recovered)
+                    && stack.getCount() < stack.getMaxStackSize()) {
+                int amount = Math.min(recovered.getCount(), stack.getMaxStackSize() - stack.getCount());
+                stack.grow(amount);
+                recovered.shrink(amount);
+                if (recovered.isEmpty()) return;
+            }
+        }
+        for (int i = 0; i < this.companionInventory.getSlots(); i++) {
+            if (this.companionInventory.getStackInSlot(i).isEmpty()) {
+                this.companionInventory.setStackInSlot(i, recovered.copy());
+                return;
+            }
+        }
+    }
+
     public static boolean isAllowedEquipment(int index, ItemStack stack) {
         if (index < 0 || index > 5) return false;
         if (index == 4) {
@@ -264,7 +299,10 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             this.setAggressive(false);
             return;
         }
-        ItemStack projectile = this.getProjectile(weapon);
+        ItemStack projectile = weapon.getItem() instanceof BowItem
+                ? this.takeCompanionProjectile()
+                : this.getProjectile(weapon);
+        if (projectile.isEmpty()) return;
         AbstractArrow arrow = ProjectileUtil.getMobArrow(this, projectile, velocity, weapon);
         double distance = this.distanceTo(target);
         Vec3 predicted = target.position().add(target.getDeltaMovement().scale(Math.min(distance / 3.0D, 12.0D)));
@@ -292,9 +330,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             super(EndboundEmber.COMPANION_MENU.get(), id);
             this.container = new CompanionContainer(entity);
             for (int i = 0; i < 6; i++) addSlot(new EquipmentSlotSlot(container, i, 8 + i * 18, 18));
-            for (int i = 0; i < 64; i++) addSlot(new Slot(container, 6 + i, 8 + (i % 8) * 18, 36 + (i / 8) * 18));
-            for (int row = 0; row < 3; row++) for (int col = 0; col < 9; col++) addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 190 + row * 18));
-            for (int col = 0; col < 9; col++) addSlot(new Slot(playerInventory, col, 8 + col * 18, 248));
+            for (int i = 0; i < 64; i++) addSlot(new Slot(container, 6 + i, 8 + (i % 8) * 18, 50 + (i / 8) * 18));
+            for (int row = 0; row < 3; row++) for (int col = 0; col < 9; col++) addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 208 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(playerInventory, col, 8 + col * 18, 266));
         }
         public CompanionMenu(int id, Inventory playerInventory, int entityId) {
             this(id, playerInventory, (ZombieGirl) playerInventory.player.level().getEntity(entityId));
@@ -360,7 +398,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
                 || state.is(Blocks.CACTUS) || state.is(BlockTags.FIRE);
     }
 
-    private static final class SafeRandomStrollGoal extends WaterAvoidingRandomStrollGoal {
+    private static final class SafeRandomStrollGoal extends net.minecraft.world.entity.ai.goal.RandomStrollGoal {
         SafeRandomStrollGoal(ZombieGirl mob, double speed) { super(mob, speed); }
 
         @Override
@@ -372,6 +410,37 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         public boolean canContinueToUse() {
             return super.canContinueToUse() && !isDangerous(mob.blockPosition(), mob.level());
         }
+    }
+
+    private static final class WildWanderGoal extends Goal {
+        private final ZombieGirl mob;
+        private int cooldown;
+        WildWanderGoal(ZombieGirl mob) {
+            this.mob = mob;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+        @Override public boolean canUse() {
+            if (mob.isTamed() || mob.getTarget() != null || mob.isAggressive()) return false;
+            return --cooldown <= 0;
+        }
+        @Override public boolean canContinueToUse() {
+            return !mob.isTamed() && mob.getTarget() == null && !mob.isAggressive()
+                    && mob.getNavigation().isInProgress();
+        }
+        @Override public void start() {
+            cooldown = 40 + mob.getRandom().nextInt(80);
+            for (int i = 0; i < 12; i++) {
+                double x = mob.getX() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
+                double z = mob.getZ() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
+                BlockPos pos = BlockPos.containing(x, mob.getY(), z);
+                if (!isDangerous(pos, mob.level()) && !isDangerous(pos.below(), mob.level())
+                        && mob.getNavigation().moveTo(x, pos.getY(), z, 1.0D)) return;
+            }
+        }
+        @Override public void tick() {
+            if (!mob.getNavigation().isInProgress()) stop();
+        }
+        @Override public void stop() { mob.getNavigation().stop(); }
     }
 
     private static final class LowHealthEscapeGoal extends Goal {
@@ -399,6 +468,37 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
                 mob.getNavigation().moveTo(destination.getX() + 0.5D, destination.getY(), destination.getZ() + 0.5D, 1.35D);
             }
             mob.getLookControl().setLookAt(attacker, 30.0F, 30.0F);
+        }
+    }
+
+    private static final class ArrowRecoveryGoal extends Goal {
+        private final ZombieGirl mob;
+        private Arrow arrow;
+        ArrowRecoveryGoal(ZombieGirl mob) {
+            this.mob = mob;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+        @Override public boolean canUse() {
+            if (!(mob.getWeaponForCombat().getItem() instanceof BowItem)
+                    || mob.getTarget() == null || !mob.getTarget().isAlive()) return false;
+            this.arrow = mob.level().getEntitiesOfClass(Arrow.class,
+                    mob.getBoundingBox().inflate(16.0D), candidate -> !candidate.isPickable()
+                            && candidate.getOwner() == mob
+                            && !candidate.isInWater()).stream()
+                    .findFirst().orElse(null);
+            return arrow != null;
+        }
+        @Override public boolean canContinueToUse() {
+            return arrow != null && arrow.isAlive() && mob.getTarget() != null;
+        }
+        @Override public void tick() {
+            mob.getLookControl().setLookAt(arrow, 30.0F, 30.0F);
+            mob.getNavigation().moveTo(arrow, 1.2D);
+            if (mob.distanceToSqr(arrow) <= 2.25D) {
+                arrow.discard();
+                mob.addArrowToCompanionInventory(arrow.getPickupItemStackOrigin().copyWithCount(1));
+                arrow = null;
+            }
         }
     }
 

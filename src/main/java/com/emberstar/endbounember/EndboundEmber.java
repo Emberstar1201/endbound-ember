@@ -3,6 +3,7 @@ package com.emberstar.endbounember;
 import org.slf4j.Logger;
 
 import com.emberstar.endbounember.entity.ModEntities;
+import com.emberstar.endbounember.item.LifeStarItem;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -81,6 +82,9 @@ public class EndboundEmber {
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
             .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
 
+    public static final DeferredItem<Item> LIFE_STAR = ITEMS.register("life_star",
+            () -> new LifeStarItem(new Item.Properties()));
+
     public static final DeferredItem<SpawnEggItem> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.ZOMBIE_GIRL.get(), 0x4A5B4A, 0xB7B7B7, new Item.Properties()));
     public static final DeferredItem<SpawnEggItem> DROWNED_GIRL_SPAWN_EGG = ITEMS.register("drowned_girl_spawn_egg",
@@ -95,6 +99,7 @@ public class EndboundEmber {
                 output.accept(EXAMPLE_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
                 output.accept(ZOMBIE_GIRL_SPAWN_EGG.get());
                 output.accept(DROWNED_GIRL_SPAWN_EGG.get());
+                output.accept(LIFE_STAR.get());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
@@ -147,6 +152,7 @@ public class EndboundEmber {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ZOMBIE_GIRL_SPAWN_EGG);
             event.accept(DROWNED_GIRL_SPAWN_EGG);
+            event.accept(LIFE_STAR);
         }
     }
 

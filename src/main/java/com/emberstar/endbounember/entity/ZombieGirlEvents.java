@@ -21,6 +21,7 @@ public class ZombieGirlEvents {
     public static void onAttributeCreation(EntityAttributeCreationEvent event) {
         event.put(ModEntities.ZOMBIE_GIRL.get(), createAttributes());
         event.put(ModEntities.DROWNED_GIRL.get(), createAttributes());
+        event.put(ModEntities.HUMAN_GIRL.get(), createAttributes());
     }
 
     /**
