@@ -1,6 +1,8 @@
 package com.emberstar.endbounember.entity;
 
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.item.LifeStarItem;
+import com.emberstar.endbounember.item.UnownedStardustItem;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -30,6 +32,13 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -151,7 +160,90 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     @Override public boolean isInvertedHealAndHarm() { return false; }
     @Override public void checkDespawn() { }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.level().isClientSide) return;
+        if (this.tickCount % 10 == 0) {
+            openNearbyPassage();
+            if (isTamed()) {
+                eatFromCompanionInventory();
+                handleBedRest();
+            }
+        }
+    }
+
+    private void openNearbyPassage() {
+        BlockPos center = blockPosition();
+        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-1, 0, -1), center.offset(1, 1, 1))) {
+            BlockState state = level().getBlockState(pos);
+            if (state.getBlock() instanceof DoorBlock && !state.getValue(DoorBlock.OPEN)) {
+                DoorBlock.setOpen(this, level(), pos, true);
+            } else if (state.getBlock() instanceof TrapDoorBlock && !state.getValue(TrapDoorBlock.OPEN)) {
+                level().setBlock(pos, state.setValue(TrapDoorBlock.OPEN, true), 10);
+            }
+        }
+    }
+
+    private void handleBedRest() {
+        if (isSleeping()) {
+            if (!level().isNight() || getTarget() != null || isInWater()) stopSleeping();
+            return;
+        }
+        if (!level().isNight() || getTarget() != null || isInWater()) return;
+        BlockPos center = blockPosition();
+        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-8, -1, -8), center.offset(8, 1, 8))) {
+            BlockState state = level().getBlockState(pos);
+            if (!state.is(BlockTags.BEDS) || state.getValue(BedBlock.OCCUPIED)) continue;
+            if (distanceToSqr(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D) > 64.0D) continue;
+            if (level().noCollision(this, getBoundingBox().move(pos.getX() + 0.5D - getX(), pos.getY() - getY(), pos.getZ() + 0.5D - getZ()))) {
+                getNavigation().stop();
+                startSleeping(pos.immutable());
+                return;
+            }
+        }
+    }
+
+    private void eatFromCompanionInventory() {
+        if (getHealth() > getMaxHealth() * 0.75F) return;
+        for (int i = 0; i < companionInventory.getSlots(); i++) {
+            ItemStack stack = companionInventory.getStackInSlot(i);
+            if (!isHealingFood(stack)) continue;
+            consumeFood(stack);
+            if (stack.isEmpty()) companionInventory.setStackInSlot(i, ItemStack.EMPTY);
+            return;
+        }
+    }
+
+    private void consumeFood(ItemStack stack) {
+        heal(8.0F);
+        if (stack.is(Items.ENCHANTED_GOLDEN_APPLE)) {
+            addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1));
+            addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
+            addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 600));
+            addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 600));
+        }
+        stack.shrink(1);
+    }
+
+    protected boolean isHealingFood(ItemStack stack) {
+        return isTamingFood(stack);
+    }
+
+    private boolean feedByPlayer(Player player, ItemStack stack) {
+        if (!isTamed() || !isOwnedBy(player) || !isHealingFood(stack) || getHealth() >= getMaxHealth()) return false;
+        if (!player.getAbilities().instabuild) consumeFood(stack);
+        else {
+            ItemStack copy = stack.copyWithCount(1);
+            consumeFood(copy);
+        }
+        return true;
+    }
+
     public boolean isTamed() { return this.owner != null; }
+    public boolean isOwnedBy(Player player) {
+        return this.owner != null && this.owner.equals(player.getUUID());
+    }
     @Nullable public UUID getOwnerUUID() { return this.owner; }
     public void setOwnerUUID(@Nullable UUID owner) { this.owner = owner; }
     @Nullable
@@ -167,6 +259,13 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        if (stack.getItem() instanceof UnownedStardustItem
+                || stack.getItem() instanceof LifeStarItem) {
+            return InteractionResult.PASS;
+        }
+        if (this.isTamed() && feedByPlayer(player, stack)) {
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
         if (!this.isTamed() && this.isTamingFood(stack)) {
             if (!player.getAbilities().instabuild) stack.shrink(1);
             if (!this.level().isClientSide) {

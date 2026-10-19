@@ -27,7 +27,10 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 public class LifeStarItem extends Item {
-    private static final int HEALING_TIME = 4800;
+    private static final int STAGE1_MIN_TICKS = 1200;
+    private static final int STAGE1_RANDOM_TICKS = 1200;
+    private static final int STAGE2_TICKS = 200;
+    private static final String HEALING_UNTIL = "EndboundEmberHealingUntil";
     private static final Map<UUID, Long> HEALING = new HashMap<>();
 
     public LifeStarItem(Properties properties) {
@@ -37,10 +40,15 @@ public class LifeStarItem extends Item {
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
         if (!(target instanceof ZombieGirl) || target instanceof HumanGirl || player.level().isClientSide
-                || HEALING.containsKey(target.getUUID())) {
+                || HEALING.containsKey(target.getUUID())
+                || target.getPersistentData().contains(HEALING_UNTIL)) {
             return InteractionResult.PASS;
         }
-        HEALING.put(target.getUUID(), target.level().getGameTime());
+        long start = target.level().getGameTime();
+        long until = start + STAGE1_MIN_TICKS
+                + target.getRandom().nextInt(STAGE1_RANDOM_TICKS + 1) + STAGE2_TICKS;
+        HEALING.put(target.getUUID(), until);
+        target.getPersistentData().putLong(HEALING_UNTIL, until);
         target.level().playSound(null, target.blockPosition(), SoundEvents.ZOMBIE_VILLAGER_CURE,
                 target.getSoundSource(), 1.0F, 1.0F);
         if (!player.getAbilities().instabuild) player.getCooldowns().addCooldown(this, 2400);
@@ -54,18 +62,38 @@ public class LifeStarItem extends Item {
             for (ServerLevel level : event.getServer().getAllLevels()) {
                 for (Entity entity : level.getAllEntities()) {
                     if (!(entity instanceof ZombieGirl girl) || entity instanceof HumanGirl) continue;
-                    Long start = HEALING.get(girl.getUUID());
-                    if (start == null) continue;
-                    long elapsed = level.getGameTime() - start;
-                    if (elapsed >= HEALING_TIME) {
+                    Long until = HEALING.get(girl.getUUID());
+                    if (until == null) {
+                        long savedUntil = girl.getPersistentData().getLong(HEALING_UNTIL);
+                        if (savedUntil <= 0L) continue;
+                        until = savedUntil;
+                        HEALING.put(girl.getUUID(), until);
+                    }
+                    long remaining = until - level.getGameTime();
+                    if (remaining <= 0L) {
                         HEALING.remove(girl.getUUID());
+                        girl.getPersistentData().remove(HEALING_UNTIL);
+                        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, girl.getX(), girl.getY(0.5D), girl.getZ(),
+                                1, 0.0D, 0.0D, 0.0D, 0.0D);
+                        level.sendParticles(ParticleTypes.LARGE_SMOKE, girl.getX(), girl.getY(0.5D), girl.getZ(),
+                                60, 0.6D, 0.9D, 0.6D, 0.01D);
+                        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, girl.getX(), girl.getY(0.5D), girl.getZ(),
+                                24, 0.5D, 0.8D, 0.5D, 0.0D);
+                        level.playSound(null, girl.blockPosition(), SoundEvents.ZOMBIE_VILLAGER_CONVERTED,
+                                girl.getSoundSource(), 1.0F, 1.0F);
                         replaceWithHuman(level, girl);
-                    } else {
-                        int count = elapsed < 2400 ? 2 : 6;
-                        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, girl.getX(), girl.getY() + 1.0D, girl.getZ(),
-                                count, 0.45D, 0.75D, 0.45D, 0.02D);
-                        if (elapsed >= 2400) level.sendParticles(ParticleTypes.POOF, girl.getX(), girl.getY() + 1.0D,
-                                girl.getZ(), 2, 0.3D, 0.5D, 0.3D, 0.03D);
+                    } else if (remaining <= STAGE2_TICKS) {
+                        if (girl.tickCount % 3 == 0) {
+                            level.sendParticles(ParticleTypes.HAPPY_VILLAGER, girl.getRandomX(1.0D), girl.getRandomY(), girl.getRandomZ(1.0D),
+                                    4, 0.3D, 0.5D, 0.3D, 0.0D);
+                        }
+                        if (girl.tickCount % 10 == 0) {
+                            level.sendParticles(ParticleTypes.INSTANT_EFFECT, girl.getX(), girl.getY(0.5D), girl.getZ(),
+                                    2, 0.4D, 0.6D, 0.4D, 0.0D);
+                        }
+                    } else if (girl.tickCount % 20 == 0) {
+                        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, girl.getRandomX(1.0D), girl.getRandomY(), girl.getRandomZ(1.0D),
+                                3, 0.3D, 0.5D, 0.3D, 0.0D);
                     }
                 }
             }

@@ -2,6 +2,7 @@ package com.emberstar.endbounember.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -20,11 +21,22 @@ public class HumanGirl extends ZombieGirl {
         this.goalSelector.removeAllGoals(goal -> true);
         this.targetSelector.removeAllGoals(goal -> true);
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new TamedFollowOwnerGoal(this, 1.15D));
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.2D, true));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new ZombieGirlTargetingGoal(this));
+    }
+
+    @Override
+    protected boolean isHealingFood(ItemStack stack) {
+        return stack.getItem().isEdible();
+    }
+
+    @Override
+    public boolean isInvertedHealAndHarm() {
+        return false;
     }
 
     public boolean isDrownedSource() {

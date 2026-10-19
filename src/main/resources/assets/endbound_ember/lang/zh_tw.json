@@ -1,5 +1,9 @@
 {
   "entity.endbound_ember.zombie_girl": "殭屍娘",
+  "entity.endbound_ember.human_girl": "倖存者少女",
+  "item.endbound_ember.unowned_stardust": "無主的星塵",
+  "item.endbound_ember.unowned_stardust.not_owner": "只有主人才能收入這名夥伴。",
+  "item.endbound_ember.unowned_stardust.captured": "無主的星塵",
   "item.endbound_ember.zombie_girl_spawn_egg": "殭屍娘生怪蛋",
   "itemGroup.endbound_ember": "Endbound Ember",
   "block.endbound_ember.example_block": "Example Block",
@@ -10,5 +14,7 @@
   "endbound_ember.configuration.items": "物品清單",
   "endbound_ember.configuration.logDirtBlock": "記錄泥土方塊",
   "endbound_ember.configuration.magicNumberIntroduction": "神奇數字描述",
-  "endbound_ember.configuration.magicNumber": "神奇數字"
+  "endbound_ember.configuration.magicNumber": "神奇數字",
+  "commands.endbound_ember.locate_camp.success": "最近的喪屍娘營地位於 %s（距離 %s 格）",
+  "commands.endbound_ember.locate_camp.failed": "尚未生成任何喪屍娘營地"
 }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.item.LifeStarItem;
+import com.emberstar.endbounember.item.UnownedStardustItem;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -83,7 +84,11 @@ public class EndboundEmber {
             .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
 
     public static final DeferredItem<Item> LIFE_STAR = ITEMS.register("life_star",
-            () -> new LifeStarItem(new Item.Properties()));
+            () -> new LifeStarItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<UnownedStardustItem> UNOWNED_STARDUST = ITEMS.register(
+            "unowned_stardust", () -> new UnownedStardustItem(new Item.Properties()
+                    .stacksTo(1).fireResistant()));
 
     public static final DeferredItem<SpawnEggItem> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.ZOMBIE_GIRL.get(), 0x4A5B4A, 0xB7B7B7, new Item.Properties()));
@@ -100,6 +105,7 @@ public class EndboundEmber {
                 output.accept(ZOMBIE_GIRL_SPAWN_EGG.get());
                 output.accept(DROWNED_GIRL_SPAWN_EGG.get());
                 output.accept(LIFE_STAR.get());
+                output.accept(UNOWNED_STARDUST.get());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
@@ -153,6 +159,7 @@ public class EndboundEmber {
             event.accept(ZOMBIE_GIRL_SPAWN_EGG);
             event.accept(DROWNED_GIRL_SPAWN_EGG);
             event.accept(LIFE_STAR);
+            event.accept(UNOWNED_STARDUST);
         }
     }
 
