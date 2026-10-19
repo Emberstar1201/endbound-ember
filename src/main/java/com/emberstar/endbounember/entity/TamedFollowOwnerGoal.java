@@ -22,7 +22,7 @@ public final class TamedFollowOwnerGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (!mob.isTamed() || mob.getTarget() != null) return false;
+        if (!mob.isTamed() || mob.isOrderedToSit() || mob.isSleeping() || mob.getTarget() != null) return false;
         Player player = mob.getOwnerPlayer();
         if (player == null || mob.distanceToSqr(player) < 9.0D) return false;
         this.owner = player;
@@ -31,12 +31,13 @@ public final class TamedFollowOwnerGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return owner != null && mob.isTamed() && mob.getTarget() == null && mob.distanceToSqr(owner) > 4.0D;
+        return owner != null && mob.isTamed() && !mob.isOrderedToSit() && !mob.isSleeping()
+                && mob.getTarget() == null && owner.isAlive() && mob.distanceToSqr(owner) > 4.0D;
     }
 
     @Override
     public void tick() {
-        if (owner == null) return;
+        if (owner == null || mob.isSleeping()) return;
         mob.getLookControl().setLookAt(owner, 10.0F, mob.getMaxHeadXRot());
         if (mob.distanceToSqr(owner) > 144.0D && tryTeleport()) return;
         mob.getNavigation().moveTo(owner, speed);

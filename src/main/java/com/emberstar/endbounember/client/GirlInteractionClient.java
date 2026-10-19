@@ -1,0 +1,6 @@
+package com.emberstar.endbounember.client;
+import com.emberstar.endbounember.EndboundEmber; import com.emberstar.endbounember.entity.ZombieGirl; import net.minecraft.client.KeyMapping; import net.minecraft.client.Minecraft; import net.minecraft.world.phys.EntityHitResult; import net.neoforged.api.distmarker.Dist; import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber; import org.lwjgl.glfw.GLFW;
+@EventBusSubscriber(modid=EndboundEmber.MODID,value=Dist.CLIENT) public final class GirlInteractionClient { public static final KeyMapping KEY=new KeyMapping("key.endbound_ember.girl_interaction",GLFW.GLFW_KEY_G,"key.categories.endbound_ember"); private GirlInteractionClient(){} @SubscribeEvent public static void keys(RegisterKeyMappingsEvent e){e.register(KEY);} @SubscribeEvent public static void tick(ClientTickEvent.Post e){Minecraft m=Minecraft.getInstance();if(m.screen!=null||m.player==null||m.level==null||!KEY.consumeClick()||!(m.hitResult instanceof EntityHitResult hit)||!(hit.getEntity() instanceof ZombieGirl girl)||!girl.isAlive()||!girl.isOwnedBy(m.player)||m.player.distanceToSqr(girl)>36.0D)return;m.setScreen(new GirlInteractionScreen(girl.getId()));}}

@@ -71,9 +71,17 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttackMob {
     private static final EntityDataAccessor<Integer> SKIN_VARIANT =
             SynchedEntityData.defineId(ZombieGirl.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> ORDERED_SIT =
+            SynchedEntityData.defineId(ZombieGirl.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<String> OWNER_UUID =
+            SynchedEntityData.defineId(ZombieGirl.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> AFFECTION =
+            SynchedEntityData.defineId(ZombieGirl.class, EntityDataSerializers.INT);
     private static final String OWNER_TAG = "EndboundOwner";
     private static final String SKIN_VARIANT_TAG = "SkinVariant";
     private static final String COMPANION_INVENTORY_TAG = "CompanionInventory";
+    private static final String ORDERED_SIT_TAG = "OrderedSit";
+    private static final String AFFECTION_TAG = "Affection";
     private UUID owner;
     /** 仅保存 64 格背包；前 6 格菜单槽位是实体实际装备槽的代理。 */
     protected final ItemStackHandler companionInventory = new ItemStackHandler(64);
@@ -103,6 +111,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SKIN_VARIANT, 0);
+        builder.define(ORDERED_SIT, false);
+        builder.define(OWNER_UUID, "");
+        builder.define(AFFECTION, 0);
     }
 
     @Override
@@ -110,19 +121,44 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         super.addAdditionalSaveData(tag);
         if (this.owner != null) tag.putUUID(OWNER_TAG, this.owner);
         tag.putInt(SKIN_VARIANT_TAG, this.getSkinVariant());
+        tag.putBoolean(ORDERED_SIT_TAG, this.isOrderedToSit());
+        tag.putInt(AFFECTION_TAG, this.getAffection());
         tag.put(COMPANION_INVENTORY_TAG, this.companionInventory.serializeNBT(this.registryAccess()));
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.hasUUID(OWNER_TAG)) this.owner = tag.getUUID(OWNER_TAG);
+        if (tag.hasUUID(OWNER_TAG)) this.setOwnerUUID(tag.getUUID(OWNER_TAG));
         if (tag.contains(SKIN_VARIANT_TAG)) this.setSkinVariant(tag.getInt(SKIN_VARIANT_TAG));
+        if (tag.contains(ORDERED_SIT_TAG)) this.setOrderedToSit(tag.getBoolean(ORDERED_SIT_TAG));
+        if (tag.contains(AFFECTION_TAG)) this.setAffection(tag.getInt(AFFECTION_TAG));
         if (tag.contains(COMPANION_INVENTORY_TAG)) this.companionInventory.deserializeNBT(this.registryAccess(), tag.getCompound(COMPANION_INVENTORY_TAG));
     }
 
     public int getSkinVariant() {
         return this.entityData.get(SKIN_VARIANT);
+    }
+
+    public boolean isOrderedToSit() {
+        return this.entityData.get(ORDERED_SIT);
+    }
+
+    public void setOrderedToSit(boolean orderedSit) {
+        this.entityData.set(ORDERED_SIT, orderedSit);
+        if (orderedSit) this.getNavigation().stop();
+    }
+
+    public int getAffection() {
+        return this.entityData.get(AFFECTION);
+    }
+
+    public void setAffection(int affection) {
+        this.entityData.set(AFFECTION, Math.max(0, Math.min(100, affection)));
+    }
+
+    public void changeAffection(int amount) {
+        this.setAffection(this.getAffection() + amount);
     }
 
     public void setSkinVariant(int variant) {
@@ -162,6 +198,11 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
 
     @Override
     public void tick() {
+        // 睡眠时强制锁在床位：先清导航与速度，再执行原版 tick，避免任何 Goal 把它从床上推走。
+        if (isSleeping()) {
+            getNavigation().stop();
+            setDeltaMovement(Vec3.ZERO);
+        }
         super.tick();
         if (this.level().isClientSide) return;
         if (this.tickCount % 10 == 0) {
@@ -177,8 +218,8 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         BlockPos center = blockPosition();
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-1, 0, -1), center.offset(1, 1, 1))) {
             BlockState state = level().getBlockState(pos);
-            if (state.getBlock() instanceof DoorBlock && !state.getValue(DoorBlock.OPEN)) {
-                DoorBlock.setOpen(this, level(), pos, true);
+            if (state.getBlock() instanceof DoorBlock door && !state.getValue(DoorBlock.OPEN)) {
+                door.setOpen(this, level(), state, pos, true);
             } else if (state.getBlock() instanceof TrapDoorBlock && !state.getValue(TrapDoorBlock.OPEN)) {
                 level().setBlock(pos, state.setValue(TrapDoorBlock.OPEN, true), 10);
             }
@@ -196,11 +237,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             BlockState state = level().getBlockState(pos);
             if (!state.is(BlockTags.BEDS) || state.getValue(BedBlock.OCCUPIED)) continue;
             if (distanceToSqr(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D) > 64.0D) continue;
-            if (level().noCollision(this, getBoundingBox().move(pos.getX() + 0.5D - getX(), pos.getY() - getY(), pos.getZ() + 0.5D - getZ()))) {
-                getNavigation().stop();
-                startSleeping(pos.immutable());
-                return;
-            }
+            getNavigation().stop();
+            startSleeping(pos.immutable());
+            return;
         }
     }
 
@@ -220,7 +259,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         if (stack.is(Items.ENCHANTED_GOLDEN_APPLE)) {
             addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1));
             addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
-            addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 600));
+            addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600));
             addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 600));
         }
         stack.shrink(1);
@@ -240,15 +279,24 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         return true;
     }
 
-    public boolean isTamed() { return this.owner != null; }
+    public boolean isTamed() { return this.getOwnerUUID() != null; }
     public boolean isOwnedBy(Player player) {
-        return this.owner != null && this.owner.equals(player.getUUID());
+        return player.getUUID().equals(this.getOwnerUUID());
     }
-    @Nullable public UUID getOwnerUUID() { return this.owner; }
-    public void setOwnerUUID(@Nullable UUID owner) { this.owner = owner; }
+    @Nullable public UUID getOwnerUUID() {
+        if (this.owner != null) return this.owner;
+        String synced = this.entityData.get(OWNER_UUID);
+        try { return synced.isEmpty() ? null : UUID.fromString(synced); }
+        catch (IllegalArgumentException ignored) { return null; }
+    }
+    public void setOwnerUUID(@Nullable UUID owner) {
+        this.owner = owner;
+        this.entityData.set(OWNER_UUID, owner == null ? "" : owner.toString());
+    }
     @Nullable
     public Player getOwnerPlayer() {
-        return this.owner == null ? null : this.level().getPlayerByUUID(this.owner);
+        UUID ownerId = this.getOwnerUUID();
+        return ownerId == null ? null : this.level().getPlayerByUUID(ownerId);
     }
 
     protected boolean isTamingFood(ItemStack stack) {
@@ -269,13 +317,15 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         if (!this.isTamed() && this.isTamingFood(stack)) {
             if (!player.getAbilities().instabuild) stack.shrink(1);
             if (!this.level().isClientSide) {
-                this.owner = player.getUUID();
+                this.setOwnerUUID(player.getUUID());
                 this.setTarget(null);
                 this.navigation.stop();
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
-        if (this.isTamed() && this.owner.equals(player.getUUID())) {
+        // 用 isOwnedBy 而非直接读 this.owner：客户端的 owner 字段未同步可能为 null，
+        // getOwnerUUID() 会回退到已同步的 entityData，避免在客户端 mobInteract 时 NPE。
+        if (this.isTamed() && this.isOwnedBy(player)) {
             if (!this.level().isClientSide) {
                 player.openMenu(new MenuProvider() {
                     @Override public Component getDisplayName() { return Component.translatable("entity.endbound_ember.companion_inventory"); }

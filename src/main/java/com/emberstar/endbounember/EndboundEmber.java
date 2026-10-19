@@ -113,6 +113,7 @@ public class EndboundEmber {
     public EndboundEmber(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(com.emberstar.endbounember.network.GirlInteractionPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);

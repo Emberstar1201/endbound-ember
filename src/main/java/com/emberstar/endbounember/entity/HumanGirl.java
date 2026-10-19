@@ -31,7 +31,7 @@ public class HumanGirl extends ZombieGirl {
 
     @Override
     protected boolean isHealingFood(ItemStack stack) {
-        return stack.getItem().isEdible();
+        return stack.getFoodProperties(this) != null;
     }
 
     @Override
