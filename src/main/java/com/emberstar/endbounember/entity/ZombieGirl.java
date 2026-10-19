@@ -196,11 +196,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             BlockState state = level().getBlockState(pos);
             if (!state.is(BlockTags.BEDS) || state.getValue(BedBlock.OCCUPIED)) continue;
             if (distanceToSqr(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D) > 64.0D) continue;
-            if (level().noCollision(this, getBoundingBox().move(pos.getX() + 0.5D - getX(), pos.getY() - getY(), pos.getZ() + 0.5D - getZ()))) {
-                getNavigation().stop();
-                startSleeping(pos.immutable());
-                return;
-            }
+            getNavigation().stop();
+            startSleeping(pos.immutable());
+            return;
         }
     }
 
