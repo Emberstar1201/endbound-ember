@@ -16,5 +16,17 @@
   },
   "husk_girl_farewell_1": {
     "sounds": ["endbound_ember:husk_girl_farewell_1"]
+  },
+  "husk_girl_eat_1": {
+    "sounds": ["endbound_ember:husk_girl_eat_1"]
+  },
+  "human_girl_idle_1": {
+    "sounds": ["endbound_ember:human_girl_idle_1"]
+  },
+  "human_girl_idle_2": {
+    "sounds": ["endbound_ember:human_girl_idle_2"]
+  },
+  "human_girl_idle_3": {
+    "sounds": ["endbound_ember:human_girl_idle_3"]
   }
 }

@@ -118,6 +118,6 @@ Minecraft、NeoForge 及其相关资产属于各自权利人。本项目不声�
 
 ## AI 中转站宣传 开发模型来源
 
-- AI 中转站官网：<https://rcolaapi.top/>
+- AI 中转站官网：<https://rcolaapi.top/sign-up?aff=lp3B/>
 - 运营者：Zch
 - 中转站群：**272395232**

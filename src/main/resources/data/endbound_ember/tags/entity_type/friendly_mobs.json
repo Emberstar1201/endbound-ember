@@ -45,6 +45,10 @@
     "minecraft:iron_golem",
     "minecraft:player",
     "endbound_ember:zombie_girl",
-    "endbound_ember:drowned_girl"
+    "endbound_ember:drowned_girl",
+    {
+      "id": "touhou_little_maid:maid",
+      "required": false
+    }
   ]
 }

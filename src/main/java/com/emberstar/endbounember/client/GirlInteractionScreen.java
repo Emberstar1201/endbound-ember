@@ -39,7 +39,7 @@ public final class GirlInteractionScreen extends Screen {
                     button -> minecraft.setScreen(new AiMemoryScreen(this, entityId))).bounds(x + 10, y, 150, 20).build());
             y += 24;
             addRenderableWidget(Button.builder(Component.translatable("gui.endbound_ember.girl.persona"),
-                    button -> minecraft.setScreen(new AiConfigurationScreen(this, personaKey()))).bounds(x + 10, y, 150, 20).build());
+                    button -> minecraft.setScreen(new AiConfigurationScreen(this, entityId))).bounds(x + 10, y, 150, 20).build());
             y += 24;
             nameBox = new EditBox(font, x + 10, y, 150, 20, Component.translatable("gui.endbound_ember.girl.name"));
             nameBox.setMaxLength(32);

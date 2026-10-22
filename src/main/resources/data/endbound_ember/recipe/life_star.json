@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GDG",
+    "DMD",
+    "GDG"
+  ],
+  "key": {
+    "M": {"item": "minecraft:enchanted_golden_apple"},
+    "D": {"item": "minecraft:glistering_melon_slice"},
+    "G": {"item": "minecraft:dandelion"}
+  },
+  "result": {
+    "id": "endbound_ember:life_star",
+    "count": 1
+  }
+}

@@ -9,6 +9,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import com.emberstar.endbounember.entity.HumanGirl;
+import com.emberstar.endbounember.entity.ZombieGirl;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -42,6 +44,7 @@ public final class AiConfigurationScreen extends Screen {
     private static final int STATUS_LINE_HEIGHT = 10;
 
     private final Screen parent;
+    private final int entityId;
     private int section;              // 0 = 文本配置，1 = 人设编辑
     private int providerIndex;
     private int personaIndex;
@@ -57,11 +60,24 @@ public final class AiConfigurationScreen extends Screen {
     private int statusHeight;
     private boolean statusTruncated;
 
-    public AiConfigurationScreen(Screen parent, String personaKey) {
+    public AiConfigurationScreen(Screen parent, int entityId) {
         super(Component.translatable("gui.endbound_ember.ai.config"));
         this.parent = parent;
-        this.personaIndex = indexOf(PERSONAS, personaKey);
+        this.entityId = entityId;
+        this.personaIndex = indexOf(PERSONAS, personaKey());
         this.providerIndex = providerIndexOf(AiConfigurationStore.get().text.provider);
+    }
+
+    private ZombieGirl currentGirl() {
+        return minecraft != null && minecraft.level != null
+                && minecraft.level.getEntity(entityId) instanceof ZombieGirl girl ? girl : null;
+    }
+
+    private String personaKey() {
+        ZombieGirl girl = currentGirl();
+        if (girl instanceof HumanGirl) return "survivor_girl";
+        if (girl != null && girl.getType().toString().contains("drowned")) return "drowned_girl";
+        return "zombie_girl";
     }
 
     @Override
@@ -185,6 +201,10 @@ public final class AiConfigurationScreen extends Screen {
     }
 
     private AiConfigurationStore.Persona persona() {
+        ZombieGirl girl = currentGirl();
+        if (girl != null) {
+            return AiConfigurationStore.persona(girl.getUUID(), PERSONAS[personaIndex]);
+        }
         return AiConfigurationStore.get().personas.computeIfAbsent(PERSONAS[personaIndex],
                 key -> new AiConfigurationStore.Persona("少女", ""));
     }
@@ -210,7 +230,7 @@ public final class AiConfigurationScreen extends Screen {
         AiConfigurationStore.save();
         status = Component.translatable("gui.endbound_ember.ai.test_pending");
         var config = AiConfigurationStore.get();
-        AiServiceClient.generate(config.text, persona(), persona().name, 0,
+        AiServiceClient.generate(config.text, persona(), persona().name, 0, "",
                 new AiConfigurationStore.Memory(), "ping")
                 .thenAccept(result -> minecraft.execute(() -> status = Component.literal(result.isBlank()
                         ? Component.translatable("gui.endbound_ember.ai.test_failed").getString()

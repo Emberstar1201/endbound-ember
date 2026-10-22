@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "S S",
+    "SSS"
+  ],
+  "key": {
+    "S": {"tag": "endbound_ember:emberstars"}
+  },
+  "result": {
+    "id": "endbound_ember:void_emberstar",
+    "count": 1
+  }
+}

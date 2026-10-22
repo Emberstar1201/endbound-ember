@@ -1,0 +1,21 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:stardust_cord_bracelet"},
+    "title": {"translate": "advancements.endbound_ember.go_sisyphus.title"},
+    "description": {"translate": "advancements.endbound_ember.go_sisyphus.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "obtain_bracelet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "endbound_ember:stardust_cord_bracelet"}]
+      }
+    }
+  },
+  "rewards": {"experience": 1000}
+}

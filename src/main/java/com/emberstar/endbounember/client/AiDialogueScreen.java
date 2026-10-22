@@ -40,13 +40,14 @@ public final class AiDialogueScreen extends Screen {
         var config = AiConfigurationStore.get();
         String key = girl instanceof HumanGirl ? "survivor_girl"
                 : girl.getType().toString().contains("drowned") ? "drowned_girl" : "zombie_girl";
-        var persona = config.personas.get(key);
         var girlId = girl.getUUID();
+        var persona = AiConfigurationStore.persona(girlId, key);
+        String background = AiConfigurationStore.backgroundFor(girl.diaryVariant());
         String girlName = girl.hasCustomName() ? girl.getCustomName().getString() : key;
         waiting = true;
         input.setValue("");
         AiServiceClient.generate(config.text, persona,
-                girlName, girl.getAffection(), AiConfigurationStore.memory(girlId), message)
+                girlName, girl.getAffection(), background, AiConfigurationStore.memory(girlId), message)
                 .thenAccept(result -> minecraft.execute(() -> {
                     waiting = false;
                     String response = result.isBlank()

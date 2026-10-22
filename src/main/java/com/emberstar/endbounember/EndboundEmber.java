@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.item.LifeStarItem;
+import com.emberstar.endbounember.item.StardustCordBraceletItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
 import com.mojang.logging.LogUtils;
 
@@ -14,17 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,9 +29,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -66,6 +60,10 @@ public class EndboundEmber {
     public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_GIRL_HUST_1 = registerSound("husk_girl_hust_1");
     public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_GIRL_HUST_2 = registerSound("husk_girl_hust_2");
     public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_GIRL_FAREWELL_1 = registerSound("husk_girl_farewell_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUSK_GIRL_EAT_1 = registerSound("husk_girl_eat_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUMAN_GIRL_IDLE_1 = registerSound("human_girl_idle_1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUMAN_GIRL_IDLE_2 = registerSound("human_girl_idle_2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HUMAN_GIRL_IDLE_3 = registerSound("human_girl_idle_3");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MODID, name)));
@@ -74,39 +72,55 @@ public class EndboundEmber {
     // 友好生物标签（与 minecraft:friendly_mobs 内容一致，供本模组实体直接绑定）
     public static final TagKey<EntityType<?>> FRIENDLY_MOB_TAG = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "friendly_mobs"));
 
-    // Creates a new Block with the id "endbound_ember:example_block", combining the namespace and path
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "endbound_ember:example_block", combining the namespace and path
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
-
-    // Creates a new food item with the id "endbound_ember:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
-
     public static final DeferredItem<Item> LIFE_STAR = ITEMS.register("life_star",
             () -> new LifeStarItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<StardustCordBraceletItem> STARDUST_CORD_BRACELET = ITEMS.register(
+            "stardust_cord_bracelet", () -> new StardustCordBraceletItem(new Item.Properties().stacksTo(1)));
 
     public static final DeferredItem<UnownedStardustItem> UNOWNED_STARDUST = ITEMS.register(
             "unowned_stardust", () -> new UnownedStardustItem(new Item.Properties()
                     .stacksTo(1).fireResistant()));
+
+    public static final DeferredItem<Item> EMBERSTAR = ITEMS.registerSimpleItem("emberstar");
+    public static final DeferredItem<Item> EMBERSTAR_1 = ITEMS.registerSimpleItem("emberstar_1");
+    public static final DeferredItem<Item> EMBERSTAR_2 = ITEMS.registerSimpleItem("emberstar_2");
+    public static final DeferredItem<Item> EMBERSTAR_3 = ITEMS.registerSimpleItem("emberstar_3");
+
+    public static final DeferredItem<Item> VOID_EMBERSTAR = ITEMS.registerSimpleItem("void_emberstar");
 
     public static final DeferredItem<SpawnEggItem> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.ZOMBIE_GIRL.get(), 0x4A5B4A, 0xB7B7B7, new Item.Properties()));
     public static final DeferredItem<SpawnEggItem> DROWNED_GIRL_SPAWN_EGG = ITEMS.register("drowned_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.DROWNED_GIRL.get(), 0x2B5D66, 0x5AB5D1, new Item.Properties()));
 
-    // Creates a creative tab with the id "endbound_ember:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.endbound_ember")) //The language key for the title of your CreativeModeTab
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
-                output.accept(ZOMBIE_GIRL_SPAWN_EGG.get());
-                output.accept(DROWNED_GIRL_SPAWN_EGG.get());
-                output.accept(LIFE_STAR.get());
-                output.accept(UNOWNED_STARDUST.get());
-            }).build());
+    // 物品分区：星尘、生命之星、手绳等道具，图标使用虚无星尘
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ITEMS_TAB = CREATIVE_MODE_TABS.register("items",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.endbound_ember.items"))
+                    .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                    .icon(() -> VOID_EMBERSTAR.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(LIFE_STAR.get());
+                        output.accept(STARDUST_CORD_BRACELET.get());
+                        output.accept(UNOWNED_STARDUST.get());
+                        output.accept(EMBERSTAR.get());
+                        output.accept(EMBERSTAR_1.get());
+                        output.accept(EMBERSTAR_2.get());
+                        output.accept(EMBERSTAR_3.get());
+                        output.accept(VOID_EMBERSTAR.get());
+                    }).build());
+
+    // 生物分区：仅放置刷怪蛋
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MOBS_TAB = CREATIVE_MODE_TABS.register("mobs",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.endbound_ember.mobs"))
+                    .withTabsAfter(ITEMS_TAB.getKey())
+                    .icon(() -> ZOMBIE_GIRL_SPAWN_EGG.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(ZOMBIE_GIRL_SPAWN_EGG.get());
+                        output.accept(DROWNED_GIRL_SPAWN_EGG.get());
+                    }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -131,9 +145,6 @@ public class EndboundEmber {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
-
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -149,19 +160,6 @@ public class EndboundEmber {
         LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
 
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
-    }
-
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(EXAMPLE_BLOCK_ITEM);
-        }
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-            event.accept(ZOMBIE_GIRL_SPAWN_EGG);
-            event.accept(DROWNED_GIRL_SPAWN_EGG);
-            event.accept(LIFE_STAR);
-            event.accept(UNOWNED_STARDUST);
-        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

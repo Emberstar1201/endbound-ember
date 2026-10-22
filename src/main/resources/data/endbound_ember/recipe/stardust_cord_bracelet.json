@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "VVV",
+    "VCV",
+    "VVV"
+  ],
+  "key": {
+    "V": {"item": "endbound_ember:void_emberstar"},
+    "C": {"item": "minecraft:string"}
+  },
+  "result": {
+    "id": "endbound_ember:stardust_cord_bracelet",
+    "count": 1
+  }
+}

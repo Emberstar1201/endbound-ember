@@ -1,19 +1,22 @@
 package com.emberstar.endbounember.client;
 
+import com.emberstar.endbounember.entity.ZombieGirl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-/** 展示当前少女的本地事件记录和最近对话。 */
+/** 展示当前少女的本地事件记录、日记和最近对话。 */
 public final class AiMemoryScreen extends Screen {
     private final Screen parent;
+    private final int entityId;
     private final java.util.UUID girlId;
 
     public AiMemoryScreen(Screen parent, int entityId) {
         super(Component.translatable("gui.endbound_ember.events"));
         this.parent = parent;
+        this.entityId = entityId;
         var client = Minecraft.getInstance();
         var entity = client.level == null ? null : client.level.getEntity(entityId);
         this.girlId = entity == null ? new java.util.UUID(0L, 0L) : entity.getUUID();
@@ -29,7 +32,9 @@ public final class AiMemoryScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(font, title, width / 2, 20, 0xFFFFFF);
-        var memory = AiConfigurationStore.memory(girlId);
+        ZombieGirl girl = minecraft != null && minecraft.level != null
+                && minecraft.level.getEntity(entityId) instanceof ZombieGirl value ? value : null;
+        var memory = AiConfigurationStore.memory(girl == null ? girlId : girl.getUUID());
         int y = 42;
         if (memory.entries.isEmpty() && memory.history.isEmpty()) {
             graphics.drawCenteredString(font, Component.translatable("gui.endbound_ember.events.empty"), width / 2, y, 0xCCCCCC);

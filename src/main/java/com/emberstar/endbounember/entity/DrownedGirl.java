@@ -18,6 +18,10 @@ import net.minecraft.world.level.Level;
 
 /** 溺尸娘实体：保留水下行为，同时复用丧尸娘的驯服与容器功能。 */
 public class DrownedGirl extends ZombieGirl {
+    /** 溺尸娘的日记分支，按皮肤编号取模选择，每个分支对应一段不同的落水经过。 */
+    private static final String[] DIARY_VARIANTS = {
+            "drowned", "drowned_river", "drowned_fog", "drowned_reef", "drowned_well", "drowned_ice"};
+
     public DrownedGirl(EntityType<? extends Zombie> entityType, Level level) {
         super(entityType, level);
         // 无敌人时四处游动或漫步，避免站在原地不动
@@ -28,6 +32,11 @@ public class DrownedGirl extends ZombieGirl {
         this.goalSelector.addGoal(4, new SurfaceWaterGoal(this));
         // 水下无目标时缓慢下沉，避免漂浮在水面。
         this.goalSelector.addGoal(7, new SinkInWaterGoal(this));
+    }
+
+    @Override
+    protected String[] diaryVariants() {
+        return DIARY_VARIANTS;
     }
 
     private static final class WildLandWanderGoal extends Goal {
