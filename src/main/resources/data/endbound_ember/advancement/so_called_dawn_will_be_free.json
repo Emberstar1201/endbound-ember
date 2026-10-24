@@ -1,0 +1,23 @@
+{
+  "parent": "endbound_ember:we_fall_we_remain",
+  "display": {
+    "icon": {"id": "endbound_ember:dawn_star"},
+    "title": {
+      "translate": "advancements.endbound_ember.so_called_dawn_will_be_free.title",
+      "color": "#FFD98A"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.so_called_dawn_will_be_free.description",
+      "color": "#fffffb"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "second_night_wither_kill": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

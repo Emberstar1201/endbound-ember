@@ -1,0 +1,27 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "minecraft:enchanted_book"},
+    "title": {
+      "translate": "advancements.endbound_ember.dawn_journey.title",
+      "color": "#fffffb"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.dawn_journey.description",
+      "color": "#fffffb"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "obtain_dawn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "minecraft:enchanted_book"}]
+      }
+    }
+  },
+  "rewards": {"experience": 100}
+}

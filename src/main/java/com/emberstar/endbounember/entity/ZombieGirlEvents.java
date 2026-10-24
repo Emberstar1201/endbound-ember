@@ -48,7 +48,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public class ZombieGirlEvents {
-    /** 增援触发后同一受保护对象的冷却时间（60 秒），避免连续刷兵。 */
+    /** 增援触发后的冷却时间（60 秒），避免连续刷兵。 */
     private static final long REINFORCE_COOLDOWN_TICKS = 1200L;
     /** 触发增援的血量阈值：受击后血量降至最大生命值的 85% 以下。 */
     private static final float REINFORCE_HEALTH_THRESHOLD = 0.85F;
@@ -60,6 +60,7 @@ public class ZombieGirlEvents {
     private static final long HEAL_THROW_INTERVAL = 40L;
 
     private static final Map<UUID, Long> REINFORCE_COOLDOWN = new HashMap<>();
+    private static long lastReinforcementTick = Long.MIN_VALUE;
     private static final List<HealTask> HEAL_TASKS = new ArrayList<>();
 
     @SubscribeEvent
@@ -203,12 +204,17 @@ public class ZombieGirlEvents {
     }
 
     private static void tryTriggerReinforcement(ServerLevel level, LivingEntity victim, LivingEntity attacker) {
+        // 少女类生物只在主世界刷新，下界与末地不产生增援。
+        if (level.dimension() != ServerLevel.OVERWORLD) return;
         // 荒野中没有玩家的少女战斗不呼叫增援，避免无意义刷兵
         if (!(victim instanceof Player) && level.getNearestPlayer(victim, 32.0D) == null) return;
-        long now = level.getGameTime();
+        long now = level.getServer().overworld().getGameTime();
         Long last = REINFORCE_COOLDOWN.get(victim.getUUID());
-        if (last != null && now - last < REINFORCE_COOLDOWN_TICKS) return;
+        if ((last != null && now - last < REINFORCE_COOLDOWN_TICKS)
+                || (lastReinforcementTick != Long.MIN_VALUE
+                && now - lastReinforcementTick < REINFORCE_COOLDOWN_TICKS)) return;
         REINFORCE_COOLDOWN.put(victim.getUUID(), now);
+        lastReinforcementTick = now;
         if (REINFORCE_COOLDOWN.size() > 512) {
             REINFORCE_COOLDOWN.entrySet().removeIf(entry -> now - entry.getValue() >= REINFORCE_COOLDOWN_TICKS);
         }

@@ -47,6 +47,18 @@ repositories {
         name = "Illusive Soulworks maven"
         url = "https://maven.theillusivec4.top/"
     }
+    // Modrinth Maven：仅用于拉取开发期临时模组，避免与其他仓库混淆
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
     mavenCentral()
 }
 base {
@@ -70,6 +82,8 @@ neoForge {
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
+    // 注意：.vscode/launch.json 由本块内容自动生成（run 类型与名称一一对应），
+    // 请在此处修改运行配置后执行 `gradlew neoForgeIdeSync` 重新生成，不要手工编辑 launch.json。
     runs {
         client {
             client()
@@ -138,6 +152,9 @@ dependencies {
     // Curios is optional at runtime; it is available here for development and compilation.
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+    // 耐久显示（DurabilityDisplay，客户端）：只在开发运行时加载，不会打进发布 jar
+    localRuntime "maven.modrinth:hjotWeH6:A7SHl04E"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

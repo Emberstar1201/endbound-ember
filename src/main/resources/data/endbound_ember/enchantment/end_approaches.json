@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.end_approaches"
+  },
+  "supported_items": "#minecraft:enchantable/sword",
+  "primary_items": "#minecraft:enchantable/sword",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": {
+    "base": 30,
+    "per_level_above_first": 0
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 0
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "mainhand"
+  ]
+}

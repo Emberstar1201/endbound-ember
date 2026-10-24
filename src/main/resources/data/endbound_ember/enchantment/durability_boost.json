@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.durability_boost"
+  },
+  "supported_items": "#minecraft:enchantable/durability",
+  "primary_items": "#minecraft:enchantable/durability",
+  "weight": 3,
+  "max_level": 3,
+  "min_cost": {
+    "base": 5,
+    "per_level_above_first": 20
+  },
+  "max_cost": {
+    "base": 20,
+    "per_level_above_first": 20
+  },
+  "anvil_cost": 2,
+  "slots": [
+    "any"
+  ]
+}

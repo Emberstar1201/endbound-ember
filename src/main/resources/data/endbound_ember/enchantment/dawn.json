@@ -1,0 +1,11 @@
+{
+  "description": {"translate": "enchantment.endbound_ember.dawn"},
+  "supported_items": "#endbound_ember:dawn_enchantable",
+  "primary_items": "#endbound_ember:dawn_enchantable",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": {"base": 20, "per_level_above_first": 5},
+  "max_cost": {"base": 30, "per_level_above_first": 5},
+  "anvil_cost": 1,
+  "slots": ["mainhand"]
+}

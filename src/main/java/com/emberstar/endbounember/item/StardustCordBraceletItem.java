@@ -94,6 +94,12 @@ public class StardustCordBraceletItem extends Item {
                 return;
             }
 
+            // /kill 指令的绝对致死伤害免疫。
+            if (event.getSource().is(DamageTypes.GENERIC_KILL)) {
+                event.setCanceled(true);
+                return;
+            }
+
             if (player.getHealth() - event.getAmount() <= 0.0F) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());

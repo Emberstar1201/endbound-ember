@@ -2,7 +2,10 @@
   "required": true,
   "package": "com.emberstar.endbounember.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "EnderDragonExperienceMixin",
+    "ItemStackMaxDamageMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

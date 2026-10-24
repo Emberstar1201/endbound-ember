@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "endbound_ember:dawn_template"
+  },
+  "base": {
+    "item": "endbound_ember:sword_of_the_free_will"
+  },
+  "addition": {
+    "item": "endbound_ember:dawn_star"
+  },
+  "result": {
+    "id": "endbound_ember:sword_of_the_free_will_enhanced",
+    "count": 1
+  }
+}

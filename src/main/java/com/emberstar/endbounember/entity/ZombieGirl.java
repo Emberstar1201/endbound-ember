@@ -30,15 +30,13 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -137,6 +135,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         this.goalSelector.addGoal(3, new TridentAttackGoal(this));
         // 无敌时可移动目标，野生与驯服状态都会四处走动
         this.goalSelector.addGoal(6, new SafeRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(1, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(7, new WildWanderGoal(this));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -379,14 +378,11 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         super.tick();
         if (this.level().isClientSide) return;
         ensureDiaryBook();
-        if (this.tickCount % 10 == 0) {
-            openNearbyPassage();
-            if (isTamed()) {
-                eatFromCompanionInventory();
-                handleBedRest();
-            }
+        if (isTamed() && this.tickCount % 10 == 0) {
+            eatFromCompanionInventory();
+            handleBedRest();
         }
-        if (!this.level().isClientSide && this.tickCount % 20 == 0) {
+        if (this.tickCount % 20 == 0) {
             updateCompanionship();
         }
     }
@@ -415,75 +411,13 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         return nearest != null && nearest.isAlive() ? nearest : null;
     }
 
-    /**
-     * 通行导航：与村民一致使用可开门的地面导航，关闭的木门在寻路中视为可通过节点。
-     * 此前默认导航把关闭的门当障碍，少女要么绕路要么原地撞门（表现为「把关闭的门当成开的」）；
-     * 改为走到门前由 tick 的通行检查实际开门，通过更顺畅。
-     */
+    /** 使用与村民相同的可开门地面导航，并由原版 OpenDoorGoal 在寻路经过门时开门。 */
     @Override
     protected PathNavigation createNavigation(Level level) {
         GroundPathNavigation navigation = new GroundPathNavigation(this, level);
         navigation.setCanOpenDoors(true);
         navigation.setCanPassDoors(true);
         return navigation;
-    }
-
-    /**
-     * 通行门开启（局部重写）。
-     * 开门前先显式读取门的 OPEN 属性，只有「确实关闭」的木门/活板门才会被处理，已开的门一律跳过，
-     * 不再依赖导航推断门的开关状态。
-     * 触发条件：
-     * 1) 野生少女：正在寻路移动（正常路过/追击时要过门）；
-     * 2) 驯服少女：正在寻路移动，或被物理阻挡（挤在门口）且主人就在附近；
-     * 3) 驯服少女：主人刚进门并立刻关门——主人位于这扇门的另一侧时立即开门。
-     * 只开不关、幂等执行；多个少女挤在同一扇门前不会互相打断。
-     */
-    private void openNearbyPassage() {
-        boolean tamed = this.isTamed() && !this.isOrderedToSit();
-        boolean pathing = this.getNavigation().isInProgress();
-        boolean pressing = this.horizontalCollision && tamed && this.getOwnerPlayer() != null;
-        BlockPos center = blockPosition();
-        // 驯服少女多扫一圈，覆盖主人进门后被同伴挤开一格的情况
-        int radius = tamed ? 2 : 1;
-        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, 0, -radius), center.offset(radius, 1, radius))) {
-            BlockState state = level().getBlockState(pos);
-            if (!isClosedPassage(state)) continue;
-            boolean adjacent = Math.abs(pos.getX() - center.getX()) <= 1 && Math.abs(pos.getZ() - center.getZ()) <= 1;
-            boolean ownerAcross = tamed && isOwnerAcrossDoor(pos, state);
-            if ((adjacent && (pathing || pressing)) || ownerAcross) {
-                openPassage(pos, state);
-            }
-        }
-    }
-
-    /** 门的真实开关状态：直接读 OPEN 属性；非门方块返回 false，表示无需开门。 */
-    private static boolean isClosedPassage(BlockState state) {
-        if (state.getBlock() instanceof DoorBlock) return !state.getValue(DoorBlock.OPEN);
-        if (state.getBlock() instanceof TrapDoorBlock) return !state.getValue(TrapDoorBlock.OPEN);
-        return false;
-    }
-
-    /** 执行开门：木门使用原版 setOpen（同步双开门与音效），活板门直接改方块状态。 */
-    private void openPassage(BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof DoorBlock door) {
-            door.setOpen(this, level(), state, pos, true);
-        } else if (state.getBlock() instanceof TrapDoorBlock) {
-            level().setBlock(pos, state.setValue(TrapDoorBlock.OPEN, true), 10);
-        }
-    }
-
-    /** 主人是否恰好位于这扇关闭木门的另一侧（少女紧贴门、主人就在门附近）。 */
-    private boolean isOwnerAcrossDoor(BlockPos doorPos, BlockState doorState) {
-        Player owner = this.getOwnerPlayer();
-        if (owner == null || !owner.isAlive()) return false;
-        Vec3 center = Vec3.atCenterOf(doorPos);
-        if (this.distanceToSqr(center) > 6.25D) return false;
-        if (owner.distanceToSqr(center) > 20.25D) return false;
-        Direction facing = doorState.getValue(DoorBlock.FACING);
-        Vec3 normal = new Vec3(facing.getStepX(), 0.0D, facing.getStepZ());
-        double mobSide = this.position().subtract(center).dot(normal);
-        double ownerSide = owner.position().subtract(center).dot(normal);
-        return mobSide * ownerSide < 0.0D;
     }
 
     private void handleBedRest() {

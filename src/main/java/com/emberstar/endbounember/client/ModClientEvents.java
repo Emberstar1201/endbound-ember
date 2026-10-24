@@ -59,6 +59,7 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.ZOMBIE_GIRL.get(), ZombieGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.DROWNED_GIRL.get(), DrownedGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.HUMAN_GIRL.get(), HumanGirlRenderer::new);
+        event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
     }
 
     @SubscribeEvent

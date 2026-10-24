@@ -18,8 +18,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 /**
  * 丧尸娘与溺尸娘的独立补刷器。
  *
- * <p>该逻辑只在玩家附近运行，不参与原版刷怪上限；独立上限和每次生成数量
- * 用来避免绕过原版上限后造成实体堆积。</p>
+ * <p>该逻辑只在玩家附近运行，且只在主世界刷新：下界与末地不会自然生成少女类生物。
+ * 不参与原版刷怪上限；独立上限和每次生成数量用来避免绕过原版上限后造成实体堆积。</p>
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class ZombieGirlSpawnEvents {
@@ -39,6 +39,10 @@ public final class ZombieGirlSpawnEvents {
 
         for (ServerLevel level : event.getServer().getAllLevels()) {
             removeFarWildGirls(level);
+            // 丧尸娘、溺尸娘与少女只在主世界自然刷新，下界与末地不生成。
+            if (level.dimension() != ServerLevel.OVERWORLD) {
+                continue;
+            }
             for (ServerPlayer player : level.players()) {
                 trySpawnNearPlayer(level, player);
             }

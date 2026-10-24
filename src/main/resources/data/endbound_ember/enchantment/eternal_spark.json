@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.eternal_spark"
+  },
+  "supported_items": "#endbound_ember:free_will_swords",
+  "primary_items": "#endbound_ember:free_will_swords",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 30,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 2,
+  "slots": [
+    "mainhand"
+  ]
+}

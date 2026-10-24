@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "endbound_ember:item/sword_of_the_free_will"
+  }
+}

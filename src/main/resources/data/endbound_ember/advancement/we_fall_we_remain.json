@@ -1,0 +1,23 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:sword_of_the_free_will"},
+    "title": {
+      "translate": "advancements.endbound_ember.we_fall_we_remain.title",
+      "color": "#6FB8FF"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.we_fall_we_remain.description",
+      "color": "#fffffb"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "kill_wither_for_free_will": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
