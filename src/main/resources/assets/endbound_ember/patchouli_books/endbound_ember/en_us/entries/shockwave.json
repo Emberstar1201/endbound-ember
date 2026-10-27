@@ -1,0 +1,13 @@
+{
+  "name": "Shockwave",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Shockwave",
+      "text": "§lMax Level: §r III$(br2)§lApplies to: §r Mace$(br2)§lEffect: §r A falling smash that hits a target sends out a shockwave, dealing splash damage and knockback to nearby mobs.$(br2)Radius: 2.5 + 0.5 × level blocks$(br)Splash damage: 2 + 2 × level + fall distance × 0.5 (fall distance counts up to 20 blocks)$(br)Knockback: 0.3 + 0.1 × level$(br2)§lObtaining: §r Enchanting Table, loot chests, villager trades.$(br)Requires at least 1.5 blocks of fall distance; does not trigger while elytra gliding."
+    }
+  ]
+}

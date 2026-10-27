@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.skyward_slam"
+  },
+  "supported_items": "minecraft:mace",
+  "primary_items": "minecraft:mace",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ]
+}

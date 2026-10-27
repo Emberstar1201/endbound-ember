@@ -1,0 +1,19 @@
+{
+  "name": "晨曦之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_star",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_star",
+      "title": "晨曦之星",
+      "text": "§l获取方式：§r 在点亮终章成就「我们逝去，我们永恒」之前，于夜间击杀凋灵即会掉落晨曦之星；成就点亮后不再掉落。$(br2)§l用途：§r 晨曦之星是锻造材料，自身没有被动效果。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "锻造强化",
+      "text": "在锻造台中组合晨曦模板、人权剑与晨曦之星，可将人权剑锻造为强化形态。$(br2)§l摆放：§r$(br)模板槽：晨曦模板$(br)底材槽：人权剑$(br)添加物槽：晨曦之星"
+    }
+  ]
+}

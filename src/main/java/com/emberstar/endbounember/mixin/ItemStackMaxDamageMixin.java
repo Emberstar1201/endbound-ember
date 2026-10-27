@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.emberstar.endbounember.enchantment.DurabilityBoostEnchantment;
+import com.emberstar.endbounember.enchantment.MadeInChinaEnchantment;
 
 import net.minecraft.world.item.ItemStack;
 
@@ -21,8 +22,13 @@ public abstract class ItemStackMaxDamageMixin {
         if (base <= 0) return;
 
         int level = DurabilityBoostEnchantment.levelOf((ItemStack) (Object) this);
-        if (level <= 0) return;
+        if (level > 0) {
+            cir.setReturnValue(DurabilityBoostEnchantment.boostedMaxDamage(base, level));
+            return;
+        }
 
-        cir.setReturnValue(DurabilityBoostEnchantment.boostedMaxDamage(base, level));
+        if (MadeInChinaEnchantment.levelOf((ItemStack) (Object) this) > 0) {
+            cir.setReturnValue(MadeInChinaEnchantment.boostedMaxDamage(base));
+        }
     }
 }

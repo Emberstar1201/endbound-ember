@@ -1,0 +1,14 @@
+{
+  "name": "晨曦模板",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_template",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_template",
+      "title": "晨曦模板",
+      "text": "§l獲取方式：§r 地牢、要塞圖書館、林地府邸、遠古城市與終界城嘅戰利品箱中，各有 50% 機率追加開出。$(br2)§l用途：§r 鍛造升級模板。喺鍛造台上以「晨曦模板 + 人權劍 + 晨曦之星」升級為人權劍·星火永燃。"
+    }
+  ]
+}

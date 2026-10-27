@@ -1,0 +1,14 @@
+{
+  "name": "无主的星尘",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:unowned_stardust",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:unowned_stardust",
+      "title": "无主的星尘",
+      "text": "§l获取方式：§r 创造模式物品栏。$(br2)§l用途：§r 收容与释放已驯服的少女。$(br)手持空的无主的星尘右键已驯服的少女，把她收入其中；再对着方块右键，即可将她放出。$(br2)只能收容自己名下的少女。收容着少女时物品会泛出附魔光效。"
+    }
+  ]
+}

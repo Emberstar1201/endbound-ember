@@ -1,0 +1,13 @@
+{
+  "name": "耐久强化",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 17,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "耐久强化",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 一切有耐久的物品$(br2)§l效果：§r 提升最大耐久并降低损耗概率，等级越高效果越强。$(br2)§l互斥：§r 原版耐久、中国制造、匠心传承$(br2)§l获取方式：§r 附魔台、遗迹宝箱、村民交易"
+    }
+  ]
+}

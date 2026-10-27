@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.spring_harvest"
+  },
+  "supported_items": "#endbound_ember:hoe_enchantable",
+  "primary_items": "#endbound_ember:hoe_enchantable",
+  "weight": 5,
+  "max_level": 2,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 8
+  },
+  "max_cost": {
+    "base": 22,
+    "per_level_above_first": 8
+  },
+  "anvil_cost": 2,
+  "slots": [
+    "mainhand"
+  ]
+}

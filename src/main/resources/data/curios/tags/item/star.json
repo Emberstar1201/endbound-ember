@@ -1,4 +1,10 @@
 {
   "replace": false,
-  "values": ["endbound_ember:life_star", "endbound_ember:end_star"]
+  "values": [
+    "endbound_ember:life_star",
+    "endbound_ember:end_star",
+    "endbound_ember:ocean_star",
+    "endbound_ember:starlight_star",
+    "endbound_ember:void_star"
+  ]
 }

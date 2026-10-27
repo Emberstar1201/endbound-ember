@@ -1,0 +1,13 @@
+{
+  "name": "坠星之引",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "坠星之引",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 重锤$(br2)§l效果：§r 手持重锤从高处坠落时减缓下坠速度，并延长实体交互距离，让玩家有更充裕的时间在空中瞄准并命中生物。$(br2)重力修正：-0.03 / -0.04 / -0.05$(br)交互距离：+0.5 / +1.0 / +1.5 格$(br2)§l获取方式：§r 附魔台、宝箱、村民交易。$(br)需要累计下落 2 格以上；鞘翅滑翔、水中、岩浆中或骑乘时不生效。"
+    }
+  ]
+}

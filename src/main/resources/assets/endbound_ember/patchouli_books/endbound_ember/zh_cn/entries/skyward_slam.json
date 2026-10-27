@@ -1,0 +1,13 @@
+{
+  "name": "浮空重击",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "浮空重击",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 重锤$(br2)§l效果：§r 重锤命中生物时把目标向上抛起，目标落地时再结算一次「余震」伤害。$(br2)上抛速度：0.8 + 0.2 × 等级$(br)余震伤害：3 + 3 × 等级$(br2)§l获取方式：§r 附魔台、宝箱、村民交易。$(br)创造模式玩家不会被抛起。"
+    }
+  ]
+}

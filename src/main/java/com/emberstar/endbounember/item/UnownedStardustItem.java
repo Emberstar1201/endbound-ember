@@ -1,5 +1,6 @@
 package com.emberstar.endbounember.item;
 
+import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.entity.DrownedGirl;
 import com.emberstar.endbounember.entity.HumanGirl;
 import com.emberstar.endbounember.entity.ModEntities;
@@ -9,7 +10,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -73,7 +73,7 @@ public class UnownedStardustItem extends Item {
             target.discard();
             player.setItemInHand(hand, filled);
             player.getCooldowns().addCooldown(this, 20);
-            player.level().playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT,
+            player.level().playSound(null, player.blockPosition(), EndboundEmber.STARLIGHT.get(),
                     target.getSoundSource(), 0.8F, 1.4F);
         }
         return InteractionResult.sidedSuccess(player.level().isClientSide);
@@ -123,7 +123,7 @@ public class UnownedStardustItem extends Item {
         } else {
             stack.shrink(1);
         }
-        level.playSound(null, spawnPos, SoundEvents.ENDERMAN_TELEPORT,
+        level.playSound(null, spawnPos, EndboundEmber.STARLIGHT.get(),
                 entity.getSoundSource(), 0.8F, 0.8F);
         return InteractionResult.CONSUME;
     }

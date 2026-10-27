@@ -1,0 +1,22 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.wind_ripple"
+  },
+  "supported_items": "#minecraft:enchantable/foot_armor",
+  "primary_items": "#minecraft:enchantable/foot_armor",
+  "weight": 2,
+  "max_level": 1,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 30,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "feet"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/wind_ripple"
+}

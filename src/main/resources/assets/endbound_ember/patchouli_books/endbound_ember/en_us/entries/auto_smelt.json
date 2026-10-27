@@ -1,0 +1,13 @@
+{
+  "name": "Auto Smelt",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Auto Smelt",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Pickaxes$(br2)§lEffect: §r Mined ores drop smelted products directly; higher levels give more chance for extra drops.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

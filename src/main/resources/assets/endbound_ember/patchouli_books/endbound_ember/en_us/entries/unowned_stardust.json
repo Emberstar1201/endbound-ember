@@ -1,0 +1,14 @@
+{
+  "name": "Unowned Stardust",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:unowned_stardust",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:unowned_stardust",
+      "title": "Unowned Stardust",
+      "text": "§lAcquisition: §r Creative inventory.$(br2)§lUse: §r Stores and releases tamed girls.$(br)Right-click a tamed girl with an empty Unowned Stardust to take her in; right-click a block to let her out again.$(br2)Only girls that belong to you can be stored. While a girl is inside, the item glows with an enchantment shimmer."
+    }
+  ]
+}

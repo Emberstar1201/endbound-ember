@@ -1,0 +1,14 @@
+{
+  "name": "End Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:end_star",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:end_star",
+      "title": "End Star",
+      "text": "§lAcquisition: §r Appears above the center of the End after defeating the Ender Dragon, floating in place.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Wings of the End: grants free flight.$(br)End Embers: every 10 current experience points grants +1% damage, with no cap.$(br)Blast Immunity: immune to explosion damage.$(br)Stardust Echo: projectile damage reduced by 75%.$(br)Body of Bedrock: physical damage reduced by 50%.$(br)Arcane Barrier: magic damage reduced by 80%.$(br)Void Anchor: immune to void damage; falling into the void sends you back to your respawn point.$(br)Unburdened Soul: immune to Mining Fatigue and to underwater or airborne mining penalties.$(br)Freedom Step: immune to Slowness and movement slowdowns.$(br)End Kin: Endermen, Endermites, Shulkers and the Ender Dragon no longer treat you as an enemy."
+    }
+  ]
+}

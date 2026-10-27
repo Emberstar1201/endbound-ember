@@ -1,0 +1,13 @@
+{
+  "name": "Guidance of the Falling Star",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Guidance of the Falling Star",
+      "text": "§lMax Level: §r III$(br2)§lApplies to: §r Mace$(br2)§lEffect: §r While holding a mace and falling from a height, your descent slows and your entity interaction range extends, giving you more time to aim and land a hit mid-air.$(br2)Gravity modifier: -0.03 / -0.04 / -0.05$(br)Interaction range: +0.5 / +1.0 / +1.5 blocks$(br2)§lObtaining: §r Enchanting Table, loot chests, villager trades.$(br)Requires at least 2 blocks of accumulated fall distance; does not work while elytra gliding, in water, in lava, or while riding."
+    }
+  ]
+}

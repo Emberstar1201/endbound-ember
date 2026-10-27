@@ -1,0 +1,14 @@
+{
+  "name": "Sword of the Free Will",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:sword_of_the_free_will",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:sword_of_the_free_will",
+      "title": "Sword of the Free Will",
+      "text": "§lWeapon Effects: §r$(br)Armor +10, 25% damage reduction, with built-in Sharpness XII, Smite XII, Looting XII, Knockback II, Dawn I, and Eternal Spark I.$(br2)§lActive Skill \"Human Will\": §r$(br)Right-click to activate. Damage +150% for 10 minutes, with a 90% chance to summon lightning on each attack; costs 25% health and has a 15-minute cooldown."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "难度馈赠",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "难度馈赠",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 武器、盔甲$(br2)§l效果：§r 难度越高加成越强：武器加伤害与攻速，盔甲加护甲、韧性与生命上限。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -67,6 +68,13 @@ public final class CraftsmanshipEnchantment {
         return 0;
     }
 
+    /** 该工具是否拥有匠心传承效果：本身附魔，或镐 / 斧 / 锹上的中国制造。 */
+    public static boolean hasEffect(ItemStack stack) {
+        if (levelOf(stack) > 0) return true;
+        if (MadeInChinaEnchantment.levelOf(stack) <= 0) return false;
+        return stack.is(ItemTags.PICKAXES) || stack.is(ItemTags.AXES) || stack.is(ItemTags.SHOVELS);
+    }
+
     /** 该工具累计破坏的方块数。 */
     public static int countOf(ItemStack stack) {
         if (stack.isEmpty()) return 0;
@@ -86,7 +94,7 @@ public final class CraftsmanshipEnchantment {
         if (player.level().isClientSide()) return;
 
         ItemStack tool = player.getMainHandItem();
-        if (levelOf(tool) <= 0) return;
+        if (!hasEffect(tool)) return;
 
         int count = countOf(tool) + 1;
         tool.set(EndboundEmber.CRAFTSMANSHIP_COUNT.get(), count);
@@ -106,7 +114,7 @@ public final class CraftsmanshipEnchantment {
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
         ItemStack tool = player.getMainHandItem();
-        if (levelOf(tool) <= 0) return;
+        if (!hasEffect(tool)) return;
 
         float speed = event.getNewSpeed();
         // 水中惩罚：原版在水下会乘以「水下挖掘速度」属性（默认 0.2，水下速掘会把它提到 1.0），除以该值即可还原
@@ -127,13 +135,15 @@ public final class CraftsmanshipEnchantment {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        if (levelOf(stack) <= 0) return;
+        if (!hasEffect(stack)) return;
 
         List<Component> tooltip = event.getToolTip();
         String enchantName = Component.translatable("enchantment.endbound_ember.craftsmanship").getString();
+        String chinaName = Component.translatable("enchantment.endbound_ember.made_in_china").getString();
         int insertAt = tooltip.size();
         for (int i = 0; i < tooltip.size(); i++) {
-            if (tooltip.get(i).getString().startsWith(enchantName)) {
+            String text = tooltip.get(i).getString();
+            if (text.startsWith(enchantName) || text.startsWith(chinaName)) {
                 insertAt = i + 1;
                 break;
             }

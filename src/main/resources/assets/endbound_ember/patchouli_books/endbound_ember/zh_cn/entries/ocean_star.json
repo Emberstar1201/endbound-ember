@@ -1,0 +1,20 @@
+{
+  "name": "海洋之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:ocean_star",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:ocean_star",
+      "title": "海洋之星",
+      "text": "§l获取方式：§r 通过下一页的合成配方制作。$(br2)§l生效条件：§r 放入饰品栏，或放在主手/副手。$(br2)海渊之息：氧气始终维持满值，并免疫溺水伤害。$(br)洋流之拥：水下泳速提升 200%，并抵消水流推力与缓慢效果。$(br)深渊无阻：免疫挖掘疲劳，且不受水中与悬空的挖掘减速。$(br)珊瑚之刃：水下挖掘速度提升 25%。$(br)潮汐同源：守卫者不会主动攻击你，除非你先动手。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "合成配方",
+      "recipe": "endbound_ember:ocean_star",
+      "text": "图中为合成摆法：四角海晶碎片，四边鹦鹉螺壳，中心潮涌核心。"
+    }
+  ]
+}

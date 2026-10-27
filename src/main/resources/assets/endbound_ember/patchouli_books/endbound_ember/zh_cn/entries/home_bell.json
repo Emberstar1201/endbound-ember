@@ -1,0 +1,19 @@
+{
+  "name": "归乡铃",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:home_bell",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:home_bell",
+      "title": "归乡铃",
+      "text": "§l获取方式：§r 铜锭在上、木棍在下，竖排两格合成。$(br2)§l效果：§r 摇响后，把主人名下同一维度的所有少女唤回身边；连躺在未加载区块里的个体也会循声归来。$(br2)使用冷却 2 秒。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:home_bell",
+      "text": "配方：上方放铜锭，下方放木棍。"
+    }
+  ]
+}

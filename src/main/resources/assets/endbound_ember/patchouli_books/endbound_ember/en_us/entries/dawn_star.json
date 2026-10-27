@@ -1,0 +1,19 @@
+{
+  "name": "Dawn Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_star",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_star",
+      "title": "Dawn Star",
+      "text": "§lAcquisition: §r Before the final advancement 'Though We Fall, We Remain' is earned, killing a Wither at night drops a Dawn Star; once the advancement is earned, it no longer drops.$(br2)§lPurpose: §r The Dawn Star is a smithing material and has no passive effect on its own."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Smithing Upgrade",
+      "text": "Combine the Dawn Template, the Sword of the Free Will and a Dawn Star in a smithing table to upgrade the sword into its enhanced form.$(br2)§lPlacement: §r$(br)Template slot: Dawn Template$(br)Base slot: Sword of the Free Will$(br)Addition slot: Dawn Star"
+    }
+  ]
+}

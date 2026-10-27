@@ -9,14 +9,18 @@ import com.emberstar.endbounember.enchantment.FreeWillEnchantments;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -37,12 +41,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 /**
  * 人权剑 / 人权剑·星火永燃。
  *
  * <p>本体不带耐久，每次普通攻击命中都会随斩击挥出剑气；携带「晨映之花」时剑气伤害提升至 350%，
- * 强化版自带「我们逝去，我们永恒」，剑气自动化为必定暴击、无视护甲的蓝火剑气。</p>
+ * 强化版独有固有技能「人的意志」，剑气自动化为必定暴击、无视护甲的蓝火剑气。</p>
  */
 public class SwordOfTheFreeWillItem extends Item {
     /** 剑气最大飞行距离（格）。 */
@@ -67,6 +72,16 @@ public class SwordOfTheFreeWillItem extends Item {
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_attack_damage");
     private static final ResourceLocation ATTACK_SPEED_ID =
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_attack_speed");
+    private static final ResourceLocation ARMOR_ID =
+            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_armor");
+    private static final ResourceLocation ARMOR_TOUGHNESS_ID =
+            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_armor_toughness");
+
+    /** 持剑时受到伤害的减免比例。 */
+    public static final double DAMAGE_REDUCTION = 0.25D;
+    /** 星火不灭抵挡致命伤害的冷却：300 秒。 */
+    public static final int ETERNAL_SPARK_COOLDOWN_TICKS = 6000;
+    private static final String SPARK_COOLDOWN_TAG = "EndboundEmberEternalSparkCooldown";
 
     private final boolean enhanced;
 
@@ -80,14 +95,22 @@ public class SwordOfTheFreeWillItem extends Item {
         return this.enhanced;
     }
 
-    /** 攻击伤害 30 / 攻速 4.5 对应玩家基础值 1.0 攻伤与 4.0 攻速的偏移量。 */
-    public static ItemAttributeModifiers attributes(double attackDamageBonus, double attackSpeedBonus) {
-        return ItemAttributeModifiers.builder()
+    /** 攻击伤害 / 攻速 / 护甲 / 盔甲韧性均为相对玩家基础值的偏移量，仅在数值非零时写入。 */
+    public static ItemAttributeModifiers attributes(double attackDamageBonus, double attackSpeedBonus,
+            double armorBonus, double armorToughnessBonus) {
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder()
                 .add(Attributes.ATTACK_DAMAGE, modifier(ATTACK_DAMAGE_ID, attackDamageBonus),
                         EquipmentSlotGroup.MAINHAND)
                 .add(Attributes.ATTACK_SPEED, modifier(ATTACK_SPEED_ID, attackSpeedBonus),
-                        EquipmentSlotGroup.MAINHAND)
-                .build();
+                        EquipmentSlotGroup.MAINHAND);
+        if (armorBonus != 0.0D) {
+            builder.add(Attributes.ARMOR, modifier(ARMOR_ID, armorBonus), EquipmentSlotGroup.MAINHAND);
+        }
+        if (armorToughnessBonus != 0.0D) {
+            builder.add(Attributes.ARMOR_TOUGHNESS, modifier(ARMOR_TOUGHNESS_ID, armorToughnessBonus),
+                    EquipmentSlotGroup.MAINHAND);
+        }
+        return builder.build();
     }
 
     private static AttributeModifier modifier(ResourceLocation id, double amount) {
@@ -103,7 +126,11 @@ public class SwordOfTheFreeWillItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
             TooltipFlag flag) {
-        // 两把人权剑只保留名称、属性和原有附魔；拂晓成长数值由 DawnEnchantment 统一追加。
+        // 拂晓成长数值由 DawnEnchantment 统一追加。
+        if (this.enhanced) {
+            tooltip.add(Component.translatable("item.endbound_ember.sword_of_the_free_will_enhanced.human_will")
+                    .withStyle(style -> style.withColor(ENHANCED_COLOR)));
+        }
     }
 
     /**
@@ -122,22 +149,7 @@ public class SwordOfTheFreeWillItem extends Item {
             bless(mutable, level, "minecraft:knockback", 2);
             bless(mutable, level, DawnEnchantment.KEY, 1);
             bless(mutable, level, FreeWillEnchantments.ETERNAL_SPARK, 1);
-            blessEnhancedSkill(mutable, level);
             stack.set(DataComponents.ENCHANTMENTS, mutable.toImmutable());
-            return;
-        }
-        // 已存在的强化版补齐自带技能，避免旧存档里的剑缺少「我们逝去，我们永恒」
-        if (this.enhanced && FreeWillEnchantments.levelOf(stack, FreeWillEnchantments.WE_FALL_WE_REMAIN) <= 0) {
-            ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(current);
-            blessEnhancedSkill(mutable, level);
-            stack.set(DataComponents.ENCHANTMENTS, mutable.toImmutable());
-        }
-    }
-
-    /** 人权剑·星火永燃自带「我们逝去，我们永恒」。 */
-    private void blessEnhancedSkill(ItemEnchantments.Mutable mutable, Level level) {
-        if (this.enhanced) {
-            bless(mutable, level, FreeWillEnchantments.WE_FALL_WE_REMAIN, 1);
         }
     }
 
@@ -153,10 +165,10 @@ public class SwordOfTheFreeWillItem extends Item {
 
     /**
      * 随普通攻击挥出剑气：白火为 100%（晨映之花 350%），
-     * 强化版自带「我们逝去，我们永恒」，剑气固定为 1000% 且必定暴击、无视护甲的蓝火。
+     * 强化版固有技能使剑气固定为 1000% 且必定暴击、无视护甲的蓝火。
      */
     private void castQi(ServerLevel level, ServerPlayer player, ItemStack stack) {
-        boolean blue = this.enhanced && FreeWillEnchantments.hasWeFallWeRemain(stack);
+        boolean blue = this.enhanced;
         double multiplier = blue
                 ? FreeWillEnchantments.BLUE_FLAME_MULTIPLIER
                 : (FreeWillEnchantments.hasDawnBloom(stack)
@@ -195,6 +207,37 @@ public class SwordOfTheFreeWillItem extends Item {
     /** 凋灵掉落：首次击杀给人权剑并点亮第一阶段成就，之后夜间第二次击杀点亮终章成就并停止掉落。 */
     @EventBusSubscriber(modid = EndboundEmber.MODID)
     public static class Events {
+        /** 持剑时受到伤害减免 25%；星火不灭抵挡一次致命伤害，冷却 300 秒。 */
+        @SubscribeEvent
+        public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+            if (!(event.getEntity() instanceof ServerPlayer player)) return;
+            if (player.level().isClientSide) return;
+            ItemStack weapon = player.getMainHandItem();
+            if (!(weapon.getItem() instanceof SwordOfTheFreeWillItem)) return;
+
+            float amount = (float) (event.getAmount() * (1.0D - DAMAGE_REDUCTION));
+            long gameTime = player.level().getGameTime();
+            boolean lethal = amount >= player.getHealth();
+            if (lethal && !event.getSource().is(DamageTypes.GENERIC_KILL)
+                    && FreeWillEnchantments.levelOf(weapon, FreeWillEnchantments.ETERNAL_SPARK) > 0
+                    && player.getPersistentData().getLong(SPARK_COOLDOWN_TAG) <= gameTime) {
+                // 星火不灭：抵挡本次致命伤害并进入冷却
+                event.setCanceled(true);
+                player.getPersistentData().putLong(SPARK_COOLDOWN_TAG,
+                        gameTime + ETERNAL_SPARK_COOLDOWN_TICKS);
+                player.displayClientMessage(
+                        Component.translatable("endbound_ember.eternal_spark.saved"), true);
+                if (player.level() instanceof ServerLevel level) {
+                    level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                            player.getX(), player.getY(0.8D), player.getZ(), 40, 0.6D, 0.8D, 0.6D, 0.08D);
+                    level.playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT,
+                            SoundSource.PLAYERS, 1.2F, 0.6F);
+                }
+                return;
+            }
+            event.setAmount(amount);
+        }
+
         /** 近战命中后随斩击挥出剑气。 */
         @SubscribeEvent
         public static void onLivingDamaged(LivingDamageEvent.Post event) {

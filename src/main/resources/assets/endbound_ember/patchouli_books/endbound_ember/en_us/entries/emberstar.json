@@ -1,0 +1,20 @@
+{
+  "name": "Emberstar",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:emberstar",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:emberstar",
+      "title": "Emberstar",
+      "text": "§lAcquisition: §r Found in chests at Zombie Girl camps (four forms: Emberstar and Emberstar I–III).$(br2)§lUse: §r Crafting material. Ring 8 Emberstars of any kind around an empty center to condense a Void Stardust."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:void_emberstar",
+      "title": "Void Stardust",
+      "text": "§lAcquisition: §r Crafted by ringing 8 Emberstars (any mix of Emberstar and Emberstar I–III) around an empty center.$(br2)§lUse: §r Crafted with string into the Emberstar Cord Bracelet; also the cornerstone for condensing the various stars."
+    }
+  ]
+}

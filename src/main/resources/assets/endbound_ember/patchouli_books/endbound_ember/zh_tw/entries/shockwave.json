@@ -1,0 +1,13 @@
+{
+  "name": "震波擴散",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "震波擴散",
+      "text": "§l最高等級：§r III$(br2)§l適用物品：§r 重錘$(br2)§l效果：§r 下落重擊命中目標時向四周擴散衝擊波，對周圍生物造成濺射傷害並擊退。$(br2)衝擊半徑：2.5 + 0.5 × 等級 格$(br)濺射傷害：2 + 2 × 等級 + 下落距離 × 0.5（下落距離最多計 20 格）$(br)擊退強度：0.3 + 0.1 × 等級$(br2)§l獲取方式：§r 附魔台、寶箱、村民交易。$(br)需要至少 1.5 格的下落距離；鞘翅滑翔時不會觸發。"
+    }
+  ]
+}

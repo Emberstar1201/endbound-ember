@@ -1,0 +1,13 @@
+{
+  "name": "匠心传承",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 16,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "匠心传承",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 镐、斧、锹$(br2)§l效果：§r 工具记忆挖掘过的方块，同类越挖越快并可能额外掉落。$(br2)§l互斥：§r 原版耐久、耐久强化、中国制造$(br2)§l获取方式：§r 宝藏附魔，仅宝箱与村民交易"
+    }
+  ]
+}

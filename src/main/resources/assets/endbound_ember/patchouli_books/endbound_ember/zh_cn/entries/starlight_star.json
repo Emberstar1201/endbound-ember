@@ -1,0 +1,19 @@
+{
+  "name": "星辉之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:starlight_star",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:starlight_star",
+      "title": "星辉之星",
+      "text": "§l获取方式：§r 在工作台中以荧石 ×4、紫水晶碎片 ×4、钻石 ×1 合成。$(br2)§l生效条件：§r 放入饰品栏，或放在主手/副手。$(br2)星夜漫行：夜间移动速度提升 20%。$(br)星眸：夜间自动获得夜视。$(br)星辉回响：击杀生物获得的经验翻倍。$(br2)仅在具有昼夜循环的维度中判定夜间（13000~23000 刻），下界与末地不会触发。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:starlight_star",
+      "text": "图中为合成摆法：四角荧石，四边紫水晶碎片，中心钻石。"
+    }
+  ]
+}

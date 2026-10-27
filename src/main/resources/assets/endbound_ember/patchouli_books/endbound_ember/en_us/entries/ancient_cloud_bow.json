@@ -1,0 +1,13 @@
+{
+  "name": "Ancient YunLai Archery",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Ancient YunLai Archery",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bows$(br2)§lEffect: §r Greatly increases bow draw speed and arrow flight velocity; a charge takes about 0.5 seconds and arrow speed is 3.5×.$(br2)§lAcquisition: §r Loot Chests and Villager Trades only (Treasure)"
+    }
+  ]
+}

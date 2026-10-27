@@ -1,0 +1,19 @@
+{
+  "name": "Emberstar Cord Bracelet",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:stardust_cord_bracelet",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:stardust_cord_bracelet",
+      "title": "Emberstar Cord Bracelet",
+      "text": "§lAcquisition: §r Crafted from 8 Void Emberstars around a single piece of string.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Night Beyond the Campfire: attack speed increased by 50%.$(br)This is my soulless heart: all damage taken is reduced by 25%, gradually rising to 99.9% over playtime.$(br)Hollow Heart: mob detection range reduced by 99%.$(br)Face the Void: falling into the void returns you to your latest respawn point; a bed's spawn takes priority over a respawn anchor.$(br)Your existence is the meaning: when you would take lethal damage, you survive once, restore all health, and gain 30 seconds of invulnerability."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:stardust_cord_bracelet",
+      "text": "Recipe: 8 Void Emberstars in a ring, with 1 piece of string in the center."
+    }
+  ]
+}

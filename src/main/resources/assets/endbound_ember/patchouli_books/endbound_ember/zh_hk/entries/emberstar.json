@@ -1,0 +1,20 @@
+{
+  "name": "星塵",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:emberstar",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:emberstar",
+      "title": "星塵",
+      "text": "§l獲取方式：§r 喪屍娘營地嘅箱子可以開出星塵（連星塵 I~III 共四種形態）。$(br2)§l用途：§r 合成材料。8 個任意星塵圍成一圈，即可凝成一顆虛無星塵。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:void_emberstar",
+      "title": "虛無星塵",
+      "text": "§l獲取方式：§r 以 8 個星塵（星塵、星塵 I、星塵 II、星塵 III 任意組合）圍成一圈合成。$(br2)§l用途：§r 與線合成星塵手繩；亦係凝成各類星辰嘅基石。"
+    }
+  ]
+}

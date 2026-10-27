@@ -1,0 +1,19 @@
+{
+  "name": "Void Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:void_star",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:void_star",
+      "title": "Void Star",
+      "text": "§lAcquisition: §r Crafted at a crafting table with 4 Obsidian, 4 Ender Pearls and 1 Chorus Fruit.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Void Body: immune to fall damage and void damage.$(br)Return to the Abyss: falling into the void sends you back to your respawn point.$(br)Void Ripple: every 2 seconds, deals void damage to hostile mobs within 18 blocks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:void_star",
+      "text": "The grid above shows the layout: obsidian in the corners, ender pearls on the edges, chorus fruit in the center."
+    }
+  ]
+}

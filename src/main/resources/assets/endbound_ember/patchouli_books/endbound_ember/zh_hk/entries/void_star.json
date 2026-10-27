@@ -1,0 +1,19 @@
+{
+  "name": "虛空之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:void_star",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:void_star",
+      "title": "虛空之星",
+      "text": "§l獲取方式：§r 在工作台中以黑曜石 ×4、終界珍珠 ×4、歌萊果 ×1 合成。$(br2)§l生效條件：§r 放入飾品欄，或放在主手/副手。$(br2)虛空之軀：免疫摔落傷害與虛空傷害。$(br)歸墟：墜入虛空時被送回重生點。$(br)虛空漣漪：每 2 秒對周圍 18 格內的敵對生物造成虛空傷害。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:void_star",
+      "text": "圖中為合成擺法：四角黑曜石，四邊終界珍珠，中心歌萊果。"
+    }
+  ]
+}

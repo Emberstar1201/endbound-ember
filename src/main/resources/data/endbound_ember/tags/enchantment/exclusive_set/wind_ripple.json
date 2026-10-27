@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:depth_strider",
+    "minecraft:frost_walker",
+    "minecraft:soul_speed",
+    "minecraft:swift_sneak",
+    "endbound_ember:elegant_catwalk",
+    "endbound_ember:flywheel_effect"
+  ]
+}

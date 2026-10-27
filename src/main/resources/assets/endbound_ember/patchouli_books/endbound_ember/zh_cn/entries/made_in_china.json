@@ -1,0 +1,13 @@
+{
+  "name": "中国制造",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 33,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "中国制造",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 一切有耐久的物品$(br2)§l效果：§r 大幅提升最大耐久、降低损耗概率、持续自动修复，工具还能越用越快。$(br2)§l互斥：§r 原版耐久、耐久强化、匠心传承$(br2)§l获取方式：§r 附魔台、村民交易、遗迹宝箱"
+    }
+  ]
+}

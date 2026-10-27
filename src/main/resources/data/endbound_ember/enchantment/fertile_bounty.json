@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.fertile_bounty"
+  },
+  "supported_items": "#endbound_ember:hoe_enchantable",
+  "primary_items": "#endbound_ember:hoe_enchantable",
+  "weight": 2,
+  "max_level": 2,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 12
+  },
+  "max_cost": {
+    "base": 33,
+    "per_level_above_first": 12
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ]
+}

@@ -55,7 +55,9 @@ public final class AiServiceClient {
                 .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
         return CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> parseReply(response.statusCode(), response.body()));
+                .thenApply(response -> parseReply(response.statusCode(), response.body()))
+                // 连接失败、超时、DNS 异常都会让 future 异常完成；兜底成空串，保证调用方一定收到回调。
+                .exceptionally(error -> "");
     }
 
     private static String completionsEndpoint(String endpoint) {

@@ -115,4 +115,12 @@ public final class GirlInteractionScreen extends Screen {
     public boolean isPauseScreen() {
         return false;
     }
+
+    @Override
+    public void removed() {
+        // 关闭面板时释放输入焦点：否则 EditBox 仍持有焦点，中文输入法会一直把候选窗挂在已关闭的界面上，
+        // 表现为回到游戏后按键（如数字 1）打不出字、也切不出中文候选。
+        setFocused(null);
+        super.removed();
+    }
 }

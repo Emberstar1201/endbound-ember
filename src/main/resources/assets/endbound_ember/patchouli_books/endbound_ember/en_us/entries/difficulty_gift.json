@@ -1,0 +1,13 @@
+{
+  "name": "Difficulty Gift",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 20,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Difficulty Gift",
+      "text": "$(bold)Max Level:$(r) I$(br2)$(bold)Applicable:$(r) Weapons, Armor$(br2)$(bold)Effect:$(r) Stronger bonuses on higher difficulty: weapons gain damage and attack speed; armor gains armor, toughness, and max HP.$(br2)$(bold)Obtainment:$(r) Enchanting Table, Structure Chests, Villager Trades."
+    }
+  ]
+}

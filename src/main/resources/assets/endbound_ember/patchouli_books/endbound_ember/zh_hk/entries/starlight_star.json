@@ -1,0 +1,19 @@
+{
+  "name": "星輝之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:starlight_star",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:starlight_star",
+      "title": "星輝之星",
+      "text": "§l獲取方式：§r 在工作台中以螢石 ×4、紫水晶碎片 ×4、鑽石 ×1 合成。$(br2)§l生效條件：§r 放入飾品欄，或放在主手/副手。$(br2)星夜漫行：夜間移動速度提升 20%。$(br)星眸：夜間自動獲得夜視。$(br)星輝回響：擊殺生物獲得的經驗加倍。$(br2)僅在具有晝夜循環的維度中判定夜間（13000~23000 刻），地獄與終界不會觸發。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:starlight_star",
+      "text": "圖中為合成擺法：四角螢石，四邊紫水晶碎片，中心鑽石。"
+    }
+  ]
+}

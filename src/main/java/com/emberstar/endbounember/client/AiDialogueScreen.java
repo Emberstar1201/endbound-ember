@@ -33,9 +33,14 @@ public final class AiDialogueScreen extends Screen {
     }
 
     private void send() {
-        if (waiting || input.getValue().isBlank()) return;
+        if (waiting) return;
+        if (input.getValue().isBlank()) return;
         ZombieGirl girl = minecraft.level != null && minecraft.level.getEntity(entityId) instanceof ZombieGirl value ? value : null;
-        if (girl == null) return;
+        if (girl == null) {
+            // 目标已不在加载范围内：必须给出提示，否则玩家只会看到点击后毫无反应。
+            ChatFeedback.error(Component.translatable("gui.endbound_ember.ai.target_lost"));
+            return;
+        }
         String message = input.getValue().trim();
         var config = AiConfigurationStore.get();
         String key = girl instanceof HumanGirl ? "survivor_girl"
@@ -46,15 +51,18 @@ public final class AiDialogueScreen extends Screen {
         String girlName = girl.hasCustomName() ? girl.getCustomName().getString() : key;
         waiting = true;
         input.setValue("");
+        // 回复统一走 ChatFeedback：即使玩家在等待期间关闭了本界面，结果仍会写进聊天栏。
+        ChatFeedback.waiting(girlName);
         AiServiceClient.generate(config.text, persona,
                 girlName, girl.getAffection(), background, AiConfigurationStore.memory(girlId), message)
                 .thenAccept(result -> minecraft.execute(() -> {
                     waiting = false;
-                    String response = result.isBlank()
-                            ? Component.translatable("gui.endbound_ember.ai.failed").getString()
-                            : result;
-                    if (!result.isBlank()) AiConfigurationStore.add(girlId, message, result);
-                    minecraft.gui.getChat().addMessage(Component.literal("<" + girlName + "> " + response));
+                    if (result.isBlank()) {
+                        ChatFeedback.error(Component.translatable("gui.endbound_ember.ai.failed"));
+                        return;
+                    }
+                    AiConfigurationStore.add(girlId, message, result);
+                    ChatFeedback.reply(girlName, result);
                 }));
     }
 
@@ -79,5 +87,12 @@ public final class AiDialogueScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void removed() {
+        // 释放输入焦点：避免关闭界面后输入法仍绑定在已消失的 EditBox 上，导致游戏中按键失效。
+        setFocused(null);
+        super.removed();
     }
 }

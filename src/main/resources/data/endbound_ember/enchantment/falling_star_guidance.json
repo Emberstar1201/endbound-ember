@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.falling_star_guidance"
+  },
+  "supported_items": "minecraft:mace",
+  "primary_items": "minecraft:mace",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {
+    "base": 12,
+    "per_level_above_first": 8
+  },
+  "max_cost": {
+    "base": 32,
+    "per_level_above_first": 8
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ]
+}

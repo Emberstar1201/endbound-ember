@@ -9,13 +9,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -46,6 +50,11 @@ public final class ZombieGirlCampEvents {
     private static final int SPAWN_CAMP_CHUNK_OFFSET = 5;
     /** 出生点营地唯一的地形条件。 */
     private static final int SPAWN_CAMP_MIN_Y = 60;
+    /**
+     * 生成少女时的地面层搜索高度：只在营地底部向上这几格内找落脚点，避免刷到屋顶。
+     * 结构底部 0~3 层是地基与地砖，第 4 层才是可站的室内地面，再向上留两格容错。
+     */
+    private static final int FLOOR_SCAN_HEIGHT = 6;
     private static final Set<Long> ATTEMPTED = new HashSet<>();
     private static final Set<PendingCamp> PENDING = new HashSet<>();
 
@@ -202,17 +211,13 @@ public final class ZombieGirlCampEvents {
         for (int i = 0; i < 4; i++) {
             for (int attempt = 0; attempt < 12; attempt++) {
                 int x = min.getX() + random.nextInt(Math.max(1, max.getX() - min.getX() + 1));
-                int y = min.getY() + random.nextInt(Math.max(1, max.getY() - min.getY() + 1));
                 int z = min.getZ() + random.nextInt(Math.max(1, max.getZ() - min.getZ() + 1));
-                BlockPos pos = new BlockPos(x, y, z);
                 boolean drowned = random.nextInt(3) == 0;
                 Mob girl = (drowned ? ModEntities.DROWNED_GIRL : ModEntities.ZOMBIE_GIRL).get().create(level);
-                if (girl == null || !level.noCollision(girl.getBoundingBox().move(x + 0.5D, y, z + 0.5D))) continue;
-                if (!drowned && (!level.getBlockState(pos.below()).blocksMotion()
-                        || !level.getFluidState(pos).isEmpty()
-                        || !level.getFluidState(pos.above()).isEmpty())) continue;
-                if (drowned && !level.getFluidState(pos).is(net.minecraft.tags.FluidTags.WATER)) continue;
-                girl.moveTo(x + 0.5D, y, z + 0.5D, random.nextFloat() * 360.0F, 0.0F);
+                if (girl == null) continue;
+                BlockPos pos = findFloorSpawn(level, girl, x, z, min.getY(), drowned);
+                if (pos == null) continue;
+                girl.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, random.nextFloat() * 360.0F, 0.0F);
                 girl.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
                 level.addFreshEntity(girl);
                 spawned++;
@@ -220,6 +225,30 @@ public final class ZombieGirlCampEvents {
             }
         }
         EndboundEmber.LOGGER.info("[营地生成] 营地少女生成完成：实际生成 {} 只", spawned);
+    }
+
+    /**
+     * 在营地最底层寻找落脚点：从结构底部向上最多 {@link #FLOOR_SCAN_HEIGHT} 格，
+     * 避免刷到屋顶，也避免悬空后坠落把营地里的耕地与作物踩掉。
+     */
+    private static BlockPos findFloorSpawn(ServerLevel level, Mob girl, int x, int z, int baseY, boolean drowned) {
+        for (int dy = 0; dy < FLOOR_SCAN_HEIGHT; dy++) {
+            BlockPos pos = new BlockPos(x, baseY + dy, z);
+            if (!level.noCollision(girl.getBoundingBox().move(x + 0.5D, pos.getY(), z + 0.5D))) continue;
+
+            if (drowned) {
+                if (level.getFluidState(pos).is(FluidTags.WATER)) return pos;
+                continue;
+            }
+
+            BlockState ground = level.getBlockState(pos.below());
+            if (!ground.blocksMotion()) continue;
+            if (!level.getFluidState(pos).isEmpty() || !level.getFluidState(pos.above()).isEmpty()) continue;
+            // 跳过耕地与作物所在的格，避免占据或踩坏营地里的农田
+            if (ground.is(Blocks.FARMLAND) || level.getBlockState(pos).is(BlockTags.CROPS)) continue;
+            return pos;
+        }
+        return null;
     }
 
     private static ChunkPos getSpawnCampChunk(BlockPos spawnPos) {

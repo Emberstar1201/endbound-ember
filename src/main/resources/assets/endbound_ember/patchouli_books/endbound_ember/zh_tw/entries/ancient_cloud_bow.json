@@ -1,0 +1,13 @@
+{
+  "name": "古·雲來弓法",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "古·雲來弓法",
+      "text": "§l最高等級：§r I$(br2)§l適用物品：§r 弓$(br2)§l效果：§r 大幅提升拉弓速度與箭矢飛行速度，蓄力約 0.5 秒、箭速 3.5 倍。$(br2)§l獲取方式：§r 僅寶箱、村民交易（寶藏級）"
+    }
+  ]
+}

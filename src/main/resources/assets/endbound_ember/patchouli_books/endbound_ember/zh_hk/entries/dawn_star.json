@@ -1,0 +1,19 @@
+{
+  "name": "晨曦之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_star",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_star",
+      "title": "晨曦之星",
+      "text": "§l獲取方式：§r 在點亮終章成就「我們逝去，我們永恆」之前，於夜間擊殺凋零即會掉落晨曦之星；成就點亮後不再掉落。$(br2)§l用途：§r 晨曦之星是鍛造材料，自身沒有被動效果。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "鍛造強化",
+      "text": "在鍛造台中組合晨曦模板、人權劍與晨曦之星，可將人權劍鍛造為強化形態。$(br2)§l擺放：§r$(br)模板槽：晨曦模板$(br)底材槽：人權劍$(br)添加物槽：晨曦之星"
+    }
+  ]
+}

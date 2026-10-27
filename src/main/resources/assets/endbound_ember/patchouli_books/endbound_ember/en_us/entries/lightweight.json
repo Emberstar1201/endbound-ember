@@ -1,0 +1,13 @@
+{
+  "name": "Lightweight",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 14,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Lightweight",
+      "text": "§lMax Level: §r III$(br2)§lApplies to: §r Mace$(br2)§lEffect: §r Holding a mace increases attack speed, letting the heavy weapon swing faster.$(br2)Attack speed: +0.2 / +0.4 / +0.6$(br2)§lObtaining: §r Enchanting Table, loot chests, villager trades.$(br)Only applies while a mace is held in the main hand."
+    }
+  ]
+}

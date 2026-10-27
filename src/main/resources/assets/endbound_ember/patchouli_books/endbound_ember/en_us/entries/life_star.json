@@ -1,0 +1,19 @@
+{
+  "name": "Life Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:life_star",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:life_star",
+      "title": "Life Star",
+      "text": "§c§lAcquisition: §r Place an Enchanted Golden Apple in the center, with 4 dandelions and 4 glistering melon slices around it.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Bountiful Breath: max health increases to 100; healing speed is increased fivefold; hunger and saturation no longer drain.$(br)Morning Dew: deals an extra 10% physical damage based on your max health.$(br)Last Light: when you would take lethal damage, clears all negative effects and restores 75% of your health.$(br)Camellia Revival: when your health drops below 50%, restores 33% of your max health.$(br)Nourishing Rain: recovers 1.5 health every 60 ticks while it rains; applies to creatures tamed by the player as well."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:life_star",
+      "text": "Recipe: place an Enchanted Golden Apple in the center, surrounded by 4 dandelions and 4 glistering melon slices."
+    }
+  ]
+}

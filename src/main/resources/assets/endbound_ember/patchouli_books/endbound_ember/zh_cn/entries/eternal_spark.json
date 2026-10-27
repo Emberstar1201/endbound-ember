@@ -1,0 +1,13 @@
+{
+  "name": "星火不灭",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "星火不灭",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 剑、斧、三叉戟$(br2)§l效果：§r 攻击叠加最多 3 层星火，造成最大生命值百分比虚空伤害；目标死亡时向附近敌对生物扩散。$(br2)§l获取方式：§r 创造模式物品栏的「附魔书」分类中取得。$(br2)与熵增、兵长的回声互斥"
+    }
+  ]
+}

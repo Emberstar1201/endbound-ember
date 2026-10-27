@@ -1,0 +1,32 @@
+{
+  "name": "Starfire Sword",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:sword_of_the_free_will_enhanced",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:sword_of_the_free_will_enhanced",
+      "title": "Starfire Sword",
+      "text": "§lWeapon Effects§r$(br)Armor +100$(br)Toughness +25$(br)Damage reduction 25%.$(br2)§lBuilt-in Enchantments§r$(br)Sharpness XII$(br)Smite XII$(br)Looting XII$(br)Knockback II$(br)Dawn I.$(br2)§lEternal Spark§r$(br)Prevents one fatal hit. Cooldown: 300 seconds.$(br2)§lHuman Will§r$(br)Hits release a blue flame wave; hitting the same target again deals 100% more damage."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:sword_of_the_free_will",
+      "title": "Step 1: Add the Base Sword",
+      "text": "Place the Sword of the Free Will in the left anvil slot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_star",
+      "title": "Step 2: Add the Dawn Star",
+      "text": "Place 1 Dawn Star in the right anvil slot. The upgrade costs 5 experience levels."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:sword_of_the_free_will_enhanced",
+      "title": "Step 3: Upgrade Complete",
+      "text": "With the Sword of the Free Will on the left and the Dawn Star on the right, the anvil outputs the Eternal Starfire variant. §c§lImportant: all accumulated Dawn levels on the sword are cleared after the upgrade!§r"
+    }
+  ]
+}

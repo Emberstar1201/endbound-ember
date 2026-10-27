@@ -1,0 +1,20 @@
+{
+  "name": "Ocean Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:ocean_star",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:ocean_star",
+      "title": "Ocean Star",
+      "text": "§lAcquisition: §r Craft it using the recipe on the next page.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Abyssal Breath: oxygen always stays full, and you are immune to drowning damage.$(br)Embrace of the Current: swim speed increased by 200%, and water current push and Slowness are negated.$(br)Unblocked Abyss: immune to Mining Fatigue, and free of underwater and airborne mining penalties.$(br)Coral Blade: underwater mining speed increased by 25%.$(br)Tidal Kin: guardians will not attack you first."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Crafting Recipe",
+      "recipe": "endbound_ember:ocean_star",
+      "text": "The grid above shows the layout: prismarine shards in the corners, nautilus shells on the edges, conduit in the center."
+    }
+  ]
+}

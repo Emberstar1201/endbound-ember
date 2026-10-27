@@ -1,0 +1,14 @@
+{
+  "name": "人权剑",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:sword_of_the_free_will",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:sword_of_the_free_will",
+      "title": "人权剑",
+      "text": "§l武器效果：§r$(br)护甲 +10、伤害减免 25%，内置锋利 XII、亡灵杀手 XII、抢夺 XII、击退 II、拂晓 I 和星火不灭 I。$(br2)§l主动技能「人的意志」：§r$(br)右键激活，10 分钟内伤害 +150%，每次攻击有 90% 概率降下闪电；消耗 25% 生命值，冷却 15 分钟。"
+    }
+  ]
+}

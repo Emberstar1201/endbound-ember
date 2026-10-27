@@ -28,5 +28,14 @@
   },
   "human_girl_idle_3": {
     "sounds": ["endbound_ember:human_girl_idle_3"]
+  },
+  "home_bell": {
+    "sounds": ["endbound_ember:home_bell"]
+  },
+  "starlight": {
+    "sounds": ["endbound_ember:starlight"]
+  },
+  "halo_ritual": {
+    "sounds": ["endbound_ember:starlight"]
   }
 }

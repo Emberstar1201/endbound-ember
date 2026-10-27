@@ -1,0 +1,22 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.qianpo_qing_ming_sword"
+  },
+  "supported_items": "#minecraft:swords",
+  "primary_items": "#minecraft:swords",
+  "weight": 2,
+  "max_level": 5,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 5
+  },
+  "max_cost": {
+    "base": 35,
+    "per_level_above_first": 5
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/qianpo_qing_ming_sword"
+}

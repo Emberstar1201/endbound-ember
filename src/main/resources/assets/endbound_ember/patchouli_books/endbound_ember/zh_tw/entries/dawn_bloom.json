@@ -1,0 +1,13 @@
+{
+  "name": "晨映之花",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "晨映之花",
+      "text": "§l最高等級：§r I$(br2)§l適用物品：§r 人權劍、人權劍·星火永燃$(br2)§l效果：§r 劍氣傷害由 100% 提升至 350%（額外 +250%）。$(br2)§l獲取方式：§r 附魔台、寶箱、村民交易。$(br2)只對人權劍系列生效"
+    }
+  ]
+}

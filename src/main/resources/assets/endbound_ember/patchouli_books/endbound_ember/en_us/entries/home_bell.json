@@ -1,0 +1,19 @@
+{
+  "name": "Home Bell",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:home_bell",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:home_bell",
+      "title": "Home Bell",
+      "text": "§lAcquisition: §r Crafted from a Copper Ingot above a Stick (two vertical slots).$(br2)§lEffect: §r Ringing it calls back every girl that belongs to its owner in the same dimension — even those resting in unloaded chunks will follow the sound home.$(br2)2-second cooldown."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:home_bell",
+      "text": "Recipe: a Copper Ingot on top, a Stick below."
+    }
+  ]
+}

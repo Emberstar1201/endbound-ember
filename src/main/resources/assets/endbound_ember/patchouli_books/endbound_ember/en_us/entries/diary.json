@@ -1,0 +1,33 @@
+{
+  "name": "A Girl's Diary",
+  "category": "endbound_ember:story",
+  "icon": "minecraft:writable_book",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "A Girl's Diary",
+      "text": "Every Zombie Girl and Drowned Girl carries a diary page soaked by water and scorched by fire.$(br)It was written back when they were still human.$(br2)After the starlight of the Life Star heals them, a new line of handwriting appears on the last page.$(br2)A few of those pages are copied here."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Mushroom Soup",
+      "text": "\"Went mushroom picking in the woods with Dad today, and I found such a big porcini! Mom made mushroom soup tonight. It smelled so, so good.\"$(br2)\"There's always a starry sky in my dreams, and the starlight feels warm on my skin. I sat on the stone at the village gate and watched the sky brighten little by little, and suddenly I wanted to taste Mom's mushroom soup one more time.\""
+    },
+    {
+      "type": "patchouli:text",
+      "title": "She Was Saving Me",
+      "text": "\"A skeleton and a spider chased me into a dead end, and then a zombie appeared in front of me. I thought it was over. But that zombie suddenly turned around, shoved the skeleton aside, and snarled at the spider — she was saving me.\"$(br2)\"They say I was terrified and hallucinating. But I remember those gentle eyes, and the hand that handed me bread. Someday, I'll make them believe it too.\""
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Torn Cloak",
+      "text": "\"No one believes a zombie would save anyone. But I'm still holding that torn cloak, and her warmth is still on it. The world is more complicated than we think. Don't be so quick to swing your sword.\"$(br2)\"Back in the village I said I wanted to write them down, and everyone said I was crazy. But I still wrote down everything I saw in the ruins. Why would the undead save a human? I want to find out.\""
+    },
+    {
+      "type": "patchouli:text",
+      "title": "After the Starlight Fell",
+      "text": "\"The starlight wasn't hot at all when it fell on me — it seeped in slowly, like warm water. For the first time I felt that my body was warm. Thank you for pulling me out of that cold.\"$(br2)\"The light seeped down from above the ice, warm enough to remind me of spring. Thank you for truly saving me from that ice hole that winter.\"$(br2)This handwriting is identical to the hand that wrote before they were healed."
+    }
+  ]
+}

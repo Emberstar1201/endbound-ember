@@ -1,0 +1,13 @@
+{
+  "name": "Wind Ripple",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 24,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Wind Ripple",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Boots$(br2)§lEffect: §r Faster on land, and walk on water as if on flat ground. Conflicts with Depth Strider, Frost Walker, Soul Speed, and Swift Sneak.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Survivor Girl",
+  "category": "endbound_ember:creatures",
+  "icon": "minecraft:player_head",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "endbound_ember:human_girl",
+      "title": "Survivor Girl",
+      "text": "§lRace: §r Human.$(br)§lAllegiance: §r Friendly.$(br)They were once Zombie Girls or Drowned Girls, healed back into people by the starlight of the Life Star.$(br)After healing, they keep their appearance, name, inventory, and equipment — and they remember the days before they were cured.$(br)§lPotions: §r Same as any human — harming potions hurt them, healing potions heal them.$(br)§lReinfection: §r If undead mobs bring their health below half, they revert to their former undead form."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Days They Cannot Return To",
+      "text": "They can taste food again, feel the cold on rainy days again, and laugh out loud at a joke again.$(br)But the doors of the village are not always opened for them. Some remember the grey-white figure who dragged herself out of the fire that night; others remember only the fangs.$(br2)They rarely speak of it. They simply pick up their packs and walk on with whoever is willing to take them in.$(br2)If you hold a Life Star in your hand — remember, the moment its starlight falls, they have waited many years for it."
+    }
+  ]
+}

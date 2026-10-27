@@ -1,0 +1,19 @@
+{
+  "name": "生命之星",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:life_star",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:life_star",
+      "title": "生命之星",
+      "text": "§c§l獲取方式：§r 附魔金蘋果置於中央，周圍放置 4 個蒲公英與 4 個閃爍的西瓜片。$(br2)§l生效條件：§r 放入飾品欄，或放在主手/副手。$(br2)豐饒之息：最大生命值提升至 100 點；回血速度提升至 5 倍；飢餓值與飽和值不再消耗。$(br)朝露：依最大生命值額外造成 10% 物理傷害。$(br)迴光返照：受到致命傷害時清除所有負面效果，並恢復 75% 生命值。$(br)椿花復甦：生命值低於 50% 時，恢復最大生命值 33% 的生命值。$(br)滋潤雨露：雨天每 60 tick 恢復 1.5 點生命值，玩家馴服的生物同樣生效。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:life_star",
+      "text": "配方：中央放置附魔金蘋果，周圍放置 4 個蒲公英與 4 個閃爍的西瓜片。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "连锁挖掘",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 19,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "连锁挖掘",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 镐、斧、锹$(br2)§l效果：§r 按住 ~ 键挖掘时连锁破坏同类方块（I~III 级范围 3×3×3 ~ 9×9×9），每块消耗 0.5 耐久。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易$(br)与无中生有·重制互斥"
+    }
+  ]
+}

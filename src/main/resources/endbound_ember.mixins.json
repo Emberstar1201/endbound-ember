@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EnderDragonExperienceMixin",
-    "ItemStackMaxDamageMixin"
+    "ItemStackMaxDamageMixin",
+    "ItemStackMadeInChinaMixin"
   ],
   "injectors": {
     "defaultRequire": 1

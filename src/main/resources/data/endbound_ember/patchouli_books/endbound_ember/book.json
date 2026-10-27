@@ -1,0 +1,9 @@
+{
+  "name": "book.endbound_ember.endbound_ember.name",
+  "landing_text": "book.endbound_ember.endbound_ember.landing_text",
+  "version": 2,
+  "use_resource_pack": true,
+  "creative_tab": "minecraft:tools_and_utilities",
+  "book_texture": "patchouli:textures/gui/book_green.png",
+  "model": "endbound_ember:end_book"
+}

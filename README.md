@@ -74,7 +74,28 @@ src/main/resources/assets/endbound_ember/textures/item/
 
 本项目使用 GNU General Public License v3.0（GPLv3）。完整许可证文本见 [LICENSE](LICENSE)。
 
+### 美术资源
+
+本项目内部的美术资源，包括方块纹理、方块模型、物品纹理与图标、界面贴图等，均以 **Creative Commons Attribution 4.0 International（CC BY 4.0）** 协议开源，可自由复制、修改与再分发（含商业用途），但须保留署名并注明是否作出修改。完整许可证文本见 [LICENSE-ASSETS](LICENSE-ASSETS)。
+
+建议署名格式：
+
+```text
+Endbound Ember 美术资源 by Emberstar，采用 CC BY 4.0 协议授权。
+来源：<项目仓库地址>
+```
+
+说明：
+
+- 上述授权仅覆盖本项目自行创作的美术资源。
+- 由第三方提供的素材（例如丧尸娘材质，提供者 Wildcanyon）仍归原作者所有，不在本授权范围内，使用时请另行取得原作者许可。
+- 音频、实体皮肤等未明确声明的资源，其授权情况请与作者联系确认。
+
 Minecraft、NeoForge 及其相关资产属于各自权利人。本项目不声称拥有 Mojang 或 NeoForged 的商标及官方资产所有权。
+
+### 第三方开源组件
+
+星尘光环的渲染方式与物理表现参考自 **Halo Mod**（作者：Azusa_Ke，MIT License，<https://github.com/AzusaKe/Halo>）。依据 MIT 许可证要求，原始版权声明与许可证全文见 [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md)。
 
 <span style="color:red">**⚠️ 特殊提醒（免责声明）：丧尸娘的受伤音频极度社死，请不要在公共场合播放！若真的要玩，请戴好耳机！**</span>
 
@@ -95,6 +116,8 @@ Minecraft、NeoForge 及其相关资产属于各自权利人。本项目不声�
 ## 🙏 致谢
 
 **制作参与**：Shasnow
+
+**开源致谢**：Azusa_Ke，[Halo Mod](https://github.com/AzusaKe/Halo) 的作者。星尘光环的渲染方式与物理表现参考自该项目（MIT License），在此致谢并保留其原始版权声明。
 
 **额外感谢**：Wildcanyon，感谢提供丧尸娘材质。 [哔哩哔哩主页](https://space.bilibili.com/622498204?spm_id_from=333.788.upinfo.head.click)
 

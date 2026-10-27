@@ -322,4 +322,11 @@ public final class AiConfigurationScreen extends Screen {
     public boolean isPauseScreen() {
         return false;
     }
+
+    @Override
+    public void removed() {
+        // 释放输入焦点：避免关闭界面后输入法仍绑定在已消失的 EditBox 上，导致游戏中按键失效。
+        setFocused(null);
+        super.removed();
+    }
 }

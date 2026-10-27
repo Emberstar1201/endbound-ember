@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {"item": "minecraft:stone_brick_slab"},
+    "B": {"item": "minecraft:stone_bricks"}
+  },
+  "result": {
+    "id": "endbound_ember:display_pedestal",
+    "count": 1
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:fortune",
+    "endbound_ember:auto_smelt"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Skyward Slam",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Skyward Slam",
+      "text": "§lMax Level: §r III$(br2)§lApplies to: §r Mace$(br2)§lEffect: §r A mace hit launches the target upward, then deals a second \"aftershock\" hit when the target lands.$(br2)Launch velocity: 0.8 + 0.2 × level$(br)Aftershock damage: 3 + 3 × level$(br2)§lObtaining: §r Enchanting Table, loot chests, villager trades.$(br)Players in Creative mode are not launched."
+    }
+  ]
+}

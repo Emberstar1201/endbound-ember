@@ -1,0 +1,22 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.chain_breaker"
+  },
+  "supported_items": "#endbound_ember:digger_enchantable",
+  "primary_items": "#endbound_ember:digger_enchantable",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 12
+  },
+  "max_cost": {
+    "base": 35,
+    "per_level_above_first": 12
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/chain_breaker"
+}

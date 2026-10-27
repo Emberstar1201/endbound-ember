@@ -8,9 +8,8 @@ import java.util.UUID;
 
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.client.DawnEnergyClient;
+import com.emberstar.endbounember.compat.FriendlyMobs;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
-import com.emberstar.endbounember.entity.HumanGirl;
-import com.emberstar.endbounember.entity.ZombieGirl;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.network.DawnEnergyPayload;
 
@@ -32,10 +31,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -301,11 +301,13 @@ public final class DawnEnchantment {
     /** 剑气与技能的通用友伤过滤：不命中玩家、友方生物与已驯服生物。 */
     public static boolean canHit(LivingEntity attacker, LivingEntity target) {
         if (target == attacker || !target.isAlive() || target.isSpectator()) return false;
-        if (target instanceof Player) return false;
-        if (target.getType().is(EndboundEmber.FRIENDLY_MOB_TAG)) return false;
-        if (target instanceof ZombieGirl || target instanceof HumanGirl) return false;
-        if (target instanceof TamableAnimal animal && animal.isTame()) return false;
-        return true;
+        return !FriendlyMobs.isProtected(target);
+    }
+
+    /** 敌对生物判定：丧尸娘、溺尸娘等带敌对标签但属于友好分类的生物不算。 */
+    private static boolean isHostile(LivingEntity dead) {
+        if (FriendlyMobs.isProtected(dead)) return false;
+        return dead instanceof Enemy || dead instanceof EnderDragon;
     }
 
     /** 释放瞬间的起手特效。 */
@@ -424,6 +426,9 @@ public final class DawnEnchantment {
             if (weapon.getItem() instanceof SwordOfTheFreeWillItem) return;
             int level = levelOf(weapon);
             if (level <= 0) return;
+
+            // 只有击杀敌对生物才会成长：丧尸娘、溺尸娘虽带敌对标签，但属于友好生物分类
+            if (!isHostile(event.getEntity())) return;
 
             if (level < MAX_LEVEL) {
                 setGrowthLevel(player, weapon, level + 1);

@@ -1,0 +1,13 @@
+{
+  "name": "Eternal Spark",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 13,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Eternal Spark",
+      "text": "§lMax Level: §r I$(br2)§lApplies to: §r Swords, axes, tridents$(br2)§lEffect: §r Attacks build up to 3 Spark stacks and deal void damage based on max health; spreads to nearby hostile mobs on death.$(br2)§lObtaining: §r Available in the Enchanted Books creative tab.$(br2)Conflicts with Entropy and Levi's Echo"
+    }
+  ]
+}

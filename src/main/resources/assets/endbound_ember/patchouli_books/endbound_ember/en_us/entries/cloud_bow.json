@@ -1,0 +1,13 @@
+{
+  "name": "YunLai Archery",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "YunLai Archery",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bows$(br2)§lEffect: §r A basic technique that only increases bow draw speed, with a charge time of about 0.45 seconds.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

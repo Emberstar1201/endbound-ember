@@ -1,0 +1,13 @@
+{
+  "name": "Durability Boost",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 17,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Durability Boost",
+      "text": "$(bold)Max Level:$(r) III$(br2)$(bold)Applicable:$(r) Any damageable item$(br2)$(bold)Effect:$(r) Increases max durability and reduces the chance of losing durability on use. Higher levels provide stronger bonuses.$(br2)$(bold)Conflicts:$(r) Unbreaking, Made in China, Artisan Legacy$(br2)$(bold)Obtainment:$(r) Enchanting Table, Structure Chests, Villager Trades."
+    }
+  ]
+}

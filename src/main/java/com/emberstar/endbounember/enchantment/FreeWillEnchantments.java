@@ -39,8 +39,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 人权剑的四项新效果：晨映之花、希望之花、我们逝去我们永恒、星火不灭。
- * 四项效果都是挂在本模组的 {@code free_will_swords} 标签上、随附魔等级生效。
+ * 人权剑的附魔效果：晨映之花、希望之花与星火不灭；强化人权剑的固有技能在物品类中判定。
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class FreeWillEnchantments {
@@ -48,8 +47,6 @@ public final class FreeWillEnchantments {
     public static final ResourceKey<Enchantment> DAWN_BLOOM = key("dawn_bloom");
     /** 希望之花：低血量增伤、提升抗性、免疫一次即死。 */
     public static final ResourceKey<Enchantment> HOPE_BLOOM = key("hope_bloom");
-    /** 我们逝去，我们永恒：人权剑自带的蓝火剑气与驱散光环。 */
-    public static final ResourceKey<Enchantment> WE_FALL_WE_REMAIN = key("we_fall_we_remain");
     /** 星火不灭：每次攻击追加目标最大生命值的虚空伤害。 */
     public static final ResourceKey<Enchantment> ETERNAL_SPARK = key("eternal_spark");
 
@@ -126,10 +123,6 @@ public final class FreeWillEnchantments {
         return levelOf(stack, HOPE_BLOOM) > 0;
     }
 
-    public static boolean hasWeFallWeRemain(ItemStack stack) {
-        return levelOf(stack, WE_FALL_WE_REMAIN) > 0;
-    }
-
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
@@ -143,9 +136,8 @@ public final class FreeWillEnchantments {
                     HOPE_RESISTANCE_DURATION, HOPE_RESISTANCE_AMPLIFIER, true, false, true));
         }
 
-        // 我们逝去，我们永恒：这把人权剑自身常驻的技能，非 BOSS 生物远离玩家
-        boolean blue = sword.isEnhanced() && hasWeFallWeRemain(weapon);
-        if (blue && player.tickCount % 10 == 0) repelMobs(player);
+        // 强化人权剑的固有技能：周围非 BOSS 生物远离玩家。
+        if (sword.isEnhanced() && player.tickCount % 10 == 0) repelMobs(player);
     }
 
     /** 让周围非 BOSS、非友方的生物远离玩家。 */

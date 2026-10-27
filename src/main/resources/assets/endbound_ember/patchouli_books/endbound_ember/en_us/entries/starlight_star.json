@@ -1,0 +1,19 @@
+{
+  "name": "Starlight Star",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:starlight_star",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:starlight_star",
+      "title": "Starlight Star",
+      "text": "§lAcquisition: §r Crafted at a crafting table with 4 Glowstone, 4 Amethyst Shards and 1 Diamond.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Night Stroll: +20% movement speed at night.$(br)Star Eyes: automatically gain Night Vision at night.$(br)Starlight Echo: experience from mob kills is doubled.$(br2)Night is only recognised in dimensions with a day-night cycle (ticks 13000~23000); it never triggers in the Nether or the End."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:starlight_star",
+      "text": "The grid above shows the layout: glowstone in the corners, amethyst shards on the edges, diamond in the center."
+    }
+  ]
+}

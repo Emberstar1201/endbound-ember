@@ -1,0 +1,19 @@
+{
+  "name": "星尘手绳",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:stardust_cord_bracelet",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:stardust_cord_bracelet",
+      "title": "星尘手绳",
+      "text": "§l获取方式：§r 以 8 个虚无星尘环绕 1 根线合成。$(br2)§l生效条件：§r 放入饰品栏，或放在主手/副手。$(br2)火堆外的夜：攻击速度提升 50%。$(br)This is my soulless heart：受到的全部伤害减少 25%，并随游戏时间逐渐提升至 99.9%。$(br)空虚的心：怪物警惕范围缩小 99%。$(br)直面虚无：从虚空坠落时，返回最新的出生点；床的出生点优先于重生锚。$(br)你的存在，即是意义：受到致命伤害时免死一次，回复全部生命值，并获得 30 秒无敌。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:stardust_cord_bracelet",
+      "text": "配方：8 个虚无星尘围成一圈，中心放置 1 根线。"
+    }
+  ]
+}

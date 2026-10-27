@@ -1,0 +1,14 @@
+{
+  "name": "Dawn Template",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_template",
+  "sortnum": 10,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_template",
+      "title": "Dawn Template",
+      "text": "§lAcquisition: §r A 50% additional chance to appear in loot chests of dungeons, stronghold libraries, woodland mansions, ancient cities, and end cities.$(br2)§lUse: §r Smithing upgrade template. At a Smithing Table, combine Dawn Template + Sword of the Free Will + Dawn Star to upgrade into Sword of the Free Will · Eternal Spark."
+    }
+  ]
+}

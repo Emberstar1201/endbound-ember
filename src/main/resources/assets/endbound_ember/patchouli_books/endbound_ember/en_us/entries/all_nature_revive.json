@@ -1,0 +1,13 @@
+{
+  "name": "Revive of All Nature",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 22,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Revive of All Nature",
+      "text": "§lMax Level: §r II$(br2)§lApplicable Items: §r Hoes$(br2)§lEffect: §r Right-click immature crops to apply bone meal over a 3×3 or 5×5 area; each use consumes 1 bone meal and will not trigger if the inventory has none.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

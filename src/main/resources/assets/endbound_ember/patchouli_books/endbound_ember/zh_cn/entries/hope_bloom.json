@@ -1,0 +1,13 @@
+{
+  "name": "希望之花",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 9,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "希望之花",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 人权剑、人权剑·星火永燃$(br2)§l效果：§r 生命值低于 50% 时，近战伤害提升 50%，并持续获得抗性提升 II。$(br2)§l免疫即死：§r 抵挡一次即死伤害，冷却 15 分钟。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易。$(br2)只对人权剑系列生效"
+    }
+  ]
+}

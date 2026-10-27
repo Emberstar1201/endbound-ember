@@ -1,0 +1,13 @@
+{
+  "name": "The End Approaches",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The End Approaches",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Swords, Axes, Tridents$(br2)§lEffect: §r Weapon damage increased by 250%, attack cooldown reduced by 90%.$(br2)§lAcquisition: §r Stronghold Library Loot Chests only"
+    }
+  ]
+}

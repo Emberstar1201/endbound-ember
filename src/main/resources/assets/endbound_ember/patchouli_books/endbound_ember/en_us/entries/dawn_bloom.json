@@ -1,0 +1,13 @@
+{
+  "name": "Dawn Bloom",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Dawn Bloom",
+      "text": "§lMax Level: §r I$(br2)§lApplies to: §r Sword of the Free Will, Sword of the Free Will · Eternal Spark$(br2)§lEffect: §r Sword aura damage is raised from 100% to 350% (an extra +250%).$(br2)§lObtaining: §r Enchanting Table, loot chests, villager trades.$(br2)Only works on the Sword of the Free Will line."
+    }
+  ]
+}

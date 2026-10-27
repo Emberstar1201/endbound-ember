@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PSP",
+    "S#S",
+    "PSP"
+  ],
+  "key": {
+    "P": {"item": "minecraft:prismarine_shard"},
+    "S": {"item": "minecraft:nautilus_shell"},
+    "#": {"item": "minecraft:conduit"}
+  },
+  "result": {
+    "id": "endbound_ember:ocean_star",
+    "count": 1
+  }
+}

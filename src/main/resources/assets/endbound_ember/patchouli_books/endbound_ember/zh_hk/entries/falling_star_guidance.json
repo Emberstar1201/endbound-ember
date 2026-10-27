@@ -1,0 +1,13 @@
+{
+  "name": "墜星之引",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 12,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "墜星之引",
+      "text": "§l最高等級：§r III$(br2)§l適用物品：§r 重錘$(br2)§l效果：§r 手持重錘由高處墜落時減緩下墜速度，並延長實體交互距離，令玩家有更充裕嘅時間喺空中瞄準並命中生物。$(br2)重力修正：-0.03 / -0.04 / -0.05$(br)交互距離：+0.5 / +1.0 / +1.5 格$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易。$(br)需要累計下落 2 格以上；鞘翅滑翔、水中、岩漿中或騎乘時唔會生效。"
+    }
+  ]
+}

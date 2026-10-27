@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:unbreaking",
+    "endbound_ember:durability_boost",
+    "endbound_ember:craftsmanship"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GAG",
+    "ADA",
+    "GAG"
+  ],
+  "key": {
+    "G": {"item": "minecraft:glowstone"},
+    "A": {"item": "minecraft:amethyst_shard"},
+    "D": {"item": "minecraft:diamond"}
+  },
+  "result": {
+    "id": "endbound_ember:starlight_star",
+    "count": 1
+  }
+}

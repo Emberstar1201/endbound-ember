@@ -1,0 +1,13 @@
+{
+  "name": "Qianpo Qingming Sword",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Qianpo Qingming Sword",
+      "text": "§lMax Level: §r V$(br2)§lApplicable Items: §r Swords$(br2)§lEffect: §r Attacks add magic damage that ignores armor; levels I-V deal 12/24/36/48/60.$(br2)§lAcquisition: §r Enchanting Table (low chance)$(br2)§lConflicts: §r Mutually exclusive with other melee damage/growth-type enchantments; only one may be applied to a weapon."
+    }
+  ]
+}
