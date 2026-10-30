@@ -33,6 +33,8 @@ public class DisplayPedestalRenderer implements BlockEntityRenderer<DisplayPedes
     private static final float RITUAL_RISE = 0.55F;
     /** 仪式期间额外放大的倍数 */
     private static final float RITUAL_SCALE = 0.45F;
+    /** 仪式期间的前倾角度（度） */
+    private static final float RITUAL_TILT = 20.0F;
 
     private final ItemRenderer itemRenderer;
 
@@ -69,10 +71,14 @@ public class DisplayPedestalRenderer implements BlockEntityRenderer<DisplayPedes
         pose.pushPose();
         pose.translate(0.5D, HOVER_HEIGHT + bob + ritualCurve * RITUAL_RISE, 0.5D);
         pose.mulPose(Axis.YP.rotationDegrees((float) (time * spinSpeed) % 360.0F));
-        // 物品略微前倾，避免完全平放时看不出立体感
-        pose.mulPose(Axis.XP.rotationDegrees(20.0F - ritualCurve * 20.0F));
+        // 平时保持 0 度正立，与掉落物观感一致；只有仪式进行时才前倾，作为蓄力表现
+        if (ritualCurve > 0.0F) {
+            pose.mulPose(Axis.XP.rotationDegrees(ritualCurve * RITUAL_TILT));
+        }
         pose.scale(scale, scale, scale);
 
+        // 固定使用 NO_OVERLAY：方块被破坏时原版会把破坏进度编码进 packedOverlay，
+        // 若透传给物品，物品会跟着出现方块裂痕贴图
         itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight,
                 OverlayTexture.NO_OVERLAY, pose, buffers, level, 0);
         pose.popPose();

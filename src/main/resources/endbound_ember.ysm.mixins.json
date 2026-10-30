@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.emberstar.endbounember.compat.ysm.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "com.emberstar.endbounember.compat.ysm.mixin.YsmMixinPlugin",
+  "client": [
+    "LivingEntityRendererRenderMixin",
+    "YsmGeoRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

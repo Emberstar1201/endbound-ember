@@ -148,6 +148,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         if (elapsed >= EndboundEmber.HALO_RITUAL_SWAP_TICK && !pedestal.isRitualSwapped()) {
             pedestal.setStoredItem(new ItemStack(EndboundEmber.STARDUST_WITCH_HALO.get()));
             pedestal.setRitualSwapped(true);
+            consumeAltarMaterials(level, pedestal);
             if (level instanceof ServerLevel serverLevel) {
                 spawnBurstParticles(serverLevel, pos);
                 serverLevel.playSound(null, pos, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 1.0F, 1.2F);
@@ -155,6 +156,15 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         }
         if (elapsed >= EndboundEmber.HALO_RITUAL_DURATION) {
             pedestal.stopRitual();
+        }
+    }
+
+    /** 仪式完成瞬间：清空环绕展示台上被消耗的虚无星尘，让仪式材料与手绳一同消失 */
+    private static void consumeAltarMaterials(Level level, DisplayPedestalBlockEntity center) {
+        for (BlockPos source : center.getAltarPedestals()) {
+            if (level.getBlockEntity(source) instanceof DisplayPedestalBlockEntity pedestal) {
+                pedestal.setStoredItem(ItemStack.EMPTY);
+            }
         }
     }
 
@@ -347,12 +357,12 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     private static void startRitual(Level level, BlockPos pos, Player player, DisplayPedestalBlockEntity pedestal,
             List<BlockPos> altar) {
         if (!player.getAbilities().instabuild) {
-            if (player.experienceLevel < 30) {
+            if (player.totalExperience < EndboundEmber.HALO_RITUAL_EXPERIENCE_COST) {
                 player.displayClientMessage(
                         Component.translatable("block.endbound_ember.display_pedestal.not_enough_experience"), true);
                 return;
             }
-            player.giveExperiencePoints(-EndboundEmber.HALO_RITUAL_EXPERIENCE_COST);
+            consumeExperience(player, EndboundEmber.HALO_RITUAL_EXPERIENCE_COST);
         }
         pedestal.startRitual(level.getGameTime(), altar);
         level.playSound(null, pos, EndboundEmber.HALO_RITUAL.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -370,6 +380,22 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
                 }
             }
         }
+    }
+
+    /**
+     * 精确扣除经验值。
+     *
+     * <p>{@code Player#giveExperiencePoints} 传入负数时，进度条会被一次性减去
+     * {@code cost / getXpNeededForNextLevel()}，随后 while 循环逐点借位扣等级，
+     * 实际会一直扣到经验见底，而不是只扣指定数值。这里改为直接结算总经验，
+     * 再按原版公式回推等级与进度。</p>
+     */
+    private static void consumeExperience(Player player, int cost) {
+        int remaining = player.totalExperience - cost;
+        player.experienceLevel = 0;
+        player.experienceProgress = 0.0F;
+        player.totalExperience = 0;
+        player.giveExperiencePoints(remaining);
     }
 
     private static void takeBack(Level level, BlockPos pos, Player player, DisplayPedestalBlockEntity pedestal) {

@@ -43,4 +43,13 @@ public class ModEntities {
                             .clientTrackingRange(16)
                             .updateInterval(1)
                             .build("dawn_sword_qi"));
+
+    /** 母凋零之首：强化版凋零发射的巨大头颅，飞行一段时间后分裂为多个子头颅。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<MotherWitherSkull>> MOTHER_WITHER_SKULL =
+            ENTITY_TYPES.register("mother_wither_skull",
+                    () -> EntityType.Builder.<MotherWitherSkull>of(MotherWitherSkull::new, MobCategory.MISC)
+                            .sized(1.4F, 1.4F)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("mother_wither_skull"));
 }

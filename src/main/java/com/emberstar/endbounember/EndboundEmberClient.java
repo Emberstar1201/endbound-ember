@@ -2,6 +2,9 @@ package com.emberstar.endbounember;
 
 import com.emberstar.endbounember.client.HaloLayers;
 import com.emberstar.endbounember.compat.CuriosCompat;
+import com.emberstar.endbounember.compat.ysm.YsmAdapter;
+import com.emberstar.endbounember.compat.ysm.YsmBoneMath;
+import com.emberstar.endbounember.compat.ysm.YsmHeadCapture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
@@ -19,9 +22,11 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import org.joml.Matrix4f;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = EndboundEmber.MODID, dist = Dist.CLIENT)
@@ -43,10 +48,44 @@ public class EndboundEmberClient {
 
     @SubscribeEvent
     static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+        // YSM 用自建渲染器接管玩家模型，原版 PlayerRenderer 的层不会被执行，
+        // 光环改由 YsmGeoRendererMixin 在 YSM 渲染管线内直接绘制，这里不再重复添加
+        if (YsmAdapter.isLoaded()) {
+            EndboundEmber.LOGGER.info("[光环诊断] 检测到 YSM，光环改由 YSM 渲染管线绘制，跳过原版渲染层");
+            return;
+        }
         event.getSkins().forEach(skin -> {
             PlayerRenderer renderer = event.getSkin(skin);
+            if (renderer == null) {
+                EndboundEmber.LOGGER.warn("[光环诊断] AddLayers: skin={} 的渲染器为 null", skin);
+                return;
+            }
             renderer.addLayer(new HaloLayer(renderer));
+            EndboundEmber.LOGGER.info("[光环诊断] AddLayers: skin={}, 渲染器={}, 当前层数={}",
+                    skin, renderer.getClass().getName(), countLayers(renderer));
         });
+    }
+
+    /** 临时诊断：反射读取渲染器的层数量（{@code layers} 为 protected 字段） */
+    private static int countLayers(PlayerRenderer renderer) {
+        try {
+            java.lang.reflect.Field field = net.minecraft.client.renderer.entity.LivingEntityRenderer.class
+                    .getDeclaredField("layers");
+            field.setAccessible(true);
+            return ((java.util.List<?>) field.get(renderer)).size();
+        } catch (ReflectiveOperationException error) {
+            return -1;
+        }
+    }
+
+    /**
+     * 每帧实体渲染结束后清空 YSM 头部捕获，保证光环只用本帧的头部矩阵。
+     */
+    @SubscribeEvent
+    static void clearYsmCaptures(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            YsmHeadCapture.clearFrame();
+        }
     }
 
     /**
@@ -57,6 +96,17 @@ public class EndboundEmberClient {
      * https://github.com/AzusaKe/Halo），许可证全文见 THIRD-PARTY-NOTICES.md。
      */
     private static final class HaloLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+        /**
+         * 原版头部锚点下的垂直偏移（格）。
+         * <p>模型空间的 Y 轴被实体渲染器整体翻转，因此负值才是向上。
+         * 头部模型顶端位于 -0.5，这里取 -0.85，让光环悬浮在头顶上方约 0.35 格。
+         */
+        private static final double VANILLA_HEAD_OFFSET = -0.85D;
+        /** YSM 头部锚点下的垂直偏移（格）：YSM 的 Head locator 原点比原版头部枢轴更高，偏移量相应减小 */
+        private static final double YSM_HEAD_OFFSET = -0.60D;
+        /** 临时诊断：只在首次渲染时打印一次 */
+        private static boolean diagnosed;
+
         private HaloLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
             super(parent);
         }
@@ -65,7 +115,15 @@ public class EndboundEmberClient {
         public void render(PoseStack pose, MultiBufferSource buffers, int packedLight, AbstractClientPlayer player,
                 float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw,
                 float headPitch) {
-            if (!wearingHalo(player) || player.isInvisible() || player.isSpectator()) {
+            boolean wearing = wearingHalo(player);
+            if (!diagnosed && player == Minecraft.getInstance().player) {
+                diagnosed = true;
+                Matrix4f probe = YsmHeadCapture.get(player.getUUID());
+                EndboundEmber.LOGGER.info("[光环诊断] 层已执行, 佩戴={}, YSM矩阵={}, 渲染器={}",
+                        wearing, probe == null ? "无" : YsmBoneMath.translation(probe),
+                        getParentModel().getClass().getName());
+            }
+            if (!wearing || player.isInvisible() || player.isSpectator()) {
                 return;
             }
             Minecraft mc = Minecraft.getInstance();
@@ -74,9 +132,18 @@ public class EndboundEmberClient {
             }
 
             pose.pushPose();
-            getParentModel().head.translateAndRotate(pose);
+            Matrix4f ysmHead = YsmHeadCapture.get(player.getUUID());
+            double verticalOffset;
+            if (ysmHead != null) {
+                // YSM 模型：直接叠加 YSM 合成出的头部矩阵，光环跟随其 Head locator
+                pose.last().pose().mul(ysmHead);
+                verticalOffset = YSM_HEAD_OFFSET;
+            } else {
+                getParentModel().head.translateAndRotate(pose);
+                verticalOffset = VANILLA_HEAD_OFFSET;
+            }
             // 头部模型原点在头部中心，向上移动到皮肤上方并保留原有视觉偏移。
-            pose.translate(0.0D, -0.55D, -0.10D);
+            pose.translate(0.0D, verticalOffset, -0.10D);
             pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-12.0F));
             HaloLayers.render(pose, buffers, ageInTicks, 1.0F, 255);
             pose.popPose();

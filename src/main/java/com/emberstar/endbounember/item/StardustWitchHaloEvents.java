@@ -8,6 +8,7 @@ import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.compat.CuriosCompat;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -41,6 +42,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * 星尘魔女的光环能力（戴在头盔栏或 Curios 光环饰品栏时生效）：
  * <ul>
  * <li>虚无中的微光：头部放置 15 级移动光源，攻击恢复速度提升 250%</li>
+ * <li>创造模式飞行：佩戴时获得飞行能力，摘下后恢复原状态</li>
  * <li>soulless heart：99% 全伤害减伤</li>
  * <li>虚无的存在：全部生物对你中立</li>
  * <li>直面于虚无：免疫虚空与真实伤害，坠落虚空后跨维度送回最近的重生点</li>
@@ -56,6 +58,13 @@ public final class StardustWitchHaloEvents {
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_witch_halo_swiftness");
     /** 移动光源：记录每名佩戴者上一次放置光源方块的位置，便于移动后清除 */
     private static final Map<UUID, BlockPos> HALO_LIGHT_POSITIONS = new ConcurrentHashMap<>();
+
+    /** 飞行：佩戴者当前是否处于「光环授予飞行」状态 */
+    private static final String FLIGHT_GRANTED = "EndboundEmberHaloFlightGranted";
+    /** 飞行：授予飞行前是否本来就能飞（创造模式等） */
+    private static final String FLIGHT_PREV_MAYFLY = "EndboundEmberHaloFlightPrevMayfly";
+    /** 飞行：授予飞行前是否正在飞 */
+    private static final String FLIGHT_PREV_FLYING = "EndboundEmberHaloFlightPrevFlying";
 
     private StardustWitchHaloEvents() {
     }
@@ -160,6 +169,53 @@ public final class StardustWitchHaloEvents {
         boolean wearing = wearingHalo(player);
         updateHaloLight(player, wearing);
         updateAttackSpeed(player, wearing);
+        updateFlight(player, wearing);
+    }
+
+    /**
+     * 创造模式飞行：佩戴光环时授予飞行能力，摘下后恢复原状态。
+     * <p>
+     * 创造与旁观模式的飞行由原版管理，这里不覆盖其状态，避免摘下光环后
+     * 把创造模式的飞行能力一并收回。
+     */
+    private static void updateFlight(Player player, boolean wearing) {
+        CompoundTag data = player.getPersistentData();
+        boolean granted = data.getBoolean(FLIGHT_GRANTED);
+
+        if (player.isCreative() || player.isSpectator()) {
+            if (granted) {
+                data.remove(FLIGHT_GRANTED);
+                data.remove(FLIGHT_PREV_MAYFLY);
+                data.remove(FLIGHT_PREV_FLYING);
+            }
+            return;
+        }
+
+        if (wearing && !granted) {
+            data.putBoolean(FLIGHT_PREV_MAYFLY, player.getAbilities().mayfly);
+            data.putBoolean(FLIGHT_PREV_FLYING, player.getAbilities().flying);
+            data.putBoolean(FLIGHT_GRANTED, true);
+        }
+
+        if (wearing) {
+            if (!player.getAbilities().mayfly) {
+                player.getAbilities().mayfly = true;
+                player.onUpdateAbilities();
+            }
+            return;
+        }
+
+        if (granted) {
+            // 只回收由光环授予的能力，原本就能飞的（如其他模组赋予）保持原样
+            if (!data.getBoolean(FLIGHT_PREV_MAYFLY)) {
+                player.getAbilities().mayfly = false;
+                player.getAbilities().flying = false;
+                player.onUpdateAbilities();
+            }
+            data.remove(FLIGHT_GRANTED);
+            data.remove(FLIGHT_PREV_MAYFLY);
+            data.remove(FLIGHT_PREV_FLYING);
+        }
     }
 
     /** 在头部放置 15 级光源方块形成移动光源，移动后清除旧位置 */

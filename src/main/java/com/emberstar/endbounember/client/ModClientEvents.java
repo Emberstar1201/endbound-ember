@@ -60,6 +60,7 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.DROWNED_GIRL.get(), DrownedGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.HUMAN_GIRL.get(), HumanGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
+        event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DISPLAY_PEDESTAL_BLOCK_ENTITY.get(),
                 DisplayPedestalRenderer::new);
     }
