@@ -67,21 +67,38 @@ public final class HaloLayers {
      */
     public static void render(PoseStack pose, MultiBufferSource buffers, float time,
             float brightness, int alpha) {
+        render(pose, buffers, time, brightness, alpha, 1.0F);
+    }
+
+    /**
+     * 绘制全部图层。
+     *
+     * @param pose       已定位到环心、且已完成水平朝向的变换栈
+     * @param buffers    渲染缓冲源
+     * @param time       动画时间（tick，含部分刻）
+     * @param brightness 亮度倍率，用于表现明亮 / 暗淡 / 破损
+     * @param alpha      整体不透明度（0-255）
+     * @param spinSign   自转方向系数，{@code 1.0F} 为正向，{@code -1.0F} 为反向。
+     *                   光环平面被头部俯仰翻过去后，绕局部 Y 轴的自转在屏幕上会投成相反方向，
+     *                   调用方可用该参数抵消。
+     */
+    public static void render(PoseStack pose, MultiBufferSource buffers, float time,
+            float brightness, int alpha, float spinSign) {
         for (Layer layer : LAYERS) {
             float bob = Mth.sin(time * BOB_OMEGA + layer.bobPhase()) * layer.bobAmplitude();
             pose.pushPose();
             pose.translate(0.0D, bob, 0.0D);
-            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(time * layer.spin()));
+            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(time * layer.spin() * spinSign));
             VertexConsumer buffer = buffers.getBuffer(RenderType.entityTranslucent(layer.texture()));
             drawQuad(pose, buffer, layer.size(), brightness, alpha);
             pose.popPose();
         }
-        renderStars(pose, buffers, time, brightness, alpha);
+        renderStars(pose, buffers, time, brightness, alpha, spinSign);
     }
 
     /** 绘制环绕外环公转的星尘：每颗星点独立绕自身中心自转，整体沿轨道公转 */
     private static void renderStars(PoseStack pose, MultiBufferSource buffers, float time,
-            float brightness, int alpha) {
+            float brightness, int alpha, float spinSign) {
         VertexConsumer buffer = buffers.getBuffer(RenderType.entityTranslucent(LAYER_INNER));
         float orbit = time * STAR_ORBIT_SPEED;
         for (int i = 0; i < STAR_COUNT; i++) {
@@ -90,7 +107,7 @@ public final class HaloLayers {
             pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(angle));
             pose.translate(STAR_ORBIT, 0.0D, 0.0D);
             // 抵消公转带来的朝向变化，只保留星点自身缓慢自转
-            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-angle + time * STAR_SPIN_SPEED));
+            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-angle + time * STAR_SPIN_SPEED * spinSign));
             drawQuad(pose, buffer, STAR_SIZE, brightness, alpha);
             pose.popPose();
         }

@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -42,15 +43,15 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
- * 强化版凋零。核心机制分两个阶段：
+ * 强化版凋零。
  *
  * <ul>
  *   <li>基础属性：最大生命 1000，护甲 24，只在生成时爆炸一次。</li>
- *   <li>凋零护盾：一阶段 2000 点、二阶段 4000 点。护盾不吃护甲与抗性等常规减伤，
- *       但按原始伤害的 1000% 结算；近战再减 70%，弹射物再减 45%。</li>
- *   <li>护盾破裂：一阶段护盾归零后立刻失去飞行能力并瘫痪 5 秒。</li>
+ *   <li>凋零护盾：2000 点。护盾不吃护甲与抗性等常规减伤，但按原始伤害的 1000% 结算；
+ *       近战再减 30%，弹射物再减 30%。</li>
+ *   <li>护盾破裂：护盾归零后立刻失去飞行能力并瘫痪 5 秒。</li>
  *   <li>弹幕强化：头颅可破坏黑曜石，并偶尔发射会分裂的「母凋零之首」。</li>
- *   <li>二阶段：生命降至 50% 时强制中断动作并重新生成 4000 点护盾，永久贴地悬浮。</li>
+ *   <li>飞行：全程保持飞行，悬停高度以目标为基准并限制上限，不会无限爬升。</li>
  *   <li>地面狂暴：公牛式直线冲撞并摧毁沿途非基岩方块，持续召唤强化凋零骷髅。</li>
  *   <li>吸血与回血：击杀非亡灵生物回血；自身回血快于原版，被亡灵杀手武器命中时回血受挫。</li>
  *   <li>凋零威压：附近玩家持续黑暗，每 15 秒一次 3 秒凋零 II。</li>
@@ -62,7 +63,6 @@ public final class WitherEmpowerment {
     private static final String TAG_INITIALIZED = "EndboundEmberWitherInit";
     private static final String TAG_SHIELD = "EndboundEmberWitherShield";
     private static final String TAG_SHIELD_MAX = "EndboundEmberWitherShieldMax";
-    private static final String TAG_PHASE = "EndboundEmberWitherPhase";
     private static final String TAG_PARALYZE = "EndboundEmberWitherParalyze";
     private static final String TAG_SKULL_COOLDOWN = "EndboundEmberWitherSkullCooldown";
     private static final String TAG_MOTHER_COOLDOWN = "EndboundEmberWitherMotherCooldown";
@@ -79,26 +79,28 @@ public final class WitherEmpowerment {
     private static final double ARMOR = 24.0D;
     private static final double BASE_ARMOR = 4.0D;
 
-    /** 一阶段护盾上限。 */
-    private static final float SHIELD_PHASE_ONE = 2000.0F;
-    /** 二阶段护盾上限。 */
-    private static final float SHIELD_PHASE_TWO = 4000.0F;
+    /** 护盾上限。 */
+    private static final float SHIELD_MAX = 2000.0F;
     /** 破盾效率：原始伤害 × 10。 */
     private static final float SHIELD_DAMAGE_MULTIPLIER = 10.0F;
     /** 护盾对近战物理伤害的减免。 */
-    private static final float SHIELD_MELEE_REDUCTION = 0.70F;
+    private static final float SHIELD_MELEE_REDUCTION = 0.30F;
     /** 护盾对弹射物的减免。 */
-    private static final float SHIELD_PROJECTILE_REDUCTION = 0.45F;
+    private static final float SHIELD_PROJECTILE_REDUCTION = 0.30F;
 
     /** 护盾破裂后的瘫痪时长：5 秒。 */
     private static final int PARALYZE_TICKS = 100;
-    /** 二阶段触发阈值。 */
-    private static final float PHASE_TWO_THRESHOLD = 0.5F;
 
-    /** 一阶段悬停高度（相对目标）。 */
+    /** 悬停高度（相对目标）。 */
     private static final double HOVER_HEIGHT = 12.0D;
-    /** 二阶段贴地悬浮高度。 */
-    private static final double GROUND_HOVER_HEIGHT = 3.0D;
+    /**
+     * 悬停高度上限（相对目标）。
+     * <p>目标站在高处时若只按固定高度跟随，凋零会一路向上叠高直到脱离战斗，
+     * 这里给相对高度封顶，保证它始终停留在玩家可攻击的范围内。
+     */
+    private static final double HOVER_MAX_HEIGHT = 20.0D;
+    /** 悬停高度下限（相对目标），避免目标在低处时凋零贴地。 */
+    private static final double HOVER_MIN_HEIGHT = 4.0D;
 
     private static final int SKULL_INTERVAL = 60;
     private static final int MOTHER_INTERVAL = 260;
@@ -155,17 +157,15 @@ public final class WitherEmpowerment {
         CompoundTag data = wither.getPersistentData();
         if (!data.getBoolean(TAG_INITIALIZED)) {
             data.putBoolean(TAG_INITIALIZED, true);
-            data.putInt(TAG_PHASE, 1);
-            // 生成时立即获得一阶段护盾
-            data.putFloat(TAG_SHIELD_MAX, SHIELD_PHASE_ONE);
-            data.putFloat(TAG_SHIELD, SHIELD_PHASE_ONE);
+            // 生成时立即获得护盾
+            data.putFloat(TAG_SHIELD_MAX, SHIELD_MAX);
+            data.putFloat(TAG_SHIELD, SHIELD_MAX);
             wither.setHealth(wither.getMaxHealth());
         } else {
             // 读档：补齐缺失的护盾上限，避免旧存档没有护盾
             if (data.getFloat(TAG_SHIELD_MAX) <= 0.0F) {
-                float max = data.getInt(TAG_PHASE) >= 2 ? SHIELD_PHASE_TWO : SHIELD_PHASE_ONE;
-                data.putFloat(TAG_SHIELD_MAX, max);
-                data.putFloat(TAG_SHIELD, max);
+                data.putFloat(TAG_SHIELD_MAX, SHIELD_MAX);
+                data.putFloat(TAG_SHIELD, SHIELD_MAX);
             }
             if (wither.getHealth() > wither.getMaxHealth()) {
                 wither.setHealth(wither.getMaxHealth());
@@ -209,8 +209,8 @@ public final class WitherEmpowerment {
     /**
      * 护盾存在时按「韧性条」结算：
      * <p>
-     * 本体照常损失生命，护盾同步被消耗，护盾伤害 = 原始伤害 × 10 ×（近战 30% / 弹射物 55% / 其他 100%），
-     * 不吃护甲、抗性提升等常规减伤。护盾归零即破裂，解除保护并触发对应阶段效果。
+     * 本体照常损失生命，护盾同步被消耗，护盾伤害 = 原始伤害 × 10 ×（近战 70% / 弹射物 70% / 其他 100%），
+     * 不吃护甲、抗性提升等常规减伤。护盾归零即破裂，解除保护并触发瘫痪。
      */
     @SubscribeEvent
     public static void onWitherIncomingDamage(LivingIncomingDamageEvent event) {
@@ -246,7 +246,7 @@ public final class WitherEmpowerment {
         }
     }
 
-    /** 护盾破裂：一阶段失去飞行并瘫痪 5 秒；二阶段只破盾不瘫痪。 */
+    /** 护盾破裂：失去飞行并瘫痪 5 秒。 */
     private static void breakShield(WitherBoss wither) {
         CompoundTag data = wither.getPersistentData();
         data.putFloat(TAG_SHIELD, 0.0F);
@@ -258,45 +258,9 @@ public final class WitherEmpowerment {
                 wither.getX(), wither.getY() + wither.getBbHeight() * 0.5D, wither.getZ(),
                 2, 1.5D, 1.0D, 1.5D, 0.0D);
 
-        if (data.getInt(TAG_PHASE) < 2) {
-            data.putInt(TAG_PARALYZE, PARALYZE_TICKS);
-            wither.setNoAi(true);
-            wither.setDeltaMovement(Vec3.ZERO);
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // 二阶段切换
-    // ------------------------------------------------------------------
-
-    /** 生命降至 50% 时强制中断当前动作，重新生成 4000 点护盾并永久贴地。 */
-    private static void tickPhaseTransition(ServerLevel level, WitherBoss wither) {
-        CompoundTag data = wither.getPersistentData();
-        if (data.getInt(TAG_PHASE) >= 2) return;
-        if (wither.getHealth() > wither.getMaxHealth() * PHASE_TWO_THRESHOLD) return;
-
-        data.putInt(TAG_PHASE, 2);
-        data.putInt(TAG_PARALYZE, 0);
-        data.putInt(TAG_CHARGE_TICKS, 0);
-        data.putFloat(TAG_SHIELD_MAX, SHIELD_PHASE_TWO);
-        data.putFloat(TAG_SHIELD, SHIELD_PHASE_TWO);
-
-        // 中断当前动作：清空无敌帧与 AI，随后由 tickWither 重新接管
-        wither.setNoAi(false);
+        data.putInt(TAG_PARALYZE, PARALYZE_TICKS);
+        wither.setNoAi(true);
         wither.setDeltaMovement(Vec3.ZERO);
-        wither.setInvulnerable(false);
-        // 永久丧失飞行能力
-        wither.setNoGravity(false);
-
-        level.playSound(null, wither.getX(), wither.getY(), wither.getZ(),
-                SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0F, 0.6F);
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
-                wither.getX(), wither.getY() + wither.getBbHeight() * 0.5D, wither.getZ(),
-                4, 2.5D, 1.5D, 2.5D, 0.0D);
-        for (Player player : level.getEntitiesOfClass(Player.class, wither.getBoundingBox().inflate(32.0D))) {
-            player.displayClientMessage(
-                    Component.translatable("entity.endbound_ember.wither.phase_two"), true);
-        }
     }
 
     // ------------------------------------------------------------------
@@ -321,7 +285,6 @@ public final class WitherEmpowerment {
 
         applyAttributes(wither);
         tickCooldowns(wither);
-        tickPhaseTransition(level, wither);
 
         // 瘫痪：无法移动和攻击，同时停止回血与凋零威压
         if (wither.getPersistentData().getInt(TAG_PARALYZE) > 0) {
@@ -330,17 +293,13 @@ public final class WitherEmpowerment {
         }
         wither.setNoAi(false);
 
-        // 回血与凋零威压是默认机制：两个阶段都持续生效，仅在瘫痪期间暂停
+        // 回血与凋零威压是默认机制：全程持续生效，仅在瘫痪期间暂停
         tickRegen(level, wither);
         tickAura(level, wither);
 
-        if (wither.getPersistentData().getInt(TAG_PHASE) >= 2) {
-            tickGroundHover(level, wither);
-            tickCharge(level, wither);
-            tickSummon(level, wither);
-        } else {
-            tickAirHover(level, wither);
-        }
+        tickHover(level, wither);
+        tickCharge(level, wither);
+        tickSummon(level, wither);
         tickSkulls(level, wither);
     }
 
@@ -356,21 +315,14 @@ public final class WitherEmpowerment {
         }
     }
 
-    /** 一阶段：护盾存在时保持高空飞行，护盾破裂后停留在地面高度。 */
-    private static void tickAirHover(ServerLevel level, WitherBoss wither) {
-        boolean shielded = wither.getPersistentData().getFloat(TAG_SHIELD) > 0.0F;
-        Player target = nearestTarget(level, wither, 64.0D);
-        if (target == null) return;
-
-        double height = shielded ? HOVER_HEIGHT : 2.0D;
-        Vec3 desired = new Vec3(target.getX(), target.getY() + height, target.getZ());
-        Vec3 delta = desired.subtract(wither.position()).scale(0.05D);
-        wither.setDeltaMovement(delta);
-        wither.setNoGravity(true);
-    }
-
-    /** 二阶段：永久贴地悬浮，跟随目标但保持低空。 */
-    private static void tickGroundHover(ServerLevel level, WitherBoss wither) {
+    /**
+     * 飞行悬停：以最近玩家为基准保持固定高度，并对相对高度封顶。
+     * <p>
+     * 原版凋零会不断向上爬升追击高处目标，玩家站在高台时它会一路飞到脱离战斗。
+     * 这里把悬停高度夹在 [{@link #HOVER_MIN_HEIGHT}, {@link #HOVER_MAX_HEIGHT}] 之间，
+     * 保证它始终停留在可攻击范围内。
+     */
+    private static void tickHover(ServerLevel level, WitherBoss wither) {
         wither.setNoGravity(true);
         // 冲撞期间不接管移动
         if (wither.getPersistentData().getInt(TAG_CHARGE_TICKS) > 0) return;
@@ -380,14 +332,19 @@ public final class WitherEmpowerment {
             wither.setDeltaMovement(wither.getDeltaMovement().scale(0.8D));
             return;
         }
-        Vec3 desired = new Vec3(target.getX(), target.getY() + GROUND_HOVER_HEIGHT, target.getZ());
+
+        double height = Mth.clamp(HOVER_HEIGHT, HOVER_MIN_HEIGHT, HOVER_MAX_HEIGHT);
+        double desiredY = Math.min(target.getY() + height, target.getY() + HOVER_MAX_HEIGHT);
+        Vec3 desired = new Vec3(target.getX(), desiredY, target.getZ());
         Vec3 delta = desired.subtract(wither.position()).scale(0.08D);
-        // 限制垂直速度，避免贴地时上下抖动
-        wither.setDeltaMovement(delta.x, Math.max(-0.4D, Math.min(0.4D, delta.y)), delta.z);
+        // 限制垂直速度，避免上下抖动；到达高度后不再继续上浮
+        double dy = Mth.clamp(delta.y, -0.4D, 0.4D);
+        wither.setDeltaMovement(delta.x, dy, delta.z);
+        wither.hurtMarked = true;
     }
 
     // ------------------------------------------------------------------
-    // 二阶段：冲撞
+    // 冲撞
     // ------------------------------------------------------------------
 
     private static void tickCharge(ServerLevel level, WitherBoss wither) {
@@ -524,7 +481,7 @@ public final class WitherEmpowerment {
     }
 
     // ------------------------------------------------------------------
-    // 默认机制：凋零威压（黑暗 + 周期性凋零 II），与阶段无关，瘫痪期间暂停
+    // 凋零威压（黑暗 + 周期性凋零 II），全程生效，瘫痪期间暂停
     // ------------------------------------------------------------------
 
     private static void tickAura(ServerLevel level, WitherBoss wither) {
@@ -542,10 +499,23 @@ public final class WitherEmpowerment {
                 player.addEffect(new MobEffectInstance(MobEffects.WITHER, AURA_WITHER_DURATION, 1, false, true, true));
             }
         }
+
+        // 黑暗期间暴露 BOSS 位置：黑暗是范围施加的，被笼罩的玩家可直接看到凋零轮廓
+        boolean anyDarkened = false;
+        for (Player player : level.getEntitiesOfClass(Player.class,
+                wither.getBoundingBox().inflate(AURA_RANGE), WitherEmpowerment::isValidTarget)) {
+            if (player.hasEffect(MobEffects.DARKNESS)) {
+                anyDarkened = true;
+                break;
+            }
+        }
+        if (anyDarkened) {
+            wither.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20, 0, false, false, false));
+        }
     }
 
     // ------------------------------------------------------------------
-    // 默认机制：回血与吸血，与阶段无关，瘫痪期间暂停回血
+    // 回血与吸血，全程生效，瘫痪期间暂停回血
     // ------------------------------------------------------------------
 
     private static void tickRegen(ServerLevel level, WitherBoss wither) {

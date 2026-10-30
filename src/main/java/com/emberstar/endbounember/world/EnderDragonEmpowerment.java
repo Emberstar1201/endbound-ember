@@ -28,20 +28,17 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -49,9 +46,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  * 末影龙强化。与旧版「末影龙强化」思路相近但机制全部重写：
  *
  * <ul>
- *   <li>晶核共鸣：场上每颗末影水晶提供 8% 减伤，10 颗时达到 80% 上限；虚空伤害、蓝火剑气与真实伤害无视该减伤。</li>
+ *   <li>晶核共鸣：场上每颗末影水晶提供 5% 减伤，10 颗时达到 50% 上限；虚空伤害、蓝火剑气与真实伤害无视该减伤。</li>
  *   <li>晶体重塑：被摧毁的水晶每隔 5 分钟在原有位置重塑一颗，同一时间只会重塑一颗。</li>
- *   <li>隐藏韧性：受到伤害会同步削减隐性韧性；韧性耗尽后末影龙坠地瘫痪 10 秒，期间失去全部减伤，只剩 20 点护甲。</li>
  *   <li>晶核滋养：水晶越多，龙的自愈速度越快。</li>
  *   <li>碎晶破绽：水晶数量减少时，龙进入 10 秒破绽期，受到伤害提高 55%。</li>
  *   <li>濒死狂怒：生命低于 45% 时受到伤害提高 30%。</li>
@@ -73,16 +69,9 @@ public final class EnderDragonEmpowerment {
     private static final String TAG_PEARL_COOLDOWN = "EndboundEmberDragonPearlCooldown";
     private static final String TAG_CRYSTAL_SITES = "EndboundEmberDragonCrystalSites";
     private static final String TAG_CRYSTAL_PENDING = "EndboundEmberDragonCrystalPending";
-    private static final String TAG_POISE = "EndboundEmberDragonPoise";
-    private static final String TAG_POISE_REGEN_DELAY = "EndboundEmberDragonPoiseRegenDelay";
-    private static final String TAG_POISE_IMMUNE = "EndboundEmberDragonPoiseImmune";
-    private static final String TAG_PARALYZE_TICKS = "EndboundEmberDragonParalyze";
-    private static final String TAG_PARALYZE_LANDED = "EndboundEmberDragonParalyzeLanded";
 
     private static final double MAX_HEALTH = 1000.0D;
     private static final double ARMOR = 10.0D;
-    /** 瘫痪期间失去一切减伤，只保留 20 点护甲。 */
-    private static final double PARALYZE_ARMOR = 20.0D;
 
     /** 碎晶破绽持续 10 秒，期间受到的伤害提高 55%。 */
     private static final int OPENING_TICKS = 200;
@@ -90,30 +79,15 @@ public final class EnderDragonEmpowerment {
     /** 生命低于 45% 时受到的伤害提高 30%。 */
     private static final float LOW_HEALTH_THRESHOLD = 0.45F;
     private static final float LOW_HEALTH_BONUS = 0.30F;
-    /** 每颗水晶 8% 减伤，10 颗（末地全部水晶）达到 80% 上限。 */
-    private static final float CRYSTAL_REDUCTION = 0.08F;
+    /** 每颗水晶 5% 减伤，10 颗（末地全部水晶）达到 50% 上限。 */
+    private static final float CRYSTAL_REDUCTION = 0.05F;
     private static final int CRYSTAL_CAP = 10;
-    private static final float PROJECTILE_REDUCTION = 0.5F;
 
     /** 水晶被摧毁后每 5 分钟（6000 tick）重塑一颗，同一时间只会重塑一颗。 */
     private static final int CRYSTAL_RESPAWN_DELAY = 6000;
     /** 排队的重生点使用 -1 作为标记，等待当前重塑完成后才会接棒。 */
     private static final int CRYSTAL_QUEUED = -1;
 
-    /** 隐藏韧性上限。韧性按实际损失的生命值等比削减。 */
-    private static final float MAX_POISE = 600.0F;
-    /** 韧性耗尽后瘫痪 10 秒。 */
-    private static final int PARALYZE_TICKS = 200;
-    /** 瘫痪开始时把龙抬到祭坛上方这个高度，再由原版着陆相位俯冲下来。 */
-    private static final double PARALYZE_DROP_HEIGHT = 18.0D;
-    /** 与祭坛落点的三维距离小于这个值就判定为落地，随即原地冻结。 */
-    private static final double PARALYZE_LAND_DISTANCE = 1.5D;
-    /** 最后一次受伤 5 秒后韧性才开始恢复。 */
-    private static final int POISE_REGEN_DELAY = 100;
-    /** 每秒恢复的韧性，30 秒回满。 */
-    private static final float POISE_REGEN_PER_SECOND = MAX_POISE / 30.0F;
-    /** 瘫痪结束后 15 秒内韧性不会被再次削减，避免被无限连控。 */
-    private static final int POISE_IMMUNE_TICKS = 300;
     /** 每 40 tick 结算一次自愈：基础 0.15%，每颗水晶再加 0.1% 最大生命。 */
     private static final double BASE_REGEN = 0.0015D;
     private static final double CRYSTAL_REGEN = 0.001D;
@@ -144,18 +118,9 @@ public final class EnderDragonEmpowerment {
         }
 
         CompoundTag data = dragon.getPersistentData();
-        if (!data.contains(TAG_POISE)) {
-            data.putFloat(TAG_POISE, MAX_POISE);
-        }
-        // 重载时若仍处于瘫痪，恢复瘫痪驱动的状态，避免被原版 phase 打断
-        if (data.getInt(TAG_PARALYZE_TICKS) > 0) {
-            if (data.getBoolean(TAG_PARALYZE_LANDED)) {
-                dragon.setNoAi(true);
-                dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
-            } else {
-                dragon.setNoAi(false);
-                dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
-            }
+        // 重载时补齐缺失的水晶数量记录，避免首次比较时误判为「水晶减少」
+        if (!data.contains(TAG_CRYSTAL_COUNT)) {
+            data.putInt(TAG_CRYSTAL_COUNT, countCrystals(dragon));
         }
     }
 
@@ -171,21 +136,11 @@ public final class EnderDragonEmpowerment {
 
         float amount = event.getAmount();
 
-        // 瘫痪：失去全部减伤，只保留 20 点护甲（护甲由 applyAttributes 换成 20 点）
-        if (isParalyzed(dragon)) {
-            return;
-        }
-
         // 晶核共鸣：水晶越多，龙越坚硬；虚空伤害与真实伤害不受影响
         if (!piercesCrystalWard(event.getSource())) {
             int crystals = Math.min(CRYSTAL_CAP, countCrystals(dragon));
             crystals = EndApproachesEnchantment.effectiveCrystalCount(dragon, event.getSource(), crystals);
             amount *= 1.0F - crystals * CRYSTAL_REDUCTION;
-
-            // 弹射物在共鸣下进一步衰减，但不再像旧版那样完全免疫
-            if (event.getSource().is(DamageTypeTags.IS_PROJECTILE)) {
-                amount *= 1.0F - PROJECTILE_REDUCTION;
-            }
         }
 
         // 碎晶破绽
@@ -202,36 +157,8 @@ public final class EnderDragonEmpowerment {
     }
 
     /**
-     * 隐藏韧性：按实际造成的伤害同步削减，韧性耗尽即进入瘫痪。
-     * 伤害越高掉得越快，但破绽、濒死狂怒这类增伤不会加速削韧。
+     * 虚空伤害（星火不灭）、蓝火剑气与真实伤害（拂晓剑气）无视水晶提供的减伤。
      */
-    @SubscribeEvent
-    public static void onDragonDamaged(LivingDamageEvent.Post event) {
-        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (dragon.level().isClientSide()) return;
-        if (dragon.isDeadOrDying()) return;
-        // 掉出世界、/kill 之类不参与韧性
-        if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)
-                || event.getSource().is(DamageTypes.FELL_OUT_OF_WORLD)) {
-            return;
-        }
-        if (isParalyzed(dragon)) return;
-        if (event.getNewDamage() <= 0.0F) return;
-
-        CompoundTag data = dragon.getPersistentData();
-        data.putInt(TAG_POISE_REGEN_DELAY, POISE_REGEN_DELAY);
-
-        // 刚瘫痪结束的免疫期内不会被继续削韧
-        if (data.getInt(TAG_POISE_IMMUNE) > 0) return;
-
-        float poise = Math.max(0.0F, data.getFloat(TAG_POISE) - event.getNewDamage());
-        data.putFloat(TAG_POISE, poise);
-        if (poise > 0.0F) return;
-
-        startParalyze(dragon);
-    }
-
-    /** 虚空伤害（星火不灭）、蓝火剑气与真实伤害（拂晓剑气）无视水晶提供的减伤。 */
     private static boolean piercesCrystalWard(DamageSource source) {
         return source.is(DamageTypes.FELL_OUT_OF_WORLD)
                 || source.is(DamageTypes.GENERIC_KILL)
@@ -257,15 +184,11 @@ public final class EnderDragonEmpowerment {
 
     private static void tickDragon(ServerLevel level, EnderDragon dragon) {
         if (dragon.isRemoved() || dragon.isDeadOrDying()) return;
-        tickParalyze(level, dragon);
         applyAttributes(dragon);
         tickCrystalOpening(level, dragon);
         tickCrystalRegen(level, dragon);
         tickOpening(level, dragon);
-        tickPoise(dragon);
         tickCooldowns(dragon);
-        // 瘫痪期间不进行任何主动行为
-        if (isParalyzed(dragon)) return;
         tickBreathCloud(level, dragon);
         tickSummon(level, dragon);
         tickRecovery(level, dragon);
@@ -284,139 +207,10 @@ public final class EnderDragonEmpowerment {
                 dragon.setHealth(dragon.getMaxHealth());
             }
         }
-        double armorTarget = isParalyzed(dragon) ? PARALYZE_ARMOR : ARMOR;
         AttributeInstance armor = dragon.getAttribute(Attributes.ARMOR);
-        if (armor != null && Math.abs(armor.getBaseValue() - armorTarget) > 0.001D) {
-            armor.setBaseValue(armorTarget);
+        if (armor != null && Math.abs(armor.getBaseValue() - ARMOR) > 0.001D) {
+            armor.setBaseValue(ARMOR);
         }
-    }
-
-    private static boolean isParalyzed(EnderDragon dragon) {
-        return dragon.getPersistentData().getInt(TAG_PARALYZE_TICKS) > 0;
-    }
-
-    /**
-     * 韧性耗尽后把末影龙挪到祭坛正上方，交给原版着陆相位带躯体俯冲。
-     * 位置只在这一刻设置一次，之后全程由原版驱动，避免手动改坐标导致躯体各部分错位。
-     */
-    private static void startParalyze(EnderDragon dragon) {
-        // 已进入死亡流程时不接管，否则会覆盖 DYING 相位导致死亡动画无法播放
-        if (dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING) return;
-        if (!(dragon.level() instanceof ServerLevel level)) return;
-
-        Vec3 landing = altarLandingPoint(level, dragon);
-        double dropY = landing.y + PARALYZE_DROP_HEIGHT;
-
-        CompoundTag data = dragon.getPersistentData();
-        data.putInt(TAG_PARALYZE_TICKS, PARALYZE_TICKS);
-        data.putBoolean(TAG_PARALYZE_LANDED, false);
-        data.putFloat(TAG_POISE, 0.0F);
-
-        dragon.setNoAi(false);
-        dragon.setDeltaMovement(Vec3.ZERO);
-        dragon.setPos(landing.x, dropY, landing.z);
-        // 渲染躯体各段用的是历史坐标，传送后要整体对齐，否则头尾会被旧坐标拉扯
-        resetLatencyHistory(dragon, dropY);
-        dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
-
-        level.playSound(null, landing.x, dropY, landing.z,
-                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4.0F, 0.5F);
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
-                landing.x, dropY + 1.0D, landing.z, 3, 1.5D, 1.0D, 1.5D, 0.0D);
-    }
-
-    /** 瘫痪计时与坠落：下坠交给原版，落地后原地冻结。 */
-    private static void tickParalyze(ServerLevel level, EnderDragon dragon) {
-        CompoundTag data = dragon.getPersistentData();
-        int ticks = data.getInt(TAG_PARALYZE_TICKS);
-        if (ticks <= 0) return;
-
-        // 致死后原版需要 phase tick 播放死亡动画，必须立刻交还控制权，否则软锁
-        if (dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING) {
-            data.putInt(TAG_PARALYZE_TICKS, 0);
-            data.putBoolean(TAG_PARALYZE_LANDED, false);
-            dragon.setNoAi(false);
-            return;
-        }
-
-        if (data.getBoolean(TAG_PARALYZE_LANDED)) {
-            // 落地后冻结：不再移动，碰撞部件停在上一个 tick 的位置，正好覆盖龙身
-            dragon.setNoAi(true);
-        } else {
-            Vec3 landing = altarLandingPoint(level, dragon);
-            if (dragon.position().distanceToSqr(landing) <= PARALYZE_LAND_DISTANCE * PARALYZE_LAND_DISTANCE) {
-                landParalyzedDragon(level, dragon, landing);
-            } else if (dragon.getPhaseManager().getCurrentPhase().getPhase() != EnderDragonPhase.LANDING) {
-                // 着陆相位被其他行为顶掉时重新接管
-                dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
-            }
-        }
-
-        data.putInt(TAG_PARALYZE_TICKS, ticks - 1);
-        if (ticks - 1 <= 0) {
-            endParalyze(level, dragon);
-        }
-    }
-
-    /**
-     * 砸到祭坛上：就地冻结，不再改动坐标，保证可受击部件与躯体完全同步。
-     * 使用非 sitting 相位，瘫痪期间持续受击不会触发原版 25% 最大生命值的起飞判定。
-     */
-    private static void landParalyzedDragon(ServerLevel level, EnderDragon dragon, Vec3 landing) {
-        dragon.getPersistentData().putBoolean(TAG_PARALYZE_LANDED, true);
-        dragon.setDeltaMovement(Vec3.ZERO);
-        dragon.setNoAi(true);
-        dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
-        level.playSound(null, landing.x, landing.y, landing.z,
-                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4.0F, 0.6F);
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
-                landing.x, landing.y + 1.0D, landing.z, 4, 2.5D, 0.5D, 2.5D, 0.0D);
-    }
-
-    /** 原版着陆相位使用的祭坛落点：中央祭坛地表上方一格。 */
-    private static Vec3 altarLandingPoint(ServerLevel level, EnderDragon dragon) {
-        return Vec3.atBottomCenterOf(level.getHeightmapPos(
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                EndPodiumFeature.getLocation(dragon.getFightOrigin())));
-    }
-
-    /** 渲染躯体各段用的历史坐标，传送后整体对齐，避免头尾被旧坐标拉扯。 */
-    private static void resetLatencyHistory(EnderDragon dragon, double y) {
-        float yRot = dragon.getYRot();
-        for (double[] pos : dragon.positions) {
-            pos[0] = yRot;
-            pos[1] = y;
-        }
-        // 置空指针，让原版在下一 tick 用当前坐标整段重写历史
-        dragon.posPointer = -1;
-    }
-
-    /** 瘫痪结束：交还原版控制，韧性回满并获得短暂免削韧窗口。 */
-    private static void endParalyze(ServerLevel level, EnderDragon dragon) {
-        CompoundTag data = dragon.getPersistentData();
-        data.putInt(TAG_PARALYZE_TICKS, 0);
-        data.putBoolean(TAG_PARALYZE_LANDED, false);
-        data.putFloat(TAG_POISE, MAX_POISE);
-        data.putInt(TAG_POISE_IMMUNE, POISE_IMMUNE_TICKS);
-        dragon.setNoAi(false);
-        dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
-        level.playSound(null, dragon.getX(), dragon.getY(), dragon.getZ(),
-                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 3.0F, 1.3F);
-    }
-
-    /** 韧性恢复：停止受伤 5 秒后开始回满，大约 30 秒恢复完成。 */
-    private static void tickPoise(EnderDragon dragon) {
-        if (isParalyzed(dragon)) return;
-        CompoundTag data = dragon.getPersistentData();
-        decrement(dragon, TAG_POISE_IMMUNE);
-        int delay = data.getInt(TAG_POISE_REGEN_DELAY);
-        if (delay > 0) {
-            data.putInt(TAG_POISE_REGEN_DELAY, delay - 1);
-            return;
-        }
-        float poise = data.getFloat(TAG_POISE);
-        if (poise >= MAX_POISE) return;
-        data.putFloat(TAG_POISE, Math.min(MAX_POISE, poise + POISE_REGEN_PER_SECOND / 20.0F));
     }
 
     /** 水晶被摧毁时开启破绽期。通过数量变化判断，避免依赖额外的方块/实体事件。 */
@@ -639,6 +433,8 @@ public final class EnderDragonEmpowerment {
                 player.push(flat.x, 0.6D, flat.z);
             }
         }
+        // 黑暗期间暴露 BOSS 位置：被黑暗笼罩的玩家可直接看到末影龙轮廓
+        dragon.addEffect(new MobEffectInstance(MobEffects.GLOWING, 140, 0, false, false, false));
         level.playSound(null, dragon.getX(), dragon.getY(), dragon.getZ(),
                 SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 2.5F, 0.9F);
     }

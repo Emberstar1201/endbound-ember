@@ -51,7 +51,7 @@ public interface YsmGeoRendererMixin {
             int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
         // animatable 参数就是正在渲染的实体，优先用它；取不到时再回退到线程上下文
         LivingEntity entity = YsmRenderContext.resolve(animatable);
-        YsmHeadCapture.capture(entity, animatedModel, pose);
+        YsmHeadCapture.begin(entity, animatedModel);
     }
 
     @Inject(

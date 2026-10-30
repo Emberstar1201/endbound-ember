@@ -66,36 +66,16 @@ public final class YsmSymbols {
     public static final String HEAD_BONES_GETTER = "oO0O000o0oooOOO0O0oooOO0";
     public static final String HEAD_BONES_DESCRIPTOR = "()Ljava/util/List;";
 
-    /** 骨骼的 float 取值方法描述符 */
-    public static final String BONE_FLOAT_GETTER_DESCRIPTOR = "()F";
+    /** 骨骼名称 getter（返回 {@code String}），用于识别骨骼链是否指向头部 */
+    public static final String BONE_NAME_GETTER = "OOO0oooOOo00OOooo0OooOOo";
+    public static final String BONE_STRING_GETTER_DESCRIPTOR = "()Ljava/lang/String;";
 
     /*
-     * 以下 12 个 getter 的语义由 YSM 内部 ooOOO0oOOo0oOo0000o0o0Oo#oOo0OO0O0o000OO0O000oo0o()
-     * 的写入顺序反推确认：
-     *   O0OO0O0o00o0o00oOoO0o0oO() 返回 Vector3f，其 x/y/z 依次写入旋转 X/Y/Z；
-     *   oo000ooO0O00oo0OO0ooO000() 返回 Vector3f，其 x/y/z 依次写入 position X/Y/Z；
-     *   O0O00oOooOo000oo00OoO0Oo() 返回 Vector3f，其 x/y/z 依次写入 scale X/Y/Z。
-     * 因此这三个 Vector3f getter 对应的分量 getter 才是骨骼数值来源。
+     * 骨骼数值 getter 的语义由 YSM 内部写入顺序反推确认。
+     * 实测（2.6.5）发现旋转、位移、缩放字段在 Java 侧恒为 0——动画姿态全部在 C++ 侧计算，
+     * 因此这里只保留 pivot：它是模型定义里的静态坐标，能准确给出头顶高度。
      */
 
-    /** 旋转 X（角度） */
-    public static final String ROTATION_X = "oOo0OO0O0o000OO0O000oo0o";
-    /** 旋转 Y（角度） */
-    public static final String ROTATION_Y = "oOoo00O0o0oO0o0oO00OO0O0";
-    /** 旋转 Z（角度） */
-    public static final String ROTATION_Z = "OO000o0ooOooooOOOOO0Ooo0";
-    /** 位移 X（模型像素） */
-    public static final String POSITION_X = "OOo0o0000Ooo0o00OO0oOOoO";
-    /** 位移 Y（模型像素） */
-    public static final String POSITION_Y = "Oo0O0OoOo0O0oOoo0000O0oO";
-    /** 位移 Z（模型像素） */
-    public static final String POSITION_Z = "O0o0OoOOooOo0O0OOoo0Oo00";
-    /** 缩放 X */
-    public static final String SCALE_X = "OoooO0OO0000O00oo0Oo00OO";
-    /** 缩放 Y */
-    public static final String SCALE_Y = "oOOO00ooO0oOOoOOo0OoOOOo";
-    /** 缩放 Z */
-    public static final String SCALE_Z = "ooOooOO0oO00o00o0o0oOOoO";
     /** 旋转轴心 X（模型像素） */
     public static final String PIVOT_X = "OOo0O00Ooo00O0Ooo0OoOo0o";
     /** 旋转轴心 Y（模型像素） */
