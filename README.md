@@ -119,6 +119,8 @@ Minecraft、NeoForge 及其相关资产属于各自权利人。本项目不声�
 
 **开源致谢**：Azusa_Ke，[Halo Mod](https://github.com/AzusaKe/Halo) 的作者。星尘光环的渲染方式与物理表现参考自该项目（MIT License），在此致谢并保留其原始版权声明。
 
+**兼容致谢**：感谢酒石酸菌大佬的包容与支持，为了兼容 [Yes Steve Model](https://github.com/YesSteveModel/YesSteveModel) 的混淆代码，我的头发真的辛苦了。星尘光环跟随 YSM 模型头部的功能依赖对其内部符号的反射访问，相关兼容代码集中在 `compat/ysm` 包内。
+
 **额外感谢**：Wildcanyon，感谢提供丧尸娘材质。 [哔哩哔哩主页](https://space.bilibili.com/622498204?spm_id_from=333.788.upinfo.head.click)
 
 **内测人员**：Shixiangye、Shasnow、andan_、鸿銞
