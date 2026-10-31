@@ -4,6 +4,7 @@ import com.emberstar.endbounember.client.HaloLayers;
 import com.emberstar.endbounember.compat.CuriosCompat;
 import com.emberstar.endbounember.compat.ysm.YsmAdapter;
 import com.emberstar.endbounember.compat.ysm.YsmHeadCapture;
+import com.emberstar.endbounember.compat.ysm.YsmHaloRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
@@ -12,6 +13,8 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -74,6 +77,25 @@ public class EndboundEmberClient {
         } catch (ReflectiveOperationException error) {
             return -1;
         }
+    }
+
+    /**
+     * 客户端指令：切换 YSM 光环渲染。
+     * <p>
+     * 注册在客户端指令分发器上，不需要 OP 权限，也不会发送到服务器。
+     */
+    @SubscribeEvent
+    static void onRegisterClientCommands(net.neoforged.neoforge.client.event.RegisterClientCommandsEvent event) {
+        event.getDispatcher().register(Commands.literal("endbound_ember")
+                .then(Commands.literal("ysm_halo")
+                        .executes(context -> {
+                            boolean enabled = YsmHaloRenderer.toggle();
+                            context.getSource().sendSuccess(() -> Component.translatable(
+                                    enabled
+                                            ? "commands.endbound_ember.ysm_halo.enabled"
+                                            : "commands.endbound_ember.ysm_halo.disabled"), false);
+                            return enabled ? 1 : 0;
+                        })));
     }
 
     /**

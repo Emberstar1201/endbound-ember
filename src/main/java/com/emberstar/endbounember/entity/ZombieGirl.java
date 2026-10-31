@@ -128,7 +128,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         this.goalSelector.addGoal(0, new LowHealthEscapeGoal(this));
         this.goalSelector.addGoal(1, new RangedThreatEscapeGoal(this));
         this.goalSelector.addGoal(2, new TamedFollowOwnerGoal(this, 1.15D));
-        this.goalSelector.addGoal(3, new ConditionalMeleeAttackGoal(this));
+        this.goalSelector.addGoal(2, new ConditionalMeleeAttackGoal(this));
         this.goalSelector.addGoal(3, new ArrowRecoveryGoal(this));
         this.goalSelector.addGoal(3, new StationaryBowAttackGoal(this));
         this.goalSelector.addGoal(3, new StationaryCrossbowAttackGoal(this));

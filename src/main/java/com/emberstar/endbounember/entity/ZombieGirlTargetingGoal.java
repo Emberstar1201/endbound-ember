@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -16,8 +17,8 @@ import net.minecraft.world.phys.AABB;
  * 丧尸娘的索敌 AI：
  * <ul>
  *   <li>主动索敌只仇视原版亡灵（{@link ModTags.EntityTypes#ZOMBIE_GIRL_ENEMIES}）；</li>
- *   <li>驯服后协助主人战斗：主人正在攻击、或攻击主人的任意非友好生物都会成为协助目标（不再限于亡灵）；</li>
- *   <li>同类、玩家、友好生物与车万女仆（白名单）永远不会成为目标。</li>
+ *   <li>驯服后协助主人战斗：主人正在攻击、或攻击主人的任意生物都会成为协助目标（含牛羊猪等动物）；</li>
+ *   <li>白名单（同类丧尸娘/溺尸娘、车万女仆）永远不会成为目标。</li>
  * </ul>
  */
 public class ZombieGirlTargetingGoal extends TargetGoal {
@@ -45,7 +46,7 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
     @Nullable
     private LivingEntity findHatedTarget() {
         if (this.mob instanceof ZombieGirl zombieGirl && zombieGirl.isTamed()) {
-            net.minecraft.world.entity.player.Player owner = zombieGirl.getOwnerPlayer();
+            Player owner = zombieGirl.getOwnerPlayer();
             if (owner != null) {
                 // 优先级 1：主人当前攻击的目标（辅助主人战斗，覆盖任意非友好生物）
                 LivingEntity ownerTarget = owner.getLastHurtMob();
@@ -91,18 +92,31 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
      * 判断是否可以作为攻击目标。
      *
      * @param requireInnateHate 主动索敌为 true（只攻击天生仇视的原版亡灵）；
-     *                          协助主人战斗为 false（主人攻击的任意非友好生物均可协助攻击）。
+     *                          协助主人战斗为 false（主人攻击的任意生物均可协助攻击）。
      */
     private boolean isValidTarget(@Nullable LivingEntity entity, boolean requireInnateHate) {
         if (entity == null || !entity.isAlive()) return false;
-        // 同类（丧尸娘、溺尸娘）绝不攻击，避免数据包缺失时误伤
-        if (entity instanceof ZombieGirl || entity instanceof DrownedGirl) return false;
+        // 白名单：同类（丧尸娘、溺尸娘）与车万女仆（野生/驯服）永远不攻击
+        if (isWhitelisted(entity)) return false;
         EntityType<?> type = entity.getType();
-        if (ZombieGirl.isFriendlySoul(type)) return false;
-        // 车万女仆白名单：野生与驯服的女仆即便被主人攻击也不协助攻击（敌对女仆妖精不在此列）
-        if (ZombieGirl.isProtectedMaid(type)) return false;
+        // 主人正在攻击的生物：驯服状态下除白名单外一律协助攻击（含牛羊猪等友好生物）
+        if (isOwnerAttacking(entity)) return this.mob.canAttack(entity);
+        // 主动索敌只打天生仇视的原版亡灵
         if (requireInnateHate && !ZombieGirl.isHated(type)) return false;
         return this.mob.canAttack(entity) && this.mob.canAttackType(type);
+    }
+
+    /** 白名单：同类与车万女仆即便被主人攻击也不协助攻击（敌对女仆妖精不在此列）。 */
+    private static boolean isWhitelisted(LivingEntity entity) {
+        if (entity instanceof ZombieGirl || entity instanceof DrownedGirl) return true;
+        return ZombieGirl.isProtectedMaid(entity.getType());
+    }
+
+    /** 主人是否正在攻击该生物（驯服状态下才协助）。 */
+    private boolean isOwnerAttacking(LivingEntity entity) {
+        if (!(this.mob instanceof ZombieGirl girl) || !girl.isTamed()) return false;
+        Player owner = girl.getOwnerPlayer();
+        return owner != null && owner.getLastHurtMob() == entity;
     }
 
     @Override

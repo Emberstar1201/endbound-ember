@@ -117,7 +117,15 @@ public class MotherWitherSkull extends Projectile {
 
         int children = MIN_CHILDREN + level.random.nextInt(MAX_CHILDREN - MIN_CHILDREN + 1);
         Entity owner = this.getOwner();
-        LivingEntity shooter = owner instanceof LivingEntity living ? living : null;
+        // 原版 WitherSkull 构造器要求发射者为非空的 LivingEntity（内部会读取其坐标），
+        // 母头颅的发射者可能已死亡或未同步，取不到时退回附近最近的生物，避免空指针崩溃。
+        LivingEntity shooter = owner instanceof LivingEntity living ? living
+                : level.getNearestPlayer(this, 32.0D);
+        if (shooter == null) {
+            // 找不到任何可用的发射者时直接消失，避免每 tick 反复尝试分裂
+            this.discard();
+            return;
+        }
         for (int i = 0; i < children; i++) {
             double angle = Math.PI * 2.0D * i / children;
             Vec3 offset = right.scale(Math.cos(angle) * Math.tan(SPREAD))

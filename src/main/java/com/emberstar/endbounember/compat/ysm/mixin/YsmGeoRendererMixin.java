@@ -1,7 +1,5 @@
 package com.emberstar.endbounember.compat.ysm.mixin;
 
-// 感谢酒石酸菌大佬的包容与支持，为了兼容这堆混淆代码，我的头发真的辛苦了。
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
  * 注入点是 YSM 渲染接口 {@code ooo0000oO0O0ooOO0ooOO0o0} 的默认实现
  * {@code (模型, 动画实体, tickDelta, PoseStack, MultiBufferSource, VertexConsumer, int, int, FFFF)V}。
  * 该方法的第一个参数就是模型实例，且进入时 {@code pose} 已包含实体的全部根变换、
- * 尚未叠加任何骨骼变换，栈顶矩阵正好是合成头部矩阵所需的根矩阵。
+ * 尚未叠加任何骨骼变换，栈顶矩阵正好是实体根变换。
  * <p>
  * 之所以要在 RETURN 处直接绘制，是因为 YSM 用自建渲染器接管了玩家模型，
  * 原版 {@code PlayerRenderer} 的 {@code RenderLayer} 列表不会被执行。
@@ -53,7 +51,7 @@ public interface YsmGeoRendererMixin {
             int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
         // animatable 参数就是正在渲染的实体，优先用它；取不到时再回退到线程上下文
         LivingEntity entity = YsmRenderContext.resolve(animatable);
-        YsmHeadCapture.begin(entity, animatedModel);
+        YsmHeadCapture.begin(entity, animatedModel, pose);
     }
 
     @Inject(

@@ -1,7 +1,5 @@
 package com.emberstar.endbounember.compat.ysm.mixin;
 
-// 感谢酒石酸菌大佬的包容与支持，为了兼容这堆混淆代码，我的头发真的辛苦了。
-
 import java.util.List;
 import java.util.Set;
 

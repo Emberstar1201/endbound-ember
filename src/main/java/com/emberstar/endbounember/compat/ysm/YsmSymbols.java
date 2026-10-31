@@ -1,6 +1,6 @@
 package com.emberstar.endbounember.compat.ysm;
 
-// 感谢酒石酸菌大佬的包容与支持，为了兼容这堆混淆代码，我的头发真的辛苦了。
+// YSM 的底层混淆代码堪称赛博迷宫，为了保护模型资产，它成功做到了连开发者的头发都一起保护没了（指被报错逼疯）。致敬酒石酸菌，你干的混淆确实是一绝。
 
 /**
  * Yes Steve Model（YSM）内部符号表。
@@ -50,11 +50,15 @@ public final class YsmSymbols {
      * 接口上「带模型实例」的渲染入口（混淆名）。
      * <p>
      * 第 1 个参数就是动画模型，进入时 {@code pose} 已含实体根变换、尚未叠加骨骼变换，
-     * 栈顶矩阵即合成头部矩阵所需的根矩阵。
+     * 栈顶矩阵即实体根变换。
      */
     public static final String RENDER_MODEL_ENTRY = "oOo0OO0O0o000OO0O000oo0o";
 
-    /** {@link #RENDER_MODEL_ENTRY} 的完整描述符（Mojang 名，{@code remap = false} 下按运行时名匹配） */
+    /**
+     * {@link #RENDER_MODEL_ENTRY} 带 {@code RenderType} 重载的完整描述符。
+     * <p>
+     * 这是 YSM 玩家模型实际调用的逐骨骼渲染入口；{@code remap = false} 下按运行时名匹配。
+     */
     public static final String RENDER_MODEL_ENTRY_DESCRIPTOR =
             "(Lcom/elfmcys/yesstevemodel/o0ooO0ooO00oo0o00Oo00000;"
                     + "Lcom/elfmcys/yesstevemodel/OoO0oo0o0o0oOoo0oOOO0Ooo;F"
@@ -62,20 +66,39 @@ public final class YsmSymbols {
                     + "Lnet/minecraft/client/renderer/MultiBufferSource;"
                     + "Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V";
 
-    /** 返回 Head locator 骨骼链的方法名（返回 {@code List<骨骼接口>}） */
+    /**
+     * 模型上返回 Head locator 骨骼链的方法（混淆名），返回 {@code List<骨骼接口>}。
+     * <p>
+     * 这条链由 YSM 解析模型 JSON 的 {@code Head} locator 得到，链上每节骨骼都带有当前帧的
+     * 旋转、位移与缩放。第三方模型只要定义了 Head locator 就能被正确定位，
+     * 不需要按骨骼名做匹配。
+     */
     public static final String HEAD_BONES_GETTER = "oO0O000o0oooOOO0O0oooOO0";
     public static final String HEAD_BONES_DESCRIPTOR = "()Ljava/util/List;";
 
-    /** 骨骼名称 getter（返回 {@code String}），用于识别骨骼链是否指向头部 */
-    public static final String BONE_NAME_GETTER = "OOO0oooOOo00OOooo0OooOOo";
-    public static final String BONE_STRING_GETTER_DESCRIPTOR = "()Ljava/lang/String;";
-
     /*
-     * 骨骼数值 getter 的语义由 YSM 内部写入顺序反推确认。
-     * 实测（2.6.5）发现旋转、位移、缩放字段在 Java 侧恒为 0——动画姿态全部在 C++ 侧计算，
-     * 因此这里只保留 pivot：它是模型定义里的静态坐标，能准确给出头顶高度。
+     * 骨骼数值 getter（混淆名），描述符均为 ()F，单位见各常量注释。
+     * 这 12 个值正是 YSM 内部 prepMatrixForLocator 合成 locator 矩阵所用的全部输入。
      */
 
+    /** 绕 X 轴旋转（度） */
+    public static final String ROTATION_X = "oOo0OO0O0o000OO0O000oo0o";
+    /** 绕 Y 轴旋转（度） */
+    public static final String ROTATION_Y = "oOoo00O0o0oO0o0oO00OO0O0";
+    /** 绕 Z 轴旋转（度） */
+    public static final String ROTATION_Z = "OO000o0ooOooooOOOOO0Ooo0";
+    /** 位移 X（模型像素） */
+    public static final String POSITION_X = "OOo0o0000Ooo0o00OO0oOOoO";
+    /** 位移 Y（模型像素） */
+    public static final String POSITION_Y = "Oo0O0OoOo0O0oOoo0000O0oO";
+    /** 位移 Z（模型像素） */
+    public static final String POSITION_Z = "O0o0OoOOooOo0O0OOoo0Oo00";
+    /** 缩放 X */
+    public static final String SCALE_X = "OoooO0OO0000O00oo0Oo00OO";
+    /** 缩放 Y */
+    public static final String SCALE_Y = "oOOO00ooO0oOOoOOo0OoOOOo";
+    /** 缩放 Z */
+    public static final String SCALE_Z = "ooOooOO0oO00o00o0o0oOOoO";
     /** 旋转轴心 X（模型像素） */
     public static final String PIVOT_X = "OOo0O00Ooo00O0Ooo0OoOo0o";
     /** 旋转轴心 Y（模型像素） */

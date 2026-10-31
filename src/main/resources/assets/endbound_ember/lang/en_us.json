@@ -102,6 +102,8 @@
   "endbound_ember.configuration.magicNumber": "Magic Number",
   "commands.endbound_ember.locate_camp.success": "The nearest zombie girl camp is at %s (%s blocks away)",
   "commands.endbound_ember.locate_camp.failed": "No zombie girl camp has been generated yet",
+  "commands.endbound_ember.ysm_halo.enabled": "YSM halo rendering enabled",
+  "commands.endbound_ember.ysm_halo.disabled": "YSM halo rendering disabled",
   "key.endbound_ember.girl_interaction": "Girl Interaction",
   "key.categories.endbound_ember": "Endbound Ember",
   "gui.endbound_ember.girl.title": "Girl Interaction",

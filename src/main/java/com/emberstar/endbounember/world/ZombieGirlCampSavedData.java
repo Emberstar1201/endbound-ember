@@ -82,4 +82,17 @@ public final class ZombieGirlCampSavedData extends SavedData {
         }
         return nearest;
     }
+
+    /** 指定水平范围内是否存在已生成的营地（只比较 X/Z，忽略高度）。 */
+    public boolean isNearCamp(BlockPos pos, int horizontalRadius) {
+        long radiusSqr = (long) horizontalRadius * horizontalRadius;
+        for (BlockPos camp : camps) {
+            long dx = camp.getX() - pos.getX();
+            long dz = camp.getZ() - pos.getZ();
+            if (dx * dx + dz * dz <= radiusSqr) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

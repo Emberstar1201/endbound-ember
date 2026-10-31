@@ -1,6 +1,7 @@
 package com.emberstar.endbounember.entity;
 
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.world.ZombieGirlCampSavedData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -27,6 +28,8 @@ public final class ZombieGirlSpawnEvents {
     private static final int PLAYER_RANGE = 32;
     private static final int SPAWN_ATTEMPTS = 8;
     private static final int MAX_NEARBY = 12;
+    /** 营地水平范围内不补刷：营地屋顶同样满足地表条件，会导致少女被刷到房顶上。 */
+    private static final int CAMP_EXCLUSION_RADIUS = 24;
 
     private ZombieGirlSpawnEvents() {
     }
@@ -81,6 +84,10 @@ public final class ZombieGirlSpawnEvents {
             int z = Mth.floor(player.getZ()) + level.random.nextIntBetweenInclusive(-PLAYER_RANGE, PLAYER_RANGE);
             BlockPos surface = findSurface(level, x, z);
             if (surface == null || !isNearPlayer(surface, player)) {
+                continue;
+            }
+            // 营地范围内由营地自身生成少女，补刷会落到营地屋顶上
+            if (ZombieGirlCampSavedData.get(level).isNearCamp(surface, CAMP_EXCLUSION_RADIUS)) {
                 continue;
             }
 

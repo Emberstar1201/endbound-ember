@@ -53,8 +53,11 @@ public final class ZombieGirlCampEvents {
     /**
      * 生成少女时的地面层搜索高度：只在营地底部向上这几格内找落脚点，避免刷到屋顶。
      * 结构底部 0~3 层是地基与地砖，第 4 层才是可站的室内地面，再向上留两格容错。
+     * 搜索窗口从结构底部起算，因此必须保证营地内部高度不超过这个值，否则会落到屋顶上。
      */
     private static final int FLOOR_SCAN_HEIGHT = 6;
+    /** 营地内部净高上限：少女只能在结构底部以上这么多格内落脚，超过即视为屋顶。 */
+    private static final int CAMP_INTERIOR_HEIGHT = 4;
     private static final Set<Long> ATTEMPTED = new HashSet<>();
     private static final Set<PendingCamp> PENDING = new HashSet<>();
 
@@ -230,9 +233,11 @@ public final class ZombieGirlCampEvents {
     /**
      * 在营地最底层寻找落脚点：从结构底部向上最多 {@link #FLOOR_SCAN_HEIGHT} 格，
      * 避免刷到屋顶，也避免悬空后坠落把营地里的耕地与作物踩掉。
+     * 超过 {@link #CAMP_INTERIOR_HEIGHT} 的位置一律视为屋顶，直接放弃。
      */
     private static BlockPos findFloorSpawn(ServerLevel level, Mob girl, int x, int z, int baseY, boolean drowned) {
         for (int dy = 0; dy < FLOOR_SCAN_HEIGHT; dy++) {
+            if (dy > CAMP_INTERIOR_HEIGHT) return null;
             BlockPos pos = new BlockPos(x, baseY + dy, z);
             if (!level.noCollision(girl.getBoundingBox().move(x + 0.5D, pos.getY(), z + 0.5D))) continue;
 

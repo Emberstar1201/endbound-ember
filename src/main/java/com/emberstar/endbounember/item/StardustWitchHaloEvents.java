@@ -44,7 +44,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * <li>虚无中的微光：头部放置 15 级移动光源，攻击恢复速度提升 250%</li>
  * <li>创造模式飞行：佩戴时获得飞行能力，摘下后恢复原状态</li>
  * <li>soulless heart：99% 全伤害减伤</li>
- * <li>虚无的存在：全部生物对你中立</li>
+ * <li>虚无的存在：生物对佩戴者强制中立，只有被佩戴者主动攻击后才会转为敌对</li>
  * <li>直面于虚无：免疫虚空与真实伤害，坠落虚空后跨维度送回最近的重生点</li>
  * <li>存在的意义？：每次致命伤免死；改写、强制清除类攻击（如无尽贪婪、莱特兰恶意的强制击杀）一律无效，无法被禁用</li>
  * </ul>
@@ -119,33 +119,50 @@ public final class StardustWitchHaloEvents {
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
     }
 
-    // ===== 虚无的存在：全部生物对你中立（含被攻击后不反击、碰撞挤压不生效） =====
+    // ===== 虚无的存在：生物对佩戴者保持强制中立（被佩戴者攻击后才转为敌对） =====
+    /**
+     * 强制中立：生物不会主动把佩戴者设为攻击目标。
+     * <p>
+     * 但「强制中立」不等于「永久中立」：一旦佩戴者主动攻击某个生物，该生物会正常转为敌对并反击，
+     * 因此这里放行「该生物正被佩戴者攻击」的情况，其余索敌仍一律拦截。
+     */
     @SubscribeEvent
     public static void onChangeTarget(LivingChangeTargetEvent event) {
         LivingEntity newTarget = event.getNewAboutToBeSetTarget();
-        if (newTarget != null && wearingHalo(newTarget)) {
-            event.setNewAboutToBeSetTarget(null);
+        if (newTarget == null || !wearingHalo(newTarget)) {
+            return;
         }
+        // 佩戴者主动打过它：允许它把佩戴者当作目标，正常反击
+        if (event.getEntity() instanceof Mob mob && isProvokedBy(mob, newTarget)) {
+            return;
+        }
+        event.setNewAboutToBeSetTarget(null);
     }
 
-    /** 中立补强：生物每 tick 都会被清掉以佩戴者为目标的仇恨，攻击后也不会反击 */
+    /**
+     * 强制中立补强：每 tick 清掉生物对佩戴者的仇恨。
+     * <p>
+     * 与 {@link #onChangeTarget} 保持一致：被佩戴者攻击过的生物保留目标，可以正常反击；
+     * 未被攻击过的生物则始终无法把佩戴者当作目标。
+     */
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         LivingEntity entity = event.getEntity() instanceof LivingEntity living ? living : null;
-        if (entity == null || entity.level().isClientSide) {
+        if (entity == null || entity.level().isClientSide || !(entity instanceof Mob mob)) {
             return;
         }
-        LivingEntity target = entity instanceof Mob mob ? mob.getTarget() : null;
-        if (target != null && wearingHalo(target)) {
-            ((Mob) entity).setTarget(null);
+        LivingEntity target = mob.getTarget();
+        if (target != null && wearingHalo(target) && !isProvokedBy(mob, target)) {
+            mob.setTarget(null);
         }
     }
 
     /**
-     * 中立补强：佩戴者被生物攻击时不产生任何伤害（等价于「返回 false，不吃这个伤害」）。
+     * 强制中立补强：未被佩戴者攻击过的生物无法对佩戴者造成伤害。
      * <p>
      * 覆盖近战、弹射物、碰撞挤压（史莱姆/岩浆怪）、爆炸等一切由生物发起的伤害；
-     * 只有佩戴者自己造成的伤害（如摔落、火焰、虚空等环境伤害）不受影响。
+     * 佩戴者自己造成的伤害（摔落、火焰、虚空等环境伤害）不受影响。
+     * 佩戴者主动攻击过的生物可以正常还手，与索敌规则保持一致。
      */
     @SubscribeEvent
     public static void onLivingHurt(LivingIncomingDamageEvent event) {
@@ -153,10 +170,23 @@ public final class StardustWitchHaloEvents {
         if (!wearingHalo(victim) || event.getSource().getEntity() == victim) {
             return;
         }
-        // 生物发起的伤害：史莱姆挤压（mob_attack_no_aggro）、近战、弹射物、爆炸等
         if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker != victim) {
+            // 佩戴者打过它：允许它反击造成伤害
+            if (attacker instanceof Mob mob && isProvokedBy(mob, victim)) {
+                return;
+            }
             event.setCanceled(true);
         }
+    }
+
+    /**
+     * 生物是否正被佩戴者主动攻击（即已被激怒，可以正常反击）。
+     * <p>
+     * 同时检查「最后伤害来源」与「最后攻击过的生物」：前者覆盖被佩戴者打中的情况，
+     * 后者覆盖佩戴者用弹射物、范围伤害等间接方式攻击的情况。
+     */
+    private static boolean isProvokedBy(Mob mob, LivingEntity haloWearer) {
+        return mob.getLastHurtByMob() == haloWearer || mob.getLastHurtMob() == haloWearer;
     }
 
     // ===== 虚无中的微光：移动光源与攻击恢复速度提升（服务端每 tick 维护） =====

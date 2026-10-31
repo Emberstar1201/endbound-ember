@@ -95,6 +95,8 @@
   "endbound_ember.configuration.magicNumber": "神奇數字",
   "commands.endbound_ember.locate_camp.success": "最近的喪屍娘營地喺 %s（距離 %s 格）",
   "commands.endbound_ember.locate_camp.failed": "仲未生成任何喪屍娘營地",
+  "commands.endbound_ember.ysm_halo.enabled": "已開啟 YSM 光環渲染",
+  "commands.endbound_ember.ysm_halo.disabled": "已關閉 YSM 光環渲染",
   "diary.endbound_ember.zombie": "×月×日 晴\n今日同爸爸去森林採蘑菇，我採到一朵好大嘅牛肝菌！夜晚媽媽煮蘑菇湯，好香好香。\n\n×月×日 雨\n村外面嚟咗好多怪物。爸爸將我藏入地窖，叫我千祈唔好出聲。出面好嘈，我好驚。\n\n我唔知自己瞓咗幾耐。醒返之後，我唔使再食嘢，亦都唔再怕凍。鏡入面嗰個我……仲係咪我？\n\n夢入面成日都有一片星空，星光落喺身上暖笠笠。我坐喺村口嘅石頭上面，睇住個天一點點光起嚟，忽然好想再飲一次媽媽煲嘅蘑菇湯。",
   "diary.endbound_ember.zombie.page1": "×月×日 晴\n今日同爸爸去森林採蘑菇，我採到一朵好大嘅牛肝菌！夜晚媽媽煮蘑菇湯，好香好香。",
   "diary.endbound_ember.zombie.page2": "×月×日 雨\n村外面嚟咗好多怪物。爸爸將我藏入地窖，叫我千祈唔好出聲。出面好嘈，我好驚。",
