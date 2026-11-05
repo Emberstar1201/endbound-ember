@@ -28,6 +28,7 @@ import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.item.EndStarItem;
 import com.emberstar.endbounember.item.HomeBellItem;
 import com.emberstar.endbounember.item.LifeStarItem;
+import com.emberstar.endbounember.item.LuoHongyuItem;
 import com.emberstar.endbounember.item.ModArmorMaterials;
 import com.emberstar.endbounember.item.OceanStarItem;
 import com.emberstar.endbounember.item.StardustCordBraceletItem;
@@ -233,6 +234,13 @@ public class EndboundEmber {
     public static final DeferredItem<DawnAmuletItem> DAWN_AMULET = ITEMS.register(
             "dawn_amulet", () -> new DawnAmuletItem(new Item.Properties().rarity(Rarity.RARE).fireResistant()));
 
+    // 洛红雨：赤色刀锋，命中叠加赤雨印记，叠满引爆赤雨斩（属性值为相对玩家基础值的偏移）
+    public static final DeferredItem<LuoHongyuItem> LUO_HONGYU = ITEMS.register(
+            "luohongyu", () -> new LuoHongyuItem(new Item.Properties()
+                    .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
+                    .component(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+                    .attributes(LuoHongyuItem.attributes(18.0D, 0.7D))));
+
     public static final DeferredItem<StardustWitchHaloItem> STARDUST_WITCH_HALO = ITEMS.register(
             "stardust_witch_halo", () -> new StardustWitchHaloItem(ModArmorMaterials.STARDUST_WITCH_HALO,
                     new Item.Properties().rarity(Rarity.RARE)));
@@ -318,6 +326,7 @@ public class EndboundEmber {
                         output.accept(DAWN_STAR.get());
                         output.accept(DAWN_TEMPLATE.get());
                         output.accept(DAWN_AMULET.get());
+                        output.accept(LUO_HONGYU.get());
                         ItemStack guideBook = createGuideBook();
                         if (!guideBook.isEmpty()) output.accept(guideBook);
                     }).build());

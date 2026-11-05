@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    "RWR",
+    " R "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "W": {
+      "item": "minecraft:netherite_sword"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:luohongyu",
+    "count": 1
+  }
+}
