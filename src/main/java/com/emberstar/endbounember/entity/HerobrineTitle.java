@@ -5,13 +5,15 @@ package com.emberstar.endbounember.entity;
  *
  * <p>每个词条只强化 BOSS 本体，代价一律外移到玩家侧（且都能被晨曦护符减免）。
  * 每场战斗固定以「亡灵领主」开场，之后每损失 10% 最大生命值就按枚举顺序换成下一个，
- * 血量打空时正好轮完一圈。{@link #MYRIAD_LORD} 是最后一个词条，会汇总前 9 个词条的
- * 全部效果并在其基础上再强化一档。</p>
+ * 血量打空时正好轮完一圈；血量被治疗回来时也会按同样的规则退回上一个词条。
+ * {@link #MYRIAD_LORD} 是第一阶段最后一个词条，会汇总前 9 个词条的全部效果并在其基础上再强化一档。
+ * {@link #NECROTIC_DOOM} 是第二阶段专属词条，不参与血量轮换，同样继承前 9 个词条，
+ * 并额外开启「亡者之柱」机制。</p>
  */
 public enum HerobrineTitle {
     /** 基准词条：只是 20% 追加减伤，无额外机制 */
     UNDEAD_LORD("undead_lord", false),
-    /** 判罚之雷更频繁、伤害更高；被雷击后短暂缓慢 */
+    /** 判罚之雷更频繁、伤害更高；额外获得带预警圈的落雷 */
     THUNDER_LORD("thunder_lord", false),
     /** 取消落雷，改为定期凋零；玩家治疗量下降 */
     PLAGUE_LORD("plague_lord", false),
@@ -19,16 +21,18 @@ public enum HerobrineTitle {
     FLESH_GLUTTON("flesh_glutton", false),
     /** 每波召唤更多、上限更高；精锐死亡留下亡魂区 */
     LEGION_LORD("legion_lord", false),
-    /** 移速大幅提升并定期瞬移；瞬移落点附近玩家失明 */
+    /** 移速大幅提升、定期瞬移并分裂幻影分身；瞬移落点附近玩家失明 */
     PHANTOM_WRAITH("phantom_wraith", false),
     /** 连射更长、真空期更短；中箭后短暂无法疾跑 */
     ARROW_MARSHAL("arrow_marshal", false),
-    /** 每场一次锁血并回复 25%；触发瞬间全场黑暗 */
+    /** 每场一次锁血并回复 25%，额外召来带预警的下界流星；触发瞬间全场黑暗 */
     UNDYING_GRUDGE("undying_grudge", false),
     /** 对持有晨曦护符 / 破晓武器的玩家额外增伤 */
     BANE_OF_DAWN("bane_of_dawn", false),
-    /** 最后一个词条：汇总前 9 条并各强化一档 */
-    MYRIAD_LORD("myriad_lord", true);
+    /** 第一阶段最后一个词条：汇总前 9 条并各强化一档 */
+    MYRIAD_LORD("myriad_lord", true),
+    /** 第二阶段专属：继承前 9 条的全部效果，并召出平摊伤害的亡者之柱 */
+    NECROTIC_DOOM("necrotic_doom", true);
 
     private final String id;
     private final boolean composite;
@@ -54,7 +58,12 @@ public enum HerobrineTitle {
     /** 本词条对应的本体强化数值 */
     public Stats stats() {
         if (this.composite) {
-            return compositeStats();
+            Stats stats = compositeStats();
+            // 万灵之主：开场夺走玩家的盔甲与饰品，击败后才会归还
+            stats.plunderGear = this == MYRIAD_LORD;
+            // 亡灵末日：在继承全部第一阶段词条的基础上再开启亡者之柱
+            stats.doomPillars = this == NECROTIC_DOOM;
+            return stats;
         }
         Stats stats = new Stats();
         applyBase(stats);
@@ -68,6 +77,7 @@ public enum HerobrineTitle {
                 stats.thunderIntervalScale = 0.7F;
                 stats.thunderDamage = 7.0F;
                 stats.slowOnThunder = true;
+                stats.telegraphThunder = true;
             }
             case PLAGUE_LORD -> {
                 stats.thunderDisabled = true;
@@ -88,6 +98,7 @@ public enum HerobrineTitle {
                 stats.moveSpeedScale = 1.4D;
                 stats.teleport = true;
                 stats.blindOnTeleport = true;
+                stats.phantomClones = true;
             }
             case ARROW_MARSHAL -> {
                 stats.burstSize = 14;
@@ -97,6 +108,7 @@ public enum HerobrineTitle {
             case UNDYING_GRUDGE -> {
                 stats.lockHealth = true;
                 stats.darknessOnLock = true;
+                stats.netherMeteor = true;
             }
             case BANE_OF_DAWN -> stats.baneOfDawn = true;
             default -> {
@@ -135,6 +147,9 @@ public enum HerobrineTitle {
             stats.blindOnTeleport |= base.blindOnTeleport;
             stats.noSprintOnArrow |= base.noSprintOnArrow;
             stats.darknessOnLock |= base.darknessOnLock;
+            stats.telegraphThunder |= base.telegraphThunder;
+            stats.netherMeteor |= base.netherMeteor;
+            stats.phantomClones |= base.phantomClones;
         }
         // 汇总之后再强化一档；落雷与凋零同时保留，不继承「取消落雷」
         stats.damageReduction += 0.05D;
@@ -145,8 +160,6 @@ public enum HerobrineTitle {
         stats.moveSpeedScale += 0.1D;
         stats.healReduction = 0.25F;
         stats.thunderDisabled = false;
-        // 万灵之主：开场夺走玩家的盔甲与饰品，击败后才会归还
-        stats.plunderGear = true;
         return stats;
     }
 
@@ -199,5 +212,13 @@ public enum HerobrineTitle {
         public boolean blindOnTeleport;
         public boolean noSprintOnArrow;
         public boolean darknessOnLock;
+        /** 带预警圈的延迟落雷 */
+        public boolean telegraphThunder;
+        /** 带预警圈的下界流星 */
+        public boolean netherMeteor;
+        /** 定期分裂幻影分身 */
+        public boolean phantomClones;
+        /** 第二阶段：召出亡者之柱平摊伤害 */
+        public boolean doomPillars;
     }
 }

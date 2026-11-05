@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "endbound_ember:oak_vertical_slab",
+    "endbound_ember:spruce_vertical_slab",
+    "endbound_ember:birch_vertical_slab",
+    "endbound_ember:jungle_vertical_slab",
+    "endbound_ember:acacia_vertical_slab",
+    "endbound_ember:dark_oak_vertical_slab",
+    "endbound_ember:mangrove_vertical_slab",
+    "endbound_ember:cherry_vertical_slab",
+    "endbound_ember:bamboo_vertical_slab",
+    "endbound_ember:crimson_vertical_slab",
+    "endbound_ember:warped_vertical_slab"
+  ]
+}

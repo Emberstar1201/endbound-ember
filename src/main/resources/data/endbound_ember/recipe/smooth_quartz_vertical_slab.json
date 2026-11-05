@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {"item": "minecraft:smooth_quartz"}
+  },
+  "result": {
+    "id": "endbound_ember:smooth_quartz_vertical_slab",
+    "count": 6
+  }
+}

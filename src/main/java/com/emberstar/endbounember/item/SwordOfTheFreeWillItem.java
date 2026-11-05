@@ -42,6 +42,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 /**
  * 人权剑 / 人权剑·星火永燃。
@@ -57,10 +58,11 @@ public class SwordOfTheFreeWillItem extends Item {
 
     private static final int BASE_COLOR = 0xF2E2B8;
     private static final int ENHANCED_COLOR = 0x6FB8FF;
-    /** 首次击杀凋灵后写入玩家持久数据的标记。 */
-    private static final String OBTAINED_TAG = "EndboundEmberFreeWillObtained";
-    private static final ResourceLocation FIRST_WITHER_ADVANCEMENT =
+    /** 捡起人权剑时点亮的成就。 */
+    private static final ResourceLocation FREE_WILL_ADVANCEMENT =
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "we_fall_we_remain");
+    /** 成就判定条件名，与 we_fall_we_remain.json 保持一致 */
+    private static final String FREE_WILL_CRITERION = "obtain_free_will";
     /** 上一次挥出剑气的时间点，用于同一次横扫命中多个目标时只挥出一道剑气。 */
     private static final String LAST_QI_TICK_TAG = "EndboundEmberLastQiTick";
 
@@ -258,6 +260,7 @@ public class SwordOfTheFreeWillItem extends Item {
             sword.castQi(level, attacker, weapon);
         }
 
+        /** 击杀凋灵掉落人权剑，成就改为捡起人权剑时点亮。 */
         @SubscribeEvent
         public static void onLivingDrops(LivingDropsEvent event) {
             if (event.getEntity().level().isClientSide) return;
@@ -266,27 +269,16 @@ public class SwordOfTheFreeWillItem extends Item {
             if (!(player.level() instanceof ServerLevel level)) return;
 
             Collection<ItemEntity> drops = event.getDrops();
-            var data = player.getPersistentData();
-            if (!data.getBoolean(OBTAINED_TAG)) {
-                // 首次击杀：先点亮「我们逝去，我们永恒」
-                data.putBoolean(OBTAINED_TAG, true);
-                awardAdvancement(player, FIRST_WITHER_ADVANCEMENT);
-            } else if (!hasAdvancement(player, FIRST_WITHER_ADVANCEMENT)) {
-                // 旧存档已经拿过人权剑，但成就未点亮时补发第一阶段成就
-                awardAdvancement(player, FIRST_WITHER_ADVANCEMENT);
-            }
-
-            // 下界挑战凋灵：人权剑与晨曦之星一同掉落
             drops.add(spawnDrop(level, event.getEntity(),
                     new ItemStack(EndboundEmber.SWORD_OF_THE_FREE_WILL.get())));
-            drops.add(spawnDrop(level, event.getEntity(), new ItemStack(EndboundEmber.DAWN_STAR.get())));
         }
 
-        private static boolean hasAdvancement(ServerPlayer player, ResourceLocation advancementId) {
-            var server = player.getServer();
-            if (server == null) return false;
-            var advancement = server.getAdvancements().get(advancementId);
-            return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
+        /** 捡起人权剑即点亮「我们逝去，我们永恒」。 */
+        @SubscribeEvent
+        public static void onPickup(ItemEntityPickupEvent.Post event) {
+            if (!(event.getPlayer() instanceof ServerPlayer player)) return;
+            if (!(event.getOriginalStack().getItem() instanceof SwordOfTheFreeWillItem)) return;
+            awardAdvancement(player, FREE_WILL_ADVANCEMENT);
         }
 
         private static void awardAdvancement(ServerPlayer player, ResourceLocation advancementId) {
@@ -294,7 +286,7 @@ public class SwordOfTheFreeWillItem extends Item {
             if (server == null) return;
             var advancement = server.getAdvancements().get(advancementId);
             if (advancement != null) {
-                player.getAdvancements().award(advancement, "kill_wither_for_free_will");
+                player.getAdvancements().award(advancement, FREE_WILL_CRITERION);
             }
         }
 

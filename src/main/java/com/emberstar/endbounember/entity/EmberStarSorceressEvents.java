@@ -16,22 +16,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -42,12 +46,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -63,12 +71,42 @@ public final class EmberStarSorceressEvents {
     private static final String DATA_NAME = "endbound_ember_sorceress_cooldowns";
     /** 触发“短暂指引”事件的概率。 */
     private static final float GUIDANCE_CHANCE = 0.25F;
-    /** 触发“神秘试炼”事件的概率（在指引之后判定）。 */
-    private static final float TRIAL_CHANCE = 0.20F;
-    /** 神秘试炼的时限：60 秒。 */
-    private static final long TRIAL_DURATION_TICKS = 60L * 20L;
-    /** 神秘试炼要求击败的亡灵生物数量。 */
-    private static final int TRIAL_REQUIRED_KILLS = 3;
+    /** 触发“神秘试炼”事件的概率。 */
+    private static final float TRIAL_CHANCE = 0.35F;
+
+    /** 进行中的神秘试炼：玩家 UUID → 试炼状态。 */
+    private static final Map<UUID, Trial> ACTIVE_TRIALS = new ConcurrentHashMap<>();
+
+    /** 试炼种类，每次开启时随机抽取，避免内容单一。 */
+    private enum TrialType {
+        /** 击败若干敌对生物。 */
+        KILL,
+        /** 在规定时间内不受到任何伤害。 */
+        SURVIVE,
+        /** 累计移动足够的距离。 */
+        TRAVEL,
+        /** 挖掘若干个方块。 */
+        MINE
+    }
+
+    /** 一次试炼的运行时状态。 */
+    private static final class Trial {
+        private final TrialType type;
+        private final int seconds;
+        private final int target;
+        private final long endTick;
+        private int progress;
+        private Vec3 lastPos;
+
+        private Trial(TrialType type, int seconds, int target, long endTick, Vec3 lastPos) {
+            this.type = type;
+            this.seconds = seconds;
+            this.target = target;
+            this.endTick = endTick;
+            this.lastPos = lastPos;
+        }
+    }
+
     /** 消失赠礼中附魔书的候选附魔与最大等级。 */
     private static final List<Map.Entry<ResourceKey<Enchantment>, Integer>> BOOK_POOL = List.of(
             Map.entry(DurabilityBoostEnchantment.DURABILITY_BOOST, 3),
@@ -78,20 +116,7 @@ public final class EmberStarSorceressEvents {
             Map.entry(WindRippleEnchantment.KEY, 1),
             Map.entry(ElegantCatwalkEnchantment.KEY, 1));
 
-    /** 进行中的神秘试炼：玩家 UUID → 试炼状态。试炼最多持续 60 秒，无需跨重启持久化。 */
-    private static final Map<UUID, Trial> ACTIVE_TRIALS = new ConcurrentHashMap<>();
-
     private EmberStarSorceressEvents() {
-    }
-
-    /** 单个玩家的神秘试炼进度。 */
-    private static final class Trial {
-        private final long endTick;
-        private int kills;
-
-        private Trial(long endTick) {
-            this.endTick = endTick;
-        }
     }
 
     /** 玩家 UUID → 最近一次刷新游戏刻，持久化保存以保证冷却跨重启有效。 */
@@ -297,13 +322,14 @@ public final class EmberStarSorceressEvents {
         }
     }
 
-    /** 魔女生成后随机触发一次事件：短暂指引或神秘试炼，也可能什么都不发生。 */
+    /** 魔女生成后随机触发一次事件：神秘试炼、短暂指引，也可能什么都不发生。 */
     private static void rollSorceressEvent(ServerLevel level, ServerPlayer player, EmberStarSorceress sorceress) {
-        float roll = level.random.nextFloat();
-        if (roll < GUIDANCE_CHANCE) {
+        if (level.random.nextFloat() < TRIAL_CHANCE) {
+            startMysteriousTrial(level, player);
+            return;
+        }
+        if (level.random.nextFloat() < GUIDANCE_CHANCE) {
             grantBriefGuidance(level, player, sorceress);
-        } else if (roll < GUIDANCE_CHANCE + TRIAL_CHANCE) {
-            startMysteriousTrial(level, player, sorceress);
         }
     }
 
@@ -322,103 +348,218 @@ public final class EmberStarSorceressEvents {
         }
     }
 
-    /** 神秘试炼：60 秒内击败 3 只亡灵生物，目标由魔女当场召唤到身边；完成后魔女留下额外赠礼。 */
-    private static void startMysteriousTrial(ServerLevel level, ServerPlayer player, EmberStarSorceress sorceress) {
-        ACTIVE_TRIALS.put(player.getUUID(), new Trial(level.getGameTime() + TRIAL_DURATION_TICKS));
-        player.sendSystemMessage(Component.translatable("endbound_ember.sorceress.trial_start"));
-        summonTrialTargets(level, sorceress, TRIAL_REQUIRED_KILLS);
+    /** 开启一场神秘试炼：先弹出挑战内容，完成后在玩家眼前凝成奖励箱。 */
+    private static void startMysteriousTrial(ServerLevel level, ServerPlayer player) {
+        if (ACTIVE_TRIALS.containsKey(player.getUUID())) {
+            return;
+        }
+        TrialType type = TrialType.values()[level.random.nextInt(TrialType.values().length)];
+        int seconds = 60 + level.random.nextInt(3) * 15;
+        int target = switch (type) {
+            case KILL -> 3 + level.random.nextInt(3);
+            case SURVIVE -> seconds;
+            case TRAVEL -> 200 + level.random.nextInt(9) * 20;
+            case MINE -> 12 + level.random.nextInt(9);
+        };
+        Trial trial = new Trial(type, seconds, target, level.getGameTime() + seconds * 20L, player.position());
+        ACTIVE_TRIALS.put(player.getUUID(), trial);
+        announceTrial(player, trial);
+
+        Vec3 pos = player.position();
+        level.sendParticles(ParticleTypes.WITCH, pos.x, pos.y + 1.0D, pos.z, 24, 0.6D, 1.0D, 0.6D, 0.1D);
     }
 
-    /** 由魔女亲自召唤试炼目标：在自身周围生成指定数量的亡灵生物 */
-    private static void summonTrialTargets(ServerLevel level, EmberStarSorceress sorceress, int count) {
-        Vec3 center = sorceress.position().add(0.0D, 0.9D, 0.0D);
-        level.sendParticles(ParticleTypes.PORTAL, center.x, center.y, center.z, 40, 1.2D, 0.6D, 1.2D, 0.25D);
-        for (int i = 0; i < count; i++) {
-            BlockPos spot = findSummonSpot(level, sorceress);
-            if (spot == null) {
-                continue;
-            }
-            Monster minion = level.random.nextBoolean()
-                    ? EntityType.ZOMBIE.create(level)
-                    : EntityType.SKELETON.create(level);
-            if (minion == null) {
-                continue;
-            }
-            minion.moveTo(spot.getX() + 0.5D, spot.getY(), spot.getZ() + 0.5D,
-                    level.random.nextFloat() * 360.0F, 0.0F);
-            minion.setPersistenceRequired();
-            level.addFreshEntity(minion);
-            level.sendParticles(ParticleTypes.END_ROD, spot.getX() + 0.5D, spot.getY() + 1.0D,
-                    spot.getZ() + 0.5D, 12, 0.3D, 0.5D, 0.3D, 0.05D);
+    /** 用标题 + 聊天栏把挑战内容完整告诉玩家。 */
+    private static void announceTrial(ServerPlayer player, Trial trial) {
+        Component challenge = switch (trial.type) {
+            case SURVIVE -> Component.translatable("endbound_ember.sorceress.trial.survive", trial.seconds);
+            default -> Component.translatable(trialKey(trial.type), trial.seconds, trial.target);
+        };
+        player.sendSystemMessage(Component.translatable("endbound_ember.sorceress.trial.start", challenge));
+        if (player.connection != null) {
+            player.connection.send(new ClientboundSetTitleTextPacket(
+                    Component.translatable("endbound_ember.sorceress.trial.title")));
+            player.connection.send(new ClientboundSetSubtitleTextPacket(challenge));
         }
     }
 
-    /** 在魔女周围 1~4 格内找一个可站立的落点，找不到就退回魔女脚下 */
-    private static BlockPos findSummonSpot(ServerLevel level, EmberStarSorceress sorceress) {
-        for (int attempt = 0; attempt < 8; attempt++) {
-            double angle = level.random.nextDouble() * Math.PI * 2.0D;
-            double distance = 1.0D + level.random.nextDouble() * 3.0D;
-            BlockPos feet = BlockPos.containing(sorceress.getX() + Math.cos(angle) * distance,
-                    sorceress.getY(), sorceress.getZ() + Math.sin(angle) * distance);
-            if (isSafePosition(level, feet)) {
-                return feet;
-            }
-        }
-        BlockPos fallback = sorceress.blockPosition();
-        return isSafePosition(level, fallback) ? fallback : null;
+    private static String trialKey(TrialType type) {
+        return switch (type) {
+            case KILL -> "endbound_ember.sorceress.trial.kill";
+            case SURVIVE -> "endbound_ember.sorceress.trial.survive";
+            case TRAVEL -> "endbound_ember.sorceress.trial.travel";
+            case MINE -> "endbound_ember.sorceress.trial.mine";
+        };
     }
 
-    /** 判断目标是否属于亡灵生物；本模组的两位少女算作伙伴，不计入试炼。 */
-    private static boolean isUndead(net.minecraft.world.entity.LivingEntity entity) {
-        if (entity instanceof ZombieGirl || entity instanceof DrownedGirl) return false;
-        return entity instanceof net.minecraft.world.entity.monster.Zombie
-                || entity instanceof net.minecraft.world.entity.monster.AbstractSkeleton
-                || entity instanceof net.minecraft.world.entity.monster.Phantom
-                || entity instanceof net.minecraft.world.entity.monster.Zoglin
-                || entity instanceof net.minecraft.world.entity.boss.wither.WitherBoss
-                || entity instanceof net.minecraft.world.entity.animal.horse.ZombieHorse
-                || entity instanceof net.minecraft.world.entity.animal.horse.SkeletonHorse;
-    }
-
-    /** 试炼期间的击杀计数：只统计试炼玩家击杀的亡灵生物。 */
-    @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event) {
-        if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
-        Trial trial = ACTIVE_TRIALS.get(player.getUUID());
-        if (trial == null) return;
-        if (!isUndead(event.getEntity())) return;
-
-        trial.kills++;
-        player.displayClientMessage(Component.translatable("endbound_ember.sorceress.trial_progress",
-                Math.min(trial.kills, TRIAL_REQUIRED_KILLS)), true);
-    }
-
-    /** 结算到期的试炼：达成目标则额外赠礼，失败仅提示。 */
     private static void tickTrials(MinecraftServer server, long gameTime) {
-        if (ACTIVE_TRIALS.isEmpty()) return;
-
-        Iterator<Map.Entry<UUID, Trial>> iterator = ACTIVE_TRIALS.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<UUID, Trial> entry = iterator.next();
+        for (Map.Entry<UUID, Trial> entry : ACTIVE_TRIALS.entrySet()) {
             Trial trial = entry.getValue();
-            if (gameTime < trial.endTick) continue;
-            iterator.remove();
-
             ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
-            if (player == null) continue;
-            if (trial.kills >= TRIAL_REQUIRED_KILLS) {
-                player.sendSystemMessage(Component.translatable("endbound_ember.sorceress.trial_success"));
-                dropAt(player, new ItemStack(EndboundEmber.UNOWNED_STARDUST.get()));
-                dropAt(player, new ItemStack(Items.EXPERIENCE_BOTTLE, 8));
-            } else {
-                player.sendSystemMessage(Component.translatable("endbound_ember.sorceress.trial_fail"));
+            if (player == null) {
+                ACTIVE_TRIALS.remove(entry.getKey());
+                continue;
+            }
+            if (!player.isAlive()) {
+                failTrial(player, "endbound_ember.sorceress.trial.fail_death");
+                continue;
+            }
+            if (gameTime >= trial.endTick) {
+                failTrial(player, "endbound_ember.sorceress.trial.fail_time");
+                continue;
+            }
+            boolean passive = trial.type == TrialType.SURVIVE || trial.type == TrialType.TRAVEL;
+            if (trial.type == TrialType.SURVIVE) {
+                trial.progress++;
+            } else if (trial.type == TrialType.TRAVEL) {
+                Vec3 now = player.position();
+                double dx = now.x - trial.lastPos.x;
+                double dz = now.z - trial.lastPos.z;
+                trial.progress += (int) Math.round(Math.sqrt(dx * dx + dz * dz));
+                trial.lastPos = now;
+            }
+            // 击杀、挖掘的进度在对应事件里累加，这里统一判定是否达成
+            if (trial.progress >= trial.target) {
+                completeTrial((ServerLevel) player.level(), player);
+            } else if (passive) {
+                showProgress(player, trial);
             }
         }
     }
 
-    private static void dropAt(ServerPlayer player, ItemStack stack) {
-        ServerLevel level = player.serverLevel();
-        level.addFreshEntity(new ItemEntity(level, player.getX(), player.getY() + 0.5D, player.getZ(), stack));
+    /** 通过动作栏反馈当前进度，避免刷屏聊天栏。 */
+    private static void showProgress(ServerPlayer player, Trial trial) {
+        player.displayClientMessage(Component.translatable("endbound_ember.sorceress.trial.progress",
+                Math.min(trial.progress, trial.target), trial.target), true);
+    }
+
+    private static void failTrial(ServerPlayer player, String reasonKey) {
+        if (ACTIVE_TRIALS.remove(player.getUUID()) != null) {
+            player.sendSystemMessage(Component.translatable(reasonKey));
+        }
+    }
+
+    /** 完成试炼：在玩家正前方两格处生成一只装满奖励的箱子。 */
+    private static void completeTrial(ServerLevel level, ServerPlayer player) {
+        ACTIVE_TRIALS.remove(player.getUUID());
+        BlockPos pos = findChestPos(level, player);
+        level.setBlockAndUpdate(pos, Blocks.CHEST.defaultBlockState());
+        if (level.getBlockEntity(pos) instanceof ChestBlockEntity chest) {
+            List<ItemStack> loot = buildTrialLoot(level);
+            List<Integer> slots = new ArrayList<>();
+            for (int slot = 0; slot < 27; slot++) {
+                slots.add(slot);
+            }
+            Collections.shuffle(slots, new Random(level.random.nextLong()));
+            for (int i = 0; i < loot.size() && i < slots.size(); i++) {
+                chest.setItem(slots.get(i), loot.get(i));
+            }
+        }
+        player.sendSystemMessage(Component.translatable("endbound_ember.sorceress.trial.success"));
+        level.sendParticles(ParticleTypes.END_ROD, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D,
+                40, 0.5D, 0.6D, 0.5D, 0.06D);
+        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.2F, 1.0F);
+    }
+
+    /** 在玩家视线方向两格处寻找一个能放下箱子的位置。 */
+    private static BlockPos findChestPos(ServerLevel level, ServerPlayer player) {
+        Vec3 look = player.getViewVector(1.0F);
+        BlockPos base = BlockPos.containing(player.getX() + look.x * 2.0D, player.getY(), player.getZ() + look.z * 2.0D);
+        for (int dy = 1; dy >= -3; dy--) {
+            BlockPos candidate = base.offset(0, dy, 0);
+            BlockState state = level.getBlockState(candidate);
+            if ((state.isAir() || state.canBeReplaced()) && isSafePosition(level, candidate)) {
+                return candidate;
+            }
+        }
+        // 兜底仍然放在玩家正前方，避免箱子直接生成在玩家脚下把人顶起来
+        return base;
+    }
+
+    /** 试炼奖励：一件核心奖励 + 3~5 份材料 + 1~2 本附魔书，种类和数量都随机。 */
+    private static List<ItemStack> buildTrialLoot(ServerLevel level) {
+        List<ItemStack> loot = new ArrayList<>();
+        loot.add(coreReward(level));
+        int bonus = 3 + level.random.nextInt(3);
+        for (int i = 0; i < bonus; i++) {
+            loot.add(bonusReward(level));
+        }
+        int books = 1 + level.random.nextInt(2);
+        for (int i = 0; i < books; i++) {
+            loot.add(randomEnchantedBook(level));
+        }
+        return loot;
+    }
+
+    private static ItemStack coreReward(ServerLevel level) {
+        return switch (level.random.nextInt(6)) {
+            case 0 -> new ItemStack(Items.DIAMOND_BLOCK, 1 + level.random.nextInt(2));
+            case 1 -> new ItemStack(Items.NETHERITE_INGOT, 1 + level.random.nextInt(2));
+            case 2 -> new ItemStack(EndboundEmber.EMBERSTAR.get(), 2 + level.random.nextInt(3));
+            case 3 -> new ItemStack(EndboundEmber.STARLIGHT_STAR.get());
+            case 4 -> new ItemStack(EndboundEmber.UNOWNED_STARDUST.get());
+            default -> new ItemStack(EndboundEmber.VOID_EMBERSTAR.get());
+        };
+    }
+
+    private static ItemStack bonusReward(ServerLevel level) {
+        return switch (level.random.nextInt(9)) {
+            case 0 -> new ItemStack(Items.DIAMOND, 3 + level.random.nextInt(6));
+            case 1 -> new ItemStack(Items.GOLD_INGOT, 6 + level.random.nextInt(7));
+            case 2 -> new ItemStack(Items.EXPERIENCE_BOTTLE, 8 + level.random.nextInt(9));
+            case 3 -> new ItemStack(Items.LAPIS_LAZULI, 8 + level.random.nextInt(9));
+            case 4 -> new ItemStack(Items.ENDER_PEARL, 2 + level.random.nextInt(3));
+            case 5 -> new ItemStack(Items.AMETHYST_SHARD, 8 + level.random.nextInt(9));
+            case 6 -> new ItemStack(Items.BLAZE_POWDER, 6 + level.random.nextInt(7));
+            case 7 -> new ItemStack(EndboundEmber.EMBERSTAR.get(), 1 + level.random.nextInt(2));
+            default -> new ItemStack(Items.ECHO_SHARD, 1 + level.random.nextInt(2));
+        };
+    }
+
+    /** 击杀试炼：击败敌对生物时累计进度。 */
+    @SubscribeEvent
+    public static void onTrialKill(LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player) || !(event.getEntity() instanceof Monster)) {
+            return;
+        }
+        Trial trial = ACTIVE_TRIALS.get(player.getUUID());
+        if (trial != null && trial.type == TrialType.KILL) {
+            trial.progress++;
+            showProgress(player, trial);
+        }
+    }
+
+    /** 生存试炼：一旦受伤即失败。 */
+    @SubscribeEvent
+    public static void onTrialIncomingDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        Trial trial = ACTIVE_TRIALS.get(player.getUUID());
+        if (trial != null && trial.type == TrialType.SURVIVE) {
+            failTrial(player, "endbound_ember.sorceress.trial.fail_hurt");
+        }
+    }
+
+    /** 挖掘试炼：破坏方块时累计进度。 */
+    @SubscribeEvent
+    public static void onTrialMine(BlockEvent.BreakEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player)) {
+            return;
+        }
+        Trial trial = ACTIVE_TRIALS.get(player.getUUID());
+        if (trial != null && trial.type == TrialType.MINE) {
+            trial.progress++;
+            showProgress(player, trial);
+        }
+    }
+
+    /** 玩家死亡时立即判负，避免死亡界面里还在计时。 */
+    @SubscribeEvent
+    public static void onTrialPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            failTrial(player, "endbound_ember.sorceress.trial.fail_death");
+        }
     }
 
     private static boolean isSafePosition(ServerLevel level, BlockPos feet) {
@@ -452,7 +593,7 @@ public final class EmberStarSorceressEvents {
     }
 
     private static boolean isAllowedDimension(ServerLevel level) {
-        // 时间乱流维度同样开放：星尘魔女会照常出现、触发指引与试炼
+        // 时间乱流维度同样开放：星尘魔女会照常出现并触发指引
         return level.dimension() == Level.OVERWORLD
                 || level.dimension() == Level.NETHER
                 || level.dimension() == Level.END

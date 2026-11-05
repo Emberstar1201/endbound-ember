@@ -16,7 +16,7 @@
     "hidden": false
   },
   "criteria": {
-    "kill_wither_for_free_will": {
+    "obtain_free_will": {
       "trigger": "minecraft:impossible"
     }
   }

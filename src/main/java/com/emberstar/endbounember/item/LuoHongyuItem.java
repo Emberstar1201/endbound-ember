@@ -162,8 +162,10 @@ public class LuoHongyuItem extends Item {
             data.putLong(NEXT_TICK_TAG, gameTime + BLEED_INTERVAL);
 
             ServerPlayer attacker = resolveAttacker(level, data);
+            // 直接实体置空：流血跳伤不再被当作一次玩家命中，
+            // 否则会被叠层事件二次捕获、反复刷新持续时间，造成永续流血
             DamageSource source = attacker != null
-                    ? level.damageSources().source(DamageTypes.MAGIC, attacker)
+                    ? level.damageSources().source(DamageTypes.MAGIC, null, attacker)
                     : level.damageSources().magic();
             target.invulnerableTime = 0;
             target.hurt(source, DAMAGE_PER_STACK * stacks);

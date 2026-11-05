@@ -73,6 +73,8 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DISPLAY_PEDESTAL_BLOCK_ENTITY.get(),
                 DisplayPedestalRenderer::new);
+        event.registerBlockEntityRenderer(EndboundEmber.MIXED_VERTICAL_SLAB_BLOCK_ENTITY.get(),
+                MixedVerticalSlabRenderer::new);
     }
 
     @SubscribeEvent

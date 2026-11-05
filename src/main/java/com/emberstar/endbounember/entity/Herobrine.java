@@ -3,6 +3,7 @@ package com.emberstar.endbounember.entity;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
 
 import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.block.DoomPillarBlockEntity;
 import com.emberstar.endbounember.compat.CuriosCompat;
 import com.emberstar.endbounember.effect.ModEffects;
 import com.emberstar.endbounember.enchantment.DawnEnchantment;
@@ -31,6 +33,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -42,6 +46,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.Containers;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -52,6 +57,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -83,10 +89,12 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -116,11 +124,23 @@ public class Herobrine extends Monster implements RangedAttackMob {
     /** 亡灵再生：每次回复的生命值 */
     private static final float REGEN_AMOUNT = 10.0F;
     /** 机制5：场上每存在一个亡灵精锐，再生量追加的点数、间隔缩短的 tick 数 */
-    private static final float REGEN_BONUS_PER_MINION = 25.0F;
-    private static final int REGEN_INTERVAL_PER_MINION = 5;
+    private static final float REGEN_BONUS_PER_MINION = 8.0F;
+    private static final int REGEN_INTERVAL_PER_MINION = 2;
     /** 亡灵杀手：每级拖延的再生 tick 数，以及计入的上限等级 */
     private static final int SMITE_REGEN_DELAY_PER_LEVEL = 75;
     private static final int SMITE_MAX_LEVEL = 12;
+    /** 通用受击抑制：每次被玩家命中拖延回血的 tick 数，与 60 tick 受击无敌配套 */
+    private static final int HIT_REGEN_DELAY = 40;
+    /** 回血暂停时长的累计上限，防止长时间叠出极端暂停 */
+    private static final int REGEN_PAUSE_CAP = 600;
+    /** 小怪回血加成的最大计入数量，封顶小怪乘区 */
+    private static final int REGEN_MINION_CAP = 3;
+    /** 停滞穿透每级削减受击无敌帧的比例 */
+    private static final float INVULN_REDUCTION_PER_LEVEL = 0.2F;
+    /** 停滞穿透生效的最大等级 */
+    private static final int STAGNATION_PIERCE_MAX_LEVEL = 5;
+    /** 受击无敌帧的下限，保证不会被完全削没 */
+    private static final int MIN_INVULNERABLE_TICKS = 5;
     /** 呼唤亡灵：召唤间隔（tick），10 秒一波 */
     private static final int SUMMON_INTERVAL = 200;
     /** 判罚之雷 buff 的持续时间（tick）与刷新阈值 */
@@ -143,6 +163,52 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int TELEPORT_INTERVAL = 100;
     private static final double TELEPORT_DISTANCE = 8.0D;
     private static final int TELEPORT_BLIND_DURATION = 30;
+    /** 词条切换的最小间隔（tick），避免血量在档位边界反复抖动 */
+    private static final int TITLE_SWITCH_COOLDOWN = 40;
+    /** 回退词条所需的滞回宽度（单位：档）：血量要低于「当前档位 - 0.2 档」才回退 */
+    private static final float TITLE_REGRESS_HYSTERESIS = 0.2F;
+
+    /** 预警类技能：两次施放之间的间隔（tick） */
+    private static final int TELEGRAPH_INTERVAL = 120;
+    /** 雷罚预警：预警圈持续时间（tick）与结算半径（格） */
+    private static final int THUNDER_WARNING_TICKS = 30;
+    private static final double THUNDER_WARNING_RADIUS = 2.6D;
+    /** 下界流星：预警持续时间（tick）、坠落高度（格）与结算半径（格） */
+    private static final int METEOR_WARNING_TICKS = 45;
+    private static final double METEOR_FALL_HEIGHT = 14.0D;
+    private static final double METEOR_WARNING_RADIUS = 3.4D;
+    /** 两类预警技能结算的伤害 */
+    private static final float TELEGRAPH_THUNDER_DAMAGE = 8.0F;
+    private static final float TELEGRAPH_METEOR_DAMAGE = 14.0F;
+    /** 预警圈的重绘间隔（tick），用来控制粒子包的数量 */
+    private static final int WARNING_REDRAW_INTERVAL = 2;
+
+    /** 幻影分身：施放间隔、单次数量、同时存在上限、持续时长（tick）与单体生命 */
+    private static final int CLONE_INTERVAL = 300;
+    private static final int CLONE_COUNT = 3;
+    private static final int CLONE_MAX = 5;
+    private static final int CLONE_LIFETIME = 240;
+    private static final double CLONE_HEALTH = 80.0D;
+    /** 幻影分身的实体标签：用来区分本体与分身 */
+    public static final String PHANTOM_TAG = "endbound_ember_herobrine_phantom";
+
+    /** 第一阶段：常规词条轮换 */
+    private static final int PHASE_ONE = 1;
+    /** 第二阶段：亡灵末日，固定在专属词条并召出亡者之柱 */
+    private static final int PHASE_TWO = 2;
+    /** 二阶段开场的无敌帧（tick），给玩家一点反应时间 */
+    private static final int PHASE_TWO_GRACE_TICKS = 60;
+    /** 亡者之柱：数量、召唤半径（格） */
+    private static final int DOOM_PILLAR_COUNT = 3;
+    private static final double DOOM_PILLAR_RADIUS = 7.5D;
+    /** 存活柱子会共同分摊掉的伤害比例（剩余部分才落到本体） */
+    private static final float DOOM_PILLAR_SHARE = 0.6F;
+    /** 指示线：间隔、持续时间与重绘间隔（tick） */
+    private static final int PILLAR_HINT_INTERVAL = 140;
+    private static final int PILLAR_HINT_DURATION = 50;
+    private static final int PILLAR_BEAM_REDRAW = 4;
+    /** 指示线的终点高度（格），对齐三格高柱子的顶部 */
+    private static final double PILLAR_BEAM_HEIGHT = 2.7D;
     /** 不死执念锁血时给全场玩家的黑暗时长（tick） */
     private static final int LOCK_DARKNESS_DURATION = 100;
     /** 召唤精锐时给玩家挂虚弱的时长（tick） */
@@ -211,18 +277,41 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private int regenPauseTicks;
     /** 距离下一波呼唤亡灵还有多少 tick */
     private int summonCooldown;
-    /** 词条轮换的档位总数：每损失 10% 最大生命值推进一档，正好轮完一圈 */
-    private static final int TITLE_STAGES = HerobrineTitle.values().length;
+    /** 词条轮换的档位总数：每损失 10% 最大生命值推进一档，正好轮完一圈（亡灵末日不参与轮换） */
+    private static final int TITLE_STAGES = HerobrineTitle.MYRIAD_LORD.ordinal() + 1;
 
     /** 当前词条（头衔）与它的强化数值 */
     private HerobrineTitle title = HerobrineTitle.UNDEAD_LORD;
     private HerobrineTitle.Stats titleStats = HerobrineTitle.UNDEAD_LORD.stats();
-    /** 已经消耗掉的血量档位（每档 = 10% 最大生命值），只增不减，避免回血时来回抖动 */
+    /** 已经消耗掉的血量档位（每档 = 10% 最大生命值），血量回升时会回退 */
     private int titleStage;
+    /** 词条切换后的冷却，防止血量在档位边界来回抖动 */
+    private int titleSwitchCooldown;
     /** 不死执念的锁血是否还没用掉 */
     private boolean lockAvailable;
+    /** 本场战斗是否已经用过锁血：词条回退后不会重新发放 */
+    private boolean lockUsed;
     /** 虚影游魂：距离下次瞬移还有多少 tick */
     private int teleportCooldown;
+
+    /** 预警类技能：距离下次施放的 tick、当前生效中的预警、两种预警的交替开关 */
+    private int telegraphCooldown;
+    private final List<Telegraph> telegraphs = new ArrayList<>();
+    private boolean nextTelegraphMeteor;
+
+    /** 幻影分身：距离下次施放的 tick */
+    private int cloneCooldown;
+    /** 分身自身的剩余存活 tick（本体不使用） */
+    private int phantomLife;
+
+    /** 战斗阶段：1 = 常规词条轮换，2 = 亡灵末日 */
+    private int phase = PHASE_ONE;
+    /** 二阶段召出的亡者之柱位置，按召唤顺序保存 */
+    private final List<BlockPos> doomPillars = new ArrayList<>();
+    /** 距离下次指示线的 tick */
+    private int pillarHintCooldown = PILLAR_HINT_INTERVAL;
+    /** 指示线剩余显示 tick */
+    private int pillarHintTicks;
 
     /** 万灵之主夺走的玩家装备，击败后原样装进地下箱子 */
     private final List<ItemStack> plunderLoot = new ArrayList<>();
@@ -262,7 +351,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
     public void setTitle(HerobrineTitle title) {
         this.title = title;
         this.titleStats = title.stats();
-        this.lockAvailable = this.titleStats.lockHealth;
+        // 锁血一场只发一次：词条回退再回来也不会重新可用
+        this.lockAvailable = this.titleStats.lockHealth && !this.lockUsed;
         this.teleportCooldown = 0;
         this.getAttribute(Attributes.MOVEMENT_SPEED)
                 .setBaseValue(0.3D * this.titleStats.moveSpeedScale);
@@ -285,18 +375,40 @@ public class Herobrine extends Monster implements RangedAttackMob {
     }
 
     /**
-     * 血量驱动词条轮换：每损失 10% 最大生命值推进一档，按固定顺序换成下一个词条。
-     * <p>档位只增不减，避免 BOSS 回血时词条来回抖动；一场战斗内 10 个词条按顺序各出现一次，
-     * 最后一条「万灵之主」会汇总前 9 条的全部效果并再强化一档。</p>
+     * 血量驱动词条轮换：以「每损失 10% 最大生命值」为一档，掉血推进、回血回退。
+     * <p>回退留了 {@link #TITLE_REGRESS_HYSTERESIS} 档的滞回，并加了
+     * {@link #TITLE_SWITCH_COOLDOWN} 的最小切换间隔，避免再生与伤害在档位边界来回抖动。</p>
+     *
+     * @param force 无视切换冷却，仅用于死亡瞬间补上最后一档词条
      */
-    private void tickTitleByHealth() {
-        float lostRatio = 1.0F - this.getHealth() / this.getMaxHealth();
-        int stage = Math.min(TITLE_STAGES - 1, (int) Math.floor(lostRatio * TITLE_STAGES + 1.0E-4D));
-        if (stage <= this.titleStage) {
+    private void tickTitleByHealth(boolean force) {
+        // 第二阶段固定在「亡灵末日」，不再随血量轮换
+        if (this.phase >= PHASE_TWO) {
+            if (this.title != HerobrineTitle.NECROTIC_DOOM) {
+                this.setTitle(HerobrineTitle.NECROTIC_DOOM);
+            }
             return;
         }
-        this.titleStage = stage;
-        this.setTitle(HerobrineTitle.values()[stage]);
+        if (this.titleSwitchCooldown > 0) {
+            this.titleSwitchCooldown--;
+        }
+        float lostRatio = 1.0F - this.getHealth() / this.getMaxHealth();
+        int stage = Math.min(TITLE_STAGES - 1, (int) Math.floor(lostRatio * TITLE_STAGES + 1.0E-4D));
+        int target;
+        if (stage > this.titleStage) {
+            target = stage;
+        } else if (stage < this.titleStage
+                && lostRatio * TITLE_STAGES < this.titleStage - TITLE_REGRESS_HYSTERESIS) {
+            target = stage;
+        } else {
+            return;
+        }
+        if (!force && this.titleSwitchCooldown > 0) {
+            return;
+        }
+        this.titleStage = target;
+        this.setTitle(HerobrineTitle.values()[target]);
+        this.titleSwitchCooldown = TITLE_SWITCH_COOLDOWN;
         // 万灵之主登场：立刻夺走正在观战玩家的装备
         if (this.titleStats.plunderGear) {
             this.plunderAllViewers();
@@ -308,7 +420,18 @@ public class Herobrine extends Monster implements RangedAttackMob {
         super.addAdditionalSaveData(tag);
         tag.putString("EndboundEmberTitle", this.title.id());
         tag.putInt("EndboundEmberTitleStage", this.titleStage);
-        tag.putBoolean("EndboundEmberLockUsed", !this.lockAvailable);
+        tag.putBoolean("EndboundEmberLockUsed", this.lockUsed);
+        tag.putInt("EndboundEmberPhantomLife", this.phantomLife);
+        tag.putInt("EndboundEmberPhase", this.phase);
+        ListTag pillarList = new ListTag();
+        for (BlockPos pos : this.doomPillars) {
+            CompoundTag entry = new CompoundTag();
+            entry.putInt("X", pos.getX());
+            entry.putInt("Y", pos.getY());
+            entry.putInt("Z", pos.getZ());
+            pillarList.add(entry);
+        }
+        tag.put("EndboundEmberDoomPillars", pillarList);
         ListTag plunderList = new ListTag();
         for (ItemStack stack : this.plunderLoot) {
             if (!stack.isEmpty()) {
@@ -329,11 +452,26 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (tag.contains("EndboundEmberTitleStage")) {
             this.titleStage = tag.getInt("EndboundEmberTitleStage");
         }
+        this.lockUsed = tag.getBoolean("EndboundEmberLockUsed");
         if (tag.contains("EndboundEmberTitle")) {
             this.setTitle(HerobrineTitle.byId(tag.getString("EndboundEmberTitle")));
         }
-        if (tag.contains("EndboundEmberLockUsed")) {
-            this.lockAvailable = this.titleStats.lockHealth && !tag.getBoolean("EndboundEmberLockUsed");
+        // setTitle 会按当前词条重置锁血，这里按本场是否用过重新计算
+        this.lockAvailable = this.titleStats.lockHealth && !this.lockUsed;
+        if (tag.contains("EndboundEmberPhantomLife")) {
+            this.phantomLife = tag.getInt("EndboundEmberPhantomLife");
+        }
+        this.phase = tag.contains("EndboundEmberPhase") ? tag.getInt("EndboundEmberPhase") : PHASE_ONE;
+        this.doomPillars.clear();
+        ListTag pillarList = tag.getList("EndboundEmberDoomPillars", Tag.TAG_COMPOUND);
+        for (int i = 0; i < pillarList.size(); i++) {
+            CompoundTag entry = pillarList.getCompound(i);
+            this.doomPillars.add(new BlockPos(entry.getInt("X"), entry.getInt("Y"), entry.getInt("Z")));
+        }
+        // 分身读档时属性会回落到本体面板，这里压回分身的血量
+        if (this.isPhantom()) {
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(CLONE_HEALTH);
+            this.setHealth(Math.min(this.getHealth(), (float) CLONE_HEALTH));
         }
         this.plunderLoot.clear();
         ListTag plunderList = tag.getList(PLUNDER_LOOT_TAG, Tag.TAG_COMPOUND);
@@ -406,16 +544,32 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (this.level().isClientSide) {
             return;
         }
+        // 幻影分身只走自己的消散计时与射击，不推进词条、召唤、落雷等本体技能
+        if (this.isPhantom()) {
+            this.tickPhantomLife();
+            if (!this.isRemoved()) {
+                this.tickRangedCombat();
+            }
+            return;
+        }
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
         // 死亡动画期间（分批发经验的那段时间）不再切换姿态，也不再射箭
         if (!this.isAlive()) {
             return;
         }
-        this.tickTitleByHealth();
+        this.tickTitleByHealth(false);
         this.tickRegeneration();
         this.tickJudgementThunder();
         this.tickSummonUndead();
         this.tickPhantomTeleport();
+        this.tickTelegraphs();
+        this.tickPhantomClones();
+        this.tickDoomPillars();
+        this.tickRangedCombat();
+    }
+
+    /** 按距离切换近战 / 远程姿态，并推进连射节奏（分身共用） */
+    private void tickRangedCombat() {
         LivingEntity target = this.getTarget();
         double distanceSqr = target == null ? Double.MAX_VALUE : this.distanceToSqr(target);
         boolean ranged = this.isRangedStance()
@@ -492,18 +646,33 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (!ignoresDamageCap(source)) {
             finalAmount = Math.min(finalAmount, DAMAGE_CAP);
         }
+        // 第二阶段：存活的亡者之柱先分摊掉一部分伤害，剩余部分才落到本体
+        if (this.phase >= PHASE_TWO && !voidDamage) {
+            finalAmount = this.splitDamageToPillars(finalAmount);
+        }
         // 不死执念：这一击会致命时把血量锁在 1 点
         boolean locked = false;
         if (this.lockAvailable && !voidDamage && this.getHealth() - finalAmount <= 0.0F) {
             finalAmount = Math.max(0.0F, this.getHealth() - 1.0F);
             this.lockAvailable = false;
+            this.lockUsed = true;
             locked = true;
         }
         boolean damaged = super.hurt(source, finalAmount);
         if (damaged) {
-            this.invulnerableTime = HURT_INVULNERABLE_TICKS;
+            // 停滞穿透：按附魔等级削减受击无敌帧，任意武器可附
+            int pierceLevel = getStagnationPierceLevel(source);
+            float invulnScale = 1.0F
+                    - INVULN_REDUCTION_PER_LEVEL * Math.min(pierceLevel, STAGNATION_PIERCE_MAX_LEVEL);
+            this.invulnerableTime = Math.max(MIN_INVULNERABLE_TICKS,
+                    Math.round(HURT_INVULNERABLE_TICKS * invulnScale));
+            // 通用受击抑制：任何玩家命中都会短暂拖延回血，不再只有亡灵杀手能压住再生
+            if (source.getEntity() instanceof Player) {
+                this.regenPauseTicks = Math.min(REGEN_PAUSE_CAP, this.regenPauseTicks + HIT_REGEN_DELAY);
+            }
             if (smite) {
-                this.regenPauseTicks += SMITE_REGEN_DELAY_PER_LEVEL * Math.min(smiteLevel, SMITE_MAX_LEVEL);
+                this.regenPauseTicks = Math.min(REGEN_PAUSE_CAP,
+                        this.regenPauseTicks + SMITE_REGEN_DELAY_PER_LEVEL * Math.min(smiteLevel, SMITE_MAX_LEVEL));
             }
         }
         if (locked) {
@@ -548,16 +717,28 @@ public class Herobrine extends Monster implements RangedAttackMob {
                 attacker);
     }
 
+    /** 攻击者手持武器上的停滞穿透等级 */
+    private static int getStagnationPierceLevel(DamageSource source) {
+        if (!(source.getEntity() instanceof LivingEntity attacker)) {
+            return 0;
+        }
+        return EnchantmentHelper.getEnchantmentLevel(
+                attacker.level().holderLookup(Registries.ENCHANTMENT)
+                        .getOrThrow(FreeWillEnchantments.STAGNATION_PIERCE),
+                attacker);
+    }
+
     /**
-     * 机制4 亡灵再生：按词条间隔回复生命，被亡灵杀手命中后按等级拖延。
-     * <p>机制5：场上每存在一个存活的亡灵精锐，每次回复量 +25、间隔缩短 5 tick。</p>
+     * 机制4 亡灵再生：按词条间隔回复生命；任何玩家的命中都会短暂拖延回血，
+     * 亡灵杀手命中后按等级大幅拖延。
+     * <p>机制5：场上存活的亡灵精锐提供回复加成（每次 +8、间隔 -2 tick），最多计入 3 只。</p>
      */
     private void tickRegeneration() {
         if (this.regenPauseTicks > 0) {
             this.regenPauseTicks--;
             return;
         }
-        int minions = this.countNearbyElites();
+        int minions = Math.min(this.countNearbyElites(), REGEN_MINION_CAP);
         int interval = Math.max(1, this.titleStats.regenInterval - REGEN_INTERVAL_PER_MINION * minions);
         if (this.tickCount % interval == 0 && this.getHealth() < this.getMaxHealth()) {
             this.heal(REGEN_AMOUNT + REGEN_BONUS_PER_MINION * minions);
@@ -589,9 +770,10 @@ public class Herobrine extends Monster implements RangedAttackMob {
                     applyPressure(player, MobEffects.WITHER, WITHER_AURA_DURATION, 0);
                 }
             } else {
+                // 词条可能因回血回退，参数每 tick 同步一次，避免沿用上一个头衔的落雷强度
+                writeThunderPressure(player);
                 MobEffectInstance current = player.getEffect(ModEffects.JUDGEMENT_THUNDER);
                 if (current == null || current.getDuration() < THUNDER_REFRESH_THRESHOLD) {
-                    writeThunderPressure(player);
                     player.addEffect(new MobEffectInstance(ModEffects.JUDGEMENT_THUNDER,
                             THUNDER_DURATION, 0, false, false, true));
                 }
@@ -751,6 +933,251 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
     }
 
+    /**
+     * 预警类技能：先在地面画出预警圈给玩家留出躲避时间，再结算落雷 / 下界流星。
+     * <p>雷霆君主获得「雷罚预警」，不死执念获得「下界流星」，万灵之主两者兼有并交替施放。</p>
+     */
+    private void tickTelegraphs() {
+        this.tickActiveTelegraphs();
+        if (!this.titleStats.telegraphThunder && !this.titleStats.netherMeteor) {
+            this.telegraphCooldown = 0;
+            return;
+        }
+        if (this.telegraphCooldown > 0) {
+            this.telegraphCooldown--;
+            return;
+        }
+        LivingEntity target = this.getTarget();
+        if (target == null || !target.isAlive() || !(this.level() instanceof ServerLevel level)) {
+            return;
+        }
+        this.telegraphCooldown = TELEGRAPH_INTERVAL;
+        // 同时拥有两种预警时交替施放，避免只有落雷或只有流星
+        boolean meteor = this.titleStats.netherMeteor
+                && (!this.titleStats.telegraphThunder || this.nextTelegraphMeteor);
+        this.nextTelegraphMeteor = !this.nextTelegraphMeteor;
+        Vec3 pos = groundPosition(level, target.position());
+        this.telegraphs.add(new Telegraph(pos, meteor,
+                meteor ? METEOR_WARNING_TICKS : THUNDER_WARNING_TICKS));
+        level.playSound(null, BlockPos.containing(pos), SoundEvents.SOUL_ESCAPE.value(),
+                SoundSource.HOSTILE, 0.8F, 0.6F);
+    }
+
+    /** 推进已经起手的预警：重绘预警圈，时间到了就结算 */
+    private void tickActiveTelegraphs() {
+        if (this.telegraphs.isEmpty()) {
+            return;
+        }
+        for (Iterator<Telegraph> it = this.telegraphs.iterator(); it.hasNext();) {
+            Telegraph telegraph = it.next();
+            telegraph.ticksLeft--;
+            this.renderWarning(telegraph);
+            if (telegraph.ticksLeft <= 0) {
+                this.resolveTelegraph(telegraph);
+                it.remove();
+            }
+        }
+    }
+
+    /** 地面预警圈：脚下画一圈灵魂火；下界流星额外画一道从高空垂落的火线 */
+    private void renderWarning(Telegraph telegraph) {
+        if (!(this.level() instanceof ServerLevel level)
+                || telegraph.ticksLeft % WARNING_REDRAW_INTERVAL != 0) {
+            return;
+        }
+        Vec3 pos = telegraph.pos;
+        double radius = telegraph.meteor ? METEOR_WARNING_RADIUS : THUNDER_WARNING_RADIUS;
+        int points = 16;
+        for (int i = 0; i < points; i++) {
+            double angle = Math.PI * 2.0D * i / points;
+            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                    pos.x + Math.cos(angle) * radius, pos.y + 0.05D, pos.z + Math.sin(angle) * radius,
+                    1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        level.sendParticles(ParticleTypes.END_ROD, pos.x, pos.y + 0.1D, pos.z,
+                1, 0.1D, 0.05D, 0.1D, 0.0D);
+        if (telegraph.meteor) {
+            double progress = 1.0D - telegraph.ticksLeft / (double) METEOR_WARNING_TICKS;
+            double fallY = pos.y + METEOR_FALL_HEIGHT * (1.0D - progress);
+            level.sendParticles(ParticleTypes.FLAME, pos.x, fallY, pos.z, 5, 0.12D, 0.3D, 0.12D, 0.02D);
+            level.sendParticles(ParticleTypes.LAVA, pos.x, fallY, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+    }
+
+    /** 预警结束：雷罚直接落雷，下界流星砸出范围伤害、击退与火焰 */
+    private void resolveTelegraph(Telegraph telegraph) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return;
+        }
+        Vec3 pos = telegraph.pos;
+        double radius = telegraph.meteor ? METEOR_WARNING_RADIUS : THUNDER_WARNING_RADIUS;
+        if (telegraph.meteor) {
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, pos.x, pos.y + 0.5D, pos.z,
+                    2, 0.4D, 0.2D, 0.4D, 0.0D);
+            level.sendParticles(ParticleTypes.LAVA, pos.x, pos.y + 0.5D, pos.z,
+                    40, 1.2D, 0.6D, 1.2D, 0.06D);
+            level.sendParticles(ParticleTypes.LARGE_SMOKE, pos.x, pos.y + 0.8D, pos.z,
+                    24, 1.0D, 0.7D, 1.0D, 0.03D);
+            level.playSound(null, BlockPos.containing(pos), SoundEvents.GENERIC_EXPLODE.value(),
+                    SoundSource.HOSTILE, 1.6F, 0.7F);
+            igniteImpact(level, pos);
+        } else {
+            LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
+            if (bolt != null) {
+                bolt.moveTo(pos.x, pos.y, pos.z);
+                // 只保留落雷的视觉与音效，伤害由下面单独结算
+                bolt.setVisualOnly(true);
+                level.addFreshEntity(bolt);
+            }
+        }
+        AABB area = new AABB(pos.x - radius, pos.y - 1.0D, pos.z - radius,
+                pos.x + radius, pos.y + 2.5D, pos.z + radius);
+        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, area)) {
+            if (!player.isAlive() || player.isCreative() || player.isSpectator()) {
+                continue;
+            }
+            if (telegraph.meteor) {
+                player.hurt(level.damageSources().explosion(this, this), TELEGRAPH_METEOR_DAMAGE);
+                Vec3 away = player.position().subtract(pos);
+                player.push(away.x * 0.6D, 0.45D, away.z * 0.6D);
+            } else {
+                player.hurt(level.damageSources().lightningBolt(), TELEGRAPH_THUNDER_DAMAGE);
+            }
+        }
+    }
+
+    /** 流星砸落后在地面留下几团火，是否破坏方块沿用 mobGriefing */
+    private static void igniteImpact(ServerLevel level, Vec3 center) {
+        if (!level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            return;
+        }
+        BlockPos origin = BlockPos.containing(center);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (dx != 0 && dz != 0) {
+                    continue;
+                }
+                BlockPos firePos = origin.offset(dx, 0, dz);
+                if (level.getBlockState(firePos).isAir()
+                        && level.getBlockState(firePos.below()).isSolid()) {
+                    level.setBlockAndUpdate(firePos, Blocks.FIRE.defaultBlockState());
+                }
+            }
+        }
+    }
+
+    /** 把预警圈贴到目标脚下的地面：从目标位置向下找第一个可站立的方块 */
+    private static Vec3 groundPosition(ServerLevel level, Vec3 pos) {
+        BlockPos.MutableBlockPos cursor = BlockPos.containing(pos.x, pos.y + 0.5D, pos.z).mutable();
+        for (int i = 0; i < 8; i++) {
+            BlockState state = level.getBlockState(cursor);
+            if (!state.isAir() && !state.getCollisionShape(level, cursor).isEmpty()) {
+                return new Vec3(cursor.getX() + 0.5D, cursor.getY() + 1.0D, cursor.getZ() + 0.5D);
+            }
+            if (cursor.getY() <= level.getMinBuildHeight()) {
+                break;
+            }
+            cursor.move(0, -1, 0);
+        }
+        return new Vec3(pos.x, pos.y, pos.z);
+    }
+
+    /**
+     * 幻影分身：虚影游魂词条下定期分裂出若干个持弓幻影，和本体一起向目标射击。
+     * <p>幻影只继承了本体的射击逻辑，没有词条、召唤与掉落，血量耗尽或到期后自动消散。</p>
+     */
+    private void tickPhantomClones() {
+        if (!this.titleStats.phantomClones) {
+            this.cloneCooldown = 0;
+            return;
+        }
+        if (this.cloneCooldown > 0) {
+            this.cloneCooldown--;
+            return;
+        }
+        LivingEntity target = this.getTarget();
+        if (target == null || !target.isAlive() || !(this.level() instanceof ServerLevel level)) {
+            return;
+        }
+        this.cloneCooldown = CLONE_INTERVAL;
+        int alive = level.getEntitiesOfClass(Herobrine.class, this.getBoundingBox().inflate(48.0D),
+                Herobrine::isPhantom).size();
+        int count = Math.min(CLONE_COUNT, CLONE_MAX - alive);
+        for (int i = 0; i < count; i++) {
+            this.spawnPhantomClone(level, target, i, count);
+        }
+    }
+
+    /** 在目标周围环形位置召出幻影 */
+    private void spawnPhantomClone(ServerLevel level, LivingEntity target, int index, int count) {
+        Herobrine phantom = ModEntities.HEROBRINE.get().create(level);
+        if (phantom == null) {
+            return;
+        }
+        double angle = Math.PI * 2.0D * index / count + this.getRandom().nextDouble() * 0.5D;
+        double radius = 5.0D + this.getRandom().nextDouble() * 3.0D;
+        double x = target.getX() + Math.cos(angle) * radius;
+        double z = target.getZ() + Math.sin(angle) * radius;
+        phantom.moveTo(x, target.getY(), z, this.getRandom().nextFloat() * 360.0F, 0.0F);
+        phantom.addTag(PHANTOM_TAG);
+        phantom.setTarget(target);
+        phantom.setPersistenceRequired();
+        phantom.phantomLife = CLONE_LIFETIME;
+        phantom.getAttribute(Attributes.MAX_HEALTH).setBaseValue(CLONE_HEALTH);
+        phantom.setHealth((float) CLONE_HEALTH);
+        level.addFreshEntity(phantom);
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, x, target.getY() + 1.0D, z,
+                24, 0.4D, 1.0D, 0.4D, 0.03D);
+        level.playSound(null, BlockPos.containing(x, target.getY(), z), SoundEvents.ENDERMAN_TELEPORT,
+                SoundSource.HOSTILE, 1.0F, 0.7F);
+    }
+
+    /** 分身标记：带 {@link #PHANTOM_TAG} 的都是幻影，不参与本体的一切技能与掉落 */
+    public boolean isPhantom() {
+        return this.getTags().contains(PHANTOM_TAG);
+    }
+
+    /** 幻影分身的生命周期：只做消散计时，不推进词条与召唤 */
+    private void tickPhantomLife() {
+        if (this.phantomLife <= 0) {
+            this.phantomLife = CLONE_LIFETIME;
+        }
+        if (--this.phantomLife <= 0) {
+            this.poof();
+            return;
+        }
+        if (this.level() instanceof ServerLevel level && this.tickCount % 10 == 0) {
+            level.sendParticles(ParticleTypes.SOUL, this.getX(), this.getY() + 1.0D, this.getZ(),
+                    3, 0.3D, 0.7D, 0.3D, 0.01D);
+        }
+    }
+
+    /** 幻影消散：灵魂烟尘 + 音效后直接移除，不触发本体的死亡动画与战利品 */
+    private void poof() {
+        if (this.level() instanceof ServerLevel level) {
+            level.sendParticles(ParticleTypes.SOUL, this.getX(), this.getY() + 1.0D, this.getZ(),
+                    30, 0.5D, 1.0D, 0.5D, 0.03D);
+            level.sendParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 1.0D, this.getZ(),
+                    14, 0.5D, 0.9D, 0.5D, 0.02D);
+            level.playSound(null, this.blockPosition(), SoundEvents.SOUL_ESCAPE.value(),
+                    SoundSource.HOSTILE, 1.0F, 1.2F);
+        }
+        this.discard();
+    }
+
+    /** 一次带预警的攻击：落点、剩余预警时间与类型 */
+    private static final class Telegraph {
+        private final Vec3 pos;
+        private final boolean meteor;
+        private int ticksLeft;
+
+        private Telegraph(Vec3 pos, boolean meteor, int warningTicks) {
+            this.pos = pos;
+            this.meteor = meteor;
+            this.ticksLeft = warningTicks;
+        }
+    }
+
     /** 「亡灵领主」头衔：精锐穿附魔钻石全套，手持钻石剑 / 高等级附魔弓 */
     private void equipElite(Monster minion, boolean skeleton) {
         HolderGetter<Enchantment> lookup = this.level().holderLookup(Registries.ENCHANTMENT);
@@ -883,6 +1310,10 @@ public class Herobrine extends Monster implements RangedAttackMob {
     @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
+        // 分身不参与血条、夺装备与判罚之雷，避免玩家看到第二根 BOSS 血条
+        if (this.isPhantom()) {
+            return;
+        }
         this.bossEvent.addPlayer(player);
         // 万灵之主：开战瞬间夺走玩家的盔甲与饰品，收进本体的战利品清单
         if (this.isAlive() && this.titleStats.plunderGear && !this.plunderedPlayers.contains(player.getUUID())) {
@@ -981,6 +1412,9 @@ public class Herobrine extends Monster implements RangedAttackMob {
     @Override
     public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
+        if (this.isPhantom()) {
+            return;
+        }
         this.bossEvent.removePlayer(player);
         clearPlayerPressure(player);
     }
@@ -1001,19 +1435,44 @@ public class Herobrine extends Monster implements RangedAttackMob {
 
     @Override
     public void die(DamageSource damageSource) {
+        // 分身死亡只化作烟尘，不执行本体的升空动画、战利品与装备归还
+        if (this.isPhantom()) {
+            this.poof();
+            return;
+        }
         // 死亡逻辑可能二次进入（前科：掉落物翻倍），全程只允许执行一次
         if (this.dead) {
             return;
         }
+        // 第一阶段血条打空：不死亡，转入第二阶段「亡灵末日」
+        // 掉出世界与 /kill 属于强制抹除，直接走正常死亡流程，避免 Boss 卡在虚空里
+        if (this.phase < PHASE_TWO && !bypassesPhaseTwo(damageSource)) {
+            this.beginPhaseTwo();
+            return;
+        }
         // 死亡瞬间补齐最后一档词条：低血量斩杀时也不会漏掉万灵之主的夺取与箱子
-        this.tickTitleByHealth();
+        this.tickTitleByHealth(true);
+        // 本体倒下时，场上残留的幻影分身与亡者之柱一并清除
+        for (Herobrine phantom : this.level().getEntitiesOfClass(Herobrine.class,
+                this.getBoundingBox().inflate(64.0D), Herobrine::isPhantom)) {
+            phantom.poof();
+        }
+        this.removeDoomPillars();
+        // 本体完全死亡时，召唤的亡灵精锐一同陪葬
+        for (Monster minion : this.level().getEntitiesOfClass(Monster.class,
+                this.getBoundingBox().inflate(64.0D),
+                minion -> minion.isAlive() && minion.getTags().contains(BOSS_MINION_TAG))) {
+            minion.kill();
+        }
         // 结束 BOSS 战时一并解除留在玩家身上的压力
         for (ServerPlayer player : List.copyOf(this.bossEvent.getPlayers())) {
             clearPlayerPressure(player);
         }
         this.bossEvent.removeAllPlayers();
-        // 万灵之主：把夺走的装备埋进死亡点地下的箱子
-        if (this.titleStats.plunderGear && this.level() instanceof ServerLevel serverLevel) {
+        // 万灵之主：把夺走的装备埋进死亡点地下的箱子。
+        // 词条可能因回血回退，这里只要还有夺来的装备就照样归还
+        if ((this.titleStats.plunderGear || !this.plunderLoot.isEmpty())
+                && this.level() instanceof ServerLevel serverLevel) {
             this.spawnPlunderChest(serverLevel);
         }
         // 钻石、下界合金锭与永恒图腾
@@ -1022,6 +1481,204 @@ public class Herobrine extends Monster implements RangedAttackMob {
         this.deathBaseY = this.getY();
         this.setNoGravity(true);
         super.die(damageSource);
+    }
+
+    /** 强制抹除类伤害不触发二阶段，直接按正常死亡处理 */
+    private static boolean bypassesPhaseTwo(DamageSource source) {
+        return source.is(DamageTypes.FELL_OUT_OF_WORLD) || source.is(DamageTypes.GENERIC_KILL);
+    }
+
+    /** BOSS 战在和平难度下照常进行：原版会在和平难度禁止怪物攻击玩家类型 */
+    @Override
+    public boolean canAttackType(EntityType<?> type) {
+        if (type == EntityType.PLAYER && this.level().getDifficulty() == Difficulty.PEACEFUL) {
+            return true;
+        }
+        return super.canAttackType(type);
+    }
+
+    /**
+     * 第一阶段血条打空：回满血、切到「亡灵末日」，并在周围召出亡者之柱。
+     * <p>柱子存活期间会分摊本体受到的大部分伤害，玩家需要先击碎柱子。</p>
+     */
+    private void beginPhaseTwo() {
+        this.phase = PHASE_TWO;
+        this.titleStage = TITLE_STAGES;
+        this.telegraphs.clear();
+        this.telegraphCooldown = TELEGRAPH_INTERVAL;
+        this.cloneCooldown = CLONE_INTERVAL;
+        // 场上残留的幻影分身一并收回，二阶段不再分裂分身
+        for (Herobrine phantom : this.level().getEntitiesOfClass(Herobrine.class,
+                this.getBoundingBox().inflate(64.0D), Herobrine::isPhantom)) {
+            phantom.poof();
+        }
+        this.setHealth(this.getMaxHealth());
+        this.invulnerableTime = PHASE_TWO_GRACE_TICKS;
+        this.setTitle(HerobrineTitle.NECROTIC_DOOM);
+        this.bossEvent.setColor(BossEvent.BossBarColor.RED);
+        this.bossEvent.setOverlay(BossEvent.BossBarOverlay.NOTCHED_10);
+        this.bossEvent.setProgress(1.0F);
+        if (this.level() instanceof ServerLevel level) {
+            this.spawnDoomPillars(level);
+            Vec3 eye = this.getEyePosition();
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, eye.x, eye.y, eye.z, 4,
+                    1.0D, 1.0D, 1.0D, 0.0D);
+            level.sendParticles(ParticleTypes.SOUL, eye.x, eye.y, eye.z, 120,
+                    1.5D, 2.0D, 1.5D, 0.08D);
+            level.playSound(null, this.blockPosition(), SoundEvents.WITHER_SPAWN,
+                    SoundSource.HOSTILE, 2.0F, 0.6F);
+        }
+        // 屏幕中央的转阶段提示
+        for (ServerPlayer player : List.copyOf(this.bossEvent.getPlayers())) {
+            player.connection.send(new ClientboundSetTitleTextPacket(
+                    Component.translatable("entity.endbound_ember.herobrine.phase_two.title")));
+            player.connection.send(new ClientboundSetSubtitleTextPacket(
+                    Component.translatable("entity.endbound_ember.herobrine.phase_two.subtitle")));
+        }
+        this.announcePillars();
+    }
+
+    /** 在本体周围的地面上召出三根亡者之柱 */
+    private void spawnDoomPillars(ServerLevel level) {
+        this.doomPillars.clear();
+        double baseAngle = this.random.nextDouble() * Math.PI * 2.0D;
+        for (int i = 0; i < DOOM_PILLAR_COUNT; i++) {
+            double angle = baseAngle + Math.PI * 2.0D * i / DOOM_PILLAR_COUNT;
+            double x = this.getX() + Math.cos(angle) * DOOM_PILLAR_RADIUS;
+            double z = this.getZ() + Math.sin(angle) * DOOM_PILLAR_RADIUS;
+            BlockPos base = this.findPillarBase(level, BlockPos.containing(x, this.getY(), z));
+            if (base == null) {
+                continue;
+            }
+            level.setBlockAndUpdate(base, EndboundEmber.DOOM_PILLAR.get().defaultBlockState());
+            this.doomPillars.add(base.immutable());
+            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                    base.getX() + 0.5D, base.getY() + 0.5D, base.getZ() + 0.5D, 40,
+                    0.4D, 1.2D, 0.4D, 0.04D);
+        }
+    }
+
+    /**
+     * 从给定位置向上下搜索一个可以放柱子的落脚点：要求脚下是实体方块，且柱身三格是空气。
+     *
+     * @return 可放置的方块坐标，找不到时返回 null
+     */
+    @Nullable
+    private BlockPos findPillarBase(ServerLevel level, BlockPos origin) {
+        for (int dy = 3; dy >= -5; dy--) {
+            BlockPos base = origin.offset(0, dy, 0);
+            if (base.getY() <= level.getMinBuildHeight() || base.getY() + 2 >= level.getMaxBuildHeight()) {
+                continue;
+            }
+            if (!level.getBlockState(base.below()).isSolid()) {
+                continue;
+            }
+            boolean clear = true;
+            for (int h = 0; h < 3; h++) {
+                if (!level.getBlockState(base.above(h)).canBeReplaced()) {
+                    clear = false;
+                    break;
+                }
+            }
+            if (clear) {
+                return base;
+            }
+        }
+        return null;
+    }
+
+    /** 二阶段每 tick：清理被打碎的柱子、周期性绘制指示线并提示玩家 */
+    private void tickDoomPillars() {
+        if (this.phase < PHASE_TWO || !(this.level() instanceof ServerLevel level)) {
+            return;
+        }
+        this.doomPillars.removeIf(pos ->
+                !(level.getBlockEntity(pos) instanceof DoomPillarBlockEntity pillar)
+                        || !pillar.isAlivePillar());
+        if (this.pillarHintCooldown > 0) {
+            this.pillarHintCooldown--;
+        }
+        if (this.pillarHintCooldown <= 0) {
+            this.pillarHintCooldown = PILLAR_HINT_INTERVAL;
+            this.pillarHintTicks = PILLAR_HINT_DURATION;
+            this.announcePillars();
+        }
+        if (this.pillarHintTicks <= 0 || this.doomPillars.isEmpty()) {
+            return;
+        }
+        this.pillarHintTicks--;
+        if (this.pillarHintTicks % PILLAR_BEAM_REDRAW != 0) {
+            return;
+        }
+        for (BlockPos pos : this.doomPillars) {
+            this.drawPillarBeam(level, pos);
+        }
+    }
+
+    /** 从本体眼睛拉一条末地烛粒子线到柱子顶部，告诉玩家柱子在哪里 */
+    private void drawPillarBeam(ServerLevel level, BlockPos pos) {
+        Vec3 from = this.getEyePosition();
+        Vec3 to = new Vec3(pos.getX() + 0.5D, pos.getY() + PILLAR_BEAM_HEIGHT, pos.getZ() + 0.5D);
+        Vec3 delta = to.subtract(from);
+        int steps = Math.max(2, (int) Math.ceil(delta.length() * 2.0D));
+        for (int i = 0; i <= steps; i++) {
+            Vec3 point = from.add(delta.scale(i / (double) steps));
+            level.sendParticles(ParticleTypes.END_ROD, point.x, point.y, point.z,
+                    1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, to.x, to.y, to.z,
+                4, 0.25D, 0.2D, 0.25D, 0.01D);
+    }
+
+    /** 用动作栏提示玩家柱子数量与分摊机制 */
+    private void announcePillars() {
+        Component message = Component.translatable(
+                "entity.endbound_ember.herobrine.doom_pillar_hint", this.doomPillars.size());
+        for (ServerPlayer player : List.copyOf(this.bossEvent.getPlayers())) {
+            player.displayClientMessage(message, true);
+        }
+    }
+
+    /**
+     * 把伤害按比例分摊给存活柱子。
+     *
+     * @return 分摊后真正落到本体身上的伤害
+     */
+    private float splitDamageToPillars(float amount) {
+        if (amount <= 0.0F || !(this.level() instanceof ServerLevel level) || this.doomPillars.isEmpty()) {
+            return amount;
+        }
+        List<DoomPillarBlockEntity> alive = new ArrayList<>();
+        for (Iterator<BlockPos> it = this.doomPillars.iterator(); it.hasNext();) {
+            BlockPos pos = it.next();
+            if (level.getBlockEntity(pos) instanceof DoomPillarBlockEntity pillar
+                    && pillar.isAlivePillar()) {
+                alive.add(pillar);
+            } else {
+                it.remove();
+            }
+        }
+        if (alive.isEmpty()) {
+            return amount;
+        }
+        float absorbed = amount * DOOM_PILLAR_SHARE;
+        float each = absorbed / alive.size();
+        for (DoomPillarBlockEntity pillar : alive) {
+            pillar.applyDamage(each);
+        }
+        return amount - absorbed;
+    }
+
+    /** 清掉场上所有亡者之柱（本体死亡或重置时调用） */
+    private void removeDoomPillars() {
+        if (this.level() instanceof ServerLevel level) {
+            for (BlockPos pos : this.doomPillars) {
+                if (level.getBlockState(pos).is(EndboundEmber.DOOM_PILLAR.get())) {
+                    level.destroyBlock(pos, false);
+                }
+            }
+        }
+        this.doomPillars.clear();
     }
 
     /** 万灵之主被击败：在死亡位置地下埋一个箱子归还全部装备 */
@@ -1050,15 +1707,20 @@ public class Herobrine extends Monster implements RangedAttackMob {
                 origin.getZ() + 0.5D, 40, 0.8D, 1.0D, 0.8D, 0.02D);
     }
 
-    /** 击败掉落：16~32 个钻石、32~64 个下界合金锭与一枚永恒图腾 */
+    /** 击败掉落：二阶段 Boss 的奖励，包含晨曦之星与大量珍稀材料 */
     private void dropBossLoot() {
         if (!(this.level() instanceof ServerLevel level)
                 || !level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
             return;
         }
-        this.dropLootStack(level, new ItemStack(Items.DIAMOND, 16 + this.random.nextInt(17)));
-        this.dropLootStack(level, new ItemStack(Items.NETHERITE_INGOT, 32 + this.random.nextInt(33)));
+        this.dropLootStack(level, new ItemStack(Items.DIAMOND, 48 + this.random.nextInt(33)));
+        this.dropLootStack(level, new ItemStack(Items.NETHERITE_INGOT, 48 + this.random.nextInt(33)));
+        this.dropLootStack(level, new ItemStack(Items.NETHER_STAR, 3 + this.random.nextInt(3)));
+        this.dropLootStack(level, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE, 4 + this.random.nextInt(5)));
+        this.dropLootStack(level, new ItemStack(Items.ECHO_SHARD, 8 + this.random.nextInt(9)));
         this.dropLootStack(level, new ItemStack(EndboundEmber.ETERNAL_TOTEM.get()));
+        // 晨曦之星改为由 Herobrine 掉落
+        this.dropLootStack(level, new ItemStack(EndboundEmber.DAWN_STAR.get()));
     }
 
     /** 单份战利品：从死亡点上方竖直落下，清零随机初速，仅加微小水平偏移避免几份叠在一起 */
@@ -1221,6 +1883,19 @@ public class Herobrine extends Monster implements RangedAttackMob {
     /** 词条带来的玩家侧压力，统一在这里处理；佩戴晨曦护符的玩家全部免除 */
     @EventBusSubscriber(modid = EndboundEmber.MODID)
     public static final class Events {
+        /** 亡灵精锐与 Herobrine 互不仇恨：误伤不会引发内讧 */
+        @SubscribeEvent
+        public static void onChangeTarget(LivingChangeTargetEvent event) {
+            LivingEntity changer = event.getEntity();
+            LivingEntity newTarget = event.getNewAboutToBeSetTarget();
+            boolean targetIsBoss = newTarget instanceof Herobrine;
+            boolean targetIsMinion = newTarget != null && newTarget.getTags().contains(BOSS_MINION_TAG);
+            if ((changer.getTags().contains(BOSS_MINION_TAG) && targetIsBoss)
+                    || (changer instanceof Herobrine && targetIsMinion)) {
+                event.setCanceled(true);
+            }
+        }
+
         /** 千军之主：精锐死亡后留下 3 秒亡魂区（缓慢 I） */
         @SubscribeEvent
         public static void onMinionDeath(LivingDeathEvent event) {

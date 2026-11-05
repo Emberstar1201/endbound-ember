@@ -10,6 +10,7 @@
     "LevelTimeStopBlockEntityMixin",
     "MinecraftServerAccessor",
     "MobEffectInstanceDurationMixin",
+    "MobPeacefulAttackMixin",
     "MonsterPeacefulMixin",
     "PlayerListDimensionMixin",
     "RangedAttributeAccessor",

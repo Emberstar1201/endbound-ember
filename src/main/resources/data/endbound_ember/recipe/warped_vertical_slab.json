@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P",
+    "P",
+    "P"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:warped_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:warped_vertical_slab",
+    "count": 6
+  }
+}

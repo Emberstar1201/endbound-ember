@@ -47,6 +47,9 @@ public final class FreeWillEnchantments {
     /** 星火不灭：每次攻击追加目标最大生命值的虚空伤害。 */
     public static final ResourceKey<Enchantment> ETERNAL_SPARK = key("eternal_spark");
 
+    /** 停滞穿透：削减 Herobrine 的受击无敌帧，任意武器可附 */
+    public static final ResourceKey<Enchantment> STAGNATION_PIERCE = key("stagnation_pierce");
+
     /** 蓝火剑气使用的伤害类型（已在 bypasses_armor 标签中，无视护甲）。 */
     public static final ResourceKey<DamageType> BLUE_FLAME = ResourceKey.create(Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "blue_flame"));

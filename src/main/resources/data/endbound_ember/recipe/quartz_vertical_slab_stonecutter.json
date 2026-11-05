@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {"item": "minecraft:quartz_block"},
+  "result": "endbound_ember:quartz_vertical_slab",
+  "count": 2
+}

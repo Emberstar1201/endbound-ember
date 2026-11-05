@@ -66,8 +66,10 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -124,6 +126,198 @@ public class EndboundEmber {
                             .of(com.emberstar.endbounember.block.DisplayPedestalBlockEntity::new,
                                     DISPLAY_PEDESTAL.get())
                             .build(null));
+
+    /** 亡者之柱：Herobrine 第二阶段召出的黑曜石柱，平摊本体伤害并有独立血条 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.DoomPillarBlock> DOOM_PILLAR =
+            BLOCKS.registerBlock("doom_pillar",
+                    com.emberstar.endbounember.block.DoomPillarBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_BLACK)
+                            .sound(SoundType.STONE)
+                            // 硬度 -1：无法被挖掘或爆炸破坏，只能靠左键攻击削血
+                            .strength(-1.0F, 3_600_000.0F)
+                            .noOcclusion()
+                            .isViewBlocking((state, level, pos) -> false)
+                            .isSuffocating((state, level, pos) -> false)
+                            .noLootTable()
+                            .pushReaction(PushReaction.BLOCK));
+
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>,
+            net.minecraft.world.level.block.entity.BlockEntityType<com.emberstar.endbounember.block.DoomPillarBlockEntity>>
+            DOOM_PILLAR_BLOCK_ENTITY = BLOCK_ENTITIES.register("doom_pillar",
+                    () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
+                            .of(com.emberstar.endbounember.block.DoomPillarBlockEntity::new,
+                                    DOOM_PILLAR.get())
+                            .build(null));
+
+    // ===== 竖半砖方块：高度一格、宽度半格的非完整方块，适合立柱、薄墙与装饰边框 =====
+
+    /** 平滑石英竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SMOOTH_QUARTZ_VERTICAL_SLAB =
+            registerVerticalSlab("smooth_quartz_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.QUARTZ)
+                            .sound(SoundType.STONE)
+                            .strength(2.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 石英块竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> QUARTZ_VERTICAL_SLAB =
+            registerVerticalSlab("quartz_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.QUARTZ)
+                            .sound(SoundType.STONE)
+                            .strength(2.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> STONE_BRICK_VERTICAL_SLAB =
+            registerVerticalSlab("stone_brick_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .sound(SoundType.STONE)
+                            .strength(1.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 裂纹石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CRACKED_STONE_BRICK_VERTICAL_SLAB =
+            registerVerticalSlab("cracked_stone_brick_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .sound(SoundType.STONE)
+                            .strength(1.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 苔石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> MOSSY_STONE_BRICK_VERTICAL_SLAB =
+            registerVerticalSlab("mossy_stone_brick_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .sound(SoundType.STONE)
+                            .strength(1.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 平滑石头竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SMOOTH_STONE_VERTICAL_SLAB =
+            registerVerticalSlab("smooth_stone_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .sound(SoundType.STONE)
+                            .strength(2.0F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 深板岩砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> DEEPSLATE_BRICK_VERTICAL_SLAB =
+            registerVerticalSlab("deepslate_brick_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.DEEPSLATE)
+                            .sound(SoundType.DEEPSLATE)
+                            .strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    /** 磨制深板岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_DEEPSLATE_VERTICAL_SLAB =
+            registerVerticalSlab("polished_deepslate_vertical_slab",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.DEEPSLATE)
+                            .sound(SoundType.DEEPSLATE)
+                            .strength(3.5F, 6.0F)
+                            .requiresCorrectToolForDrops()
+                            .noOcclusion());
+
+    // ===== 木质竖半砖：11 种原版木板材质，斧可挖掘、无需工具掉落 =====
+
+    /** 橡木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> OAK_VERTICAL_SLAB =
+            registerVerticalSlab("oak_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 云杉木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SPRUCE_VERTICAL_SLAB =
+            registerVerticalSlab("spruce_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 白桦木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> BIRCH_VERTICAL_SLAB =
+            registerVerticalSlab("birch_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 丛林木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> JUNGLE_VERTICAL_SLAB =
+            registerVerticalSlab("jungle_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 金合欢木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> ACACIA_VERTICAL_SLAB =
+            registerVerticalSlab("acacia_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 深色橡木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> DARK_OAK_VERTICAL_SLAB =
+            registerVerticalSlab("dark_oak_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 红木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> MANGROVE_VERTICAL_SLAB =
+            registerVerticalSlab("mangrove_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 樱花木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CHERRY_VERTICAL_SLAB =
+            registerVerticalSlab("cherry_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 竹竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> BAMBOO_VERTICAL_SLAB =
+            registerVerticalSlab("bamboo_vertical_slab", woodVerticalSlabProperties(MapColor.WOOD));
+
+    /** 绯红菌木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CRIMSON_VERTICAL_SLAB =
+            registerVerticalSlab("crimson_vertical_slab", woodVerticalSlabProperties(MapColor.NETHER));
+
+    /** 诡异菌木竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WARPED_VERTICAL_SLAB =
+            registerVerticalSlab("warped_vertical_slab", woodVerticalSlabProperties(MapColor.NETHER));
+
+    /** 混合竖半砖：两片不同材质竖半砖合并成的完整方块，材质数据存放在方块实体中，不可直接获取 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.MixedVerticalSlabBlock> MIXED_VERTICAL_SLAB =
+            BLOCKS.registerBlock("mixed_vertical_slabs",
+                    com.emberstar.endbounember.block.MixedVerticalSlabBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.STONE)
+                            .sound(SoundType.STONE)
+                            .strength(2.0F, 6.0F)
+                            .noOcclusion()
+                            .noLootTable());
+
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>,
+            net.minecraft.world.level.block.entity.BlockEntityType<com.emberstar.endbounember.block.MixedVerticalSlabBlockEntity>>
+            MIXED_VERTICAL_SLAB_BLOCK_ENTITY = BLOCK_ENTITIES.register("mixed_vertical_slabs",
+                    () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
+                            .of(com.emberstar.endbounember.block.MixedVerticalSlabBlockEntity::new,
+                                    MIXED_VERTICAL_SLAB.get())
+                            .build(null));
+
+    /** 木质竖半砖统一属性：硬度与原版木板一致，斧头挖掘，徒手也可掉落 */
+    private static BlockBehaviour.Properties woodVerticalSlabProperties(MapColor mapColor) {
+        return BlockBehaviour.Properties.of()
+                .mapColor(mapColor)
+                .sound(SoundType.WOOD)
+                .strength(2.0F, 3.0F)
+                .noOcclusion();
+    }
+
+    /**
+     * 注册一个竖半砖方块及其对应物品，减少重复代码。
+     * 方块注册在 BLOCKS，物品以 BlockItem 形式注册在 ITEMS。
+     */
+    private static DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> registerVerticalSlab(
+            String name, BlockBehaviour.Properties properties) {
+        DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> block =
+                BLOCKS.registerBlock(name, com.emberstar.endbounember.block.VerticalSlabBlock::new, properties);
+        ITEMS.registerItem(name,
+                itemProperties -> new com.emberstar.endbounember.item.VerticalSlabItem(block.get(), itemProperties));
+        return block;
+    }
 
     /** 拂晓成长等级（1~100），与固定为 1 级的附魔等级分开存储。 */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> DAWN_LEVEL =
@@ -274,7 +468,7 @@ public class EndboundEmber {
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
                     .attributes(SwordOfTheFreeWillItem.attributes(39.0D, 0.5D, 100.0D, 25.0D))));
 
-    // 晨曦之星：下界挑战凋灵时与人权剑一同掉落，锻造升级素材
+    // 晨曦之星：击败 Herobrine 后掉落，锻造升级素材
     public static final DeferredItem<Item> DAWN_STAR = ITEMS.registerSimpleItem("dawn_star",
             new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant());
 
@@ -315,7 +509,6 @@ public class EndboundEmber {
                         output.accept(TIME_HALO.get());
                         output.accept(ETERNAL_TOTEM.get());
                         output.accept(UNOWNED_STARDUST.get());
-                        output.accept(DISPLAY_PEDESTAL_ITEM.get());
                         output.accept(EMBERSTAR.get());
                         output.accept(EMBERSTAR_1.get());
                         output.accept(EMBERSTAR_2.get());
@@ -330,6 +523,36 @@ public class EndboundEmber {
                         ItemStack guideBook = createGuideBook();
                         if (!guideBook.isEmpty()) output.accept(guideBook);
                     }).build());
+
+    // 建筑分区：竖半砖与展示台，图标使用展示台
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BUILDING_TAB =
+            CREATIVE_MODE_TABS.register("building",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup.endbound_ember.building"))
+                            .withTabsBefore(ITEMS_TAB.getKey())
+                            .icon(() -> DISPLAY_PEDESTAL_ITEM.get().getDefaultInstance())
+                            .displayItems((parameters, output) -> {
+                                output.accept(DISPLAY_PEDESTAL_ITEM.get());
+                                output.accept(SMOOTH_QUARTZ_VERTICAL_SLAB.get());
+                                output.accept(QUARTZ_VERTICAL_SLAB.get());
+                                output.accept(STONE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(CRACKED_STONE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(MOSSY_STONE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(SMOOTH_STONE_VERTICAL_SLAB.get());
+                                output.accept(DEEPSLATE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_DEEPSLATE_VERTICAL_SLAB.get());
+                                output.accept(OAK_VERTICAL_SLAB.get());
+                                output.accept(SPRUCE_VERTICAL_SLAB.get());
+                                output.accept(BIRCH_VERTICAL_SLAB.get());
+                                output.accept(JUNGLE_VERTICAL_SLAB.get());
+                                output.accept(ACACIA_VERTICAL_SLAB.get());
+                                output.accept(DARK_OAK_VERTICAL_SLAB.get());
+                                output.accept(MANGROVE_VERTICAL_SLAB.get());
+                                output.accept(CHERRY_VERTICAL_SLAB.get());
+                                output.accept(BAMBOO_VERTICAL_SLAB.get());
+                                output.accept(CRIMSON_VERTICAL_SLAB.get());
+                                output.accept(WARPED_VERTICAL_SLAB.get());
+                            }).build());
 
     // 生物分区：仅放置刷怪蛋
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MOBS_TAB = CREATIVE_MODE_TABS.register("mobs",
@@ -427,6 +650,10 @@ public class EndboundEmber {
                                 for (int level = 1; level <= 3; level++) {
                                     output.accept(createEnchantedBook(parameters.holders(),
                                             ChainBreakerEnchantment.KEY, level));
+                                }
+                                for (int level = 1; level <= 5; level++) {
+                                    output.accept(createEnchantedBook(parameters.holders(),
+                                            FreeWillEnchantments.STAGNATION_PIERCE, level));
                                 }
                             }).build());
 
