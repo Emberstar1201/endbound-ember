@@ -3,6 +3,7 @@ package com.emberstar.endbounember.entity;
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.item.LifeStarItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
+import com.emberstar.endbounember.world.ModAdvancements;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -60,6 +61,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TridentItem;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.Container;
@@ -524,6 +526,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
                 // 驯服喂食与日常喂食体验一致，同样播放嚼肉音效（幸存者少女无专用音效，保持安静）
                 if (!(this instanceof HumanGirl)) {
                     this.playSound(EndboundEmber.HUSK_GIRL_EAT_1.get(), 1.0F, 1.0F);
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    ModAdvancements.award(serverPlayer, ModAdvancements.TAME_GIRL);
                 }
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);

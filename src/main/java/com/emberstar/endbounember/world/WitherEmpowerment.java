@@ -20,6 +20,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -56,6 +57,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  *   <li>吸血与回血：击杀非亡灵生物回血；自身回血快于原版，被亡灵杀手武器命中时回血受挫。</li>
  *   <li>凋零威压：附近玩家持续黑暗，每 15 秒一次 3 秒凋零 II。</li>
  *   <li>下界限定：主世界等其他维度召唤会被阻止并提示玩家。</li>
+ *   <li>击杀奖励：被击杀时掉落 10000 点经验。</li>
  * </ul>
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
@@ -129,6 +131,8 @@ public final class WitherEmpowerment {
     /** 被亡灵杀手命中后回血降低 60%，持续 8 秒。 */
     private static final int SMITE_PENALTY_TICKS = 160;
     private static final double SMITE_PENALTY = 0.6D;
+    /** 凋零被击杀时掉落的经验总量。 */
+    private static final int WITHER_EXPERIENCE = 10000;
     /** 击杀非亡灵生物时回复最大生命的 4%。 */
     private static final double LIFESTEAL_RATIO = 0.04D;
     /** 子头颅伤害相对普通头颅的倍率。 */
@@ -562,6 +566,14 @@ public final class WitherEmpowerment {
                     wither.getX(), wither.getY() + wither.getBbHeight() * 0.7D, wither.getZ(),
                     6, 0.6D, 0.4D, 0.6D, 0.02D);
         }
+    }
+
+    /** 凋零被击杀时掉落 10000 点经验。 */
+    @SubscribeEvent
+    public static void onWitherDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof WitherBoss wither)) return;
+        if (!(wither.level() instanceof ServerLevel level)) return;
+        ExperienceOrb.award(level, wither.position(), WITHER_EXPERIENCE);
     }
 
     // ------------------------------------------------------------------

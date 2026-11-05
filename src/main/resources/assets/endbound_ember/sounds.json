@@ -37,5 +37,13 @@
   },
   "halo_ritual": {
     "sounds": ["endbound_ember:starlight"]
+  },
+  "time_tick": {
+    "subtitle": "subtitles.endbound_ember.time_tick",
+    "sounds": ["endbound_ember:time_tick"]
+  },
+  "time_chime": {
+    "subtitle": "subtitles.endbound_ember.time_chime",
+    "sounds": ["endbound_ember:time_chime"]
   }
 }

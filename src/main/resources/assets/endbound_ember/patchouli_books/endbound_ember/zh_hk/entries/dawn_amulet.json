@@ -1,0 +1,51 @@
+{
+  "name": "晨曦護符",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_amulet",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_amulet",
+      "title": "晨曦護符",
+      "text": "§l取得方式：§r喺祭壇完成儀式。$(br2)底座為7×7嘅完整發光方塊，紅石點亮嘅燈除外。$(br2)外緣擺8個展示台，中心放帶拂曉附魔嘅附魔書。$(br2)儀式完結後，附魔書變成晨曦護符。"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "晨曦護符祭壇",
+      "multiblock": {
+        "pattern": [
+          [
+            "p  p  p",
+            "       ",
+            "       ",
+            "p  0  p",
+            "       ",
+            "       ",
+            "p  p  p"
+          ],
+          [
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg"
+          ]
+        ],
+        "mapping": {
+          "g": "minecraft:glowstone",
+          "p": "endbound_ember:display_pedestal",
+          "0": "endbound_ember:display_pedestal"
+        },
+        "symmetrical": true
+      },
+      "text": "圖中螢石只用嚟展示結構。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "§l擺放：§r$(br2)中心：拂曉附魔書$(br)四邊中點：烈焰粉$(br)四角：星塵$(br2)擺好之後右鍵中心展示台開始儀式。"
+    }
+  ]
+}

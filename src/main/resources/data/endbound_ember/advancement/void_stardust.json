@@ -1,0 +1,20 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:stardust_cord_bracelet"},
+    "title": {"translate": "advancements.endbound_ember.void_stardust.title"},
+    "description": {"translate": "advancements.endbound_ember.void_stardust.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_stardust_cord_bracelet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "endbound_ember:stardust_cord_bracelet"}]
+      }
+    }
+  }
+}

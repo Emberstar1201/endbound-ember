@@ -1,6 +1,9 @@
 package com.emberstar.endbounember.world;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 
 import com.emberstar.endbounember.EndboundEmber;
@@ -23,6 +26,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.EnderDragonPart;
@@ -98,6 +102,15 @@ public final class EnderDragonEmpowerment {
     private static final int ROAR_INTERVAL = 240;
     private static final int PEARL_INTERVAL = 60;
 
+    /** 末影龙经验掉落队列：逐颗掉落，同一时刻最多存在一颗球，Clumps 没有可合并的目标。 */
+    private static final Deque<ExperienceDrop> EXPERIENCE_DROPS = new ArrayDeque<>();
+    /** 总经验分成多少波掉落；首杀 12 万点每波约 1 万点，远低于 short 上限 32767。 */
+    private static final int EXPERIENCE_DROP_WAVES = 12;
+    /** 两波之间至少间隔的 tick 数，让掉落过程可见而不是一 tick 全部抛出。 */
+    private static final int EXPERIENCE_DROP_INTERVAL = 10;
+    /** 经验球传送冷却设为最大值，存活期间不会被返回传送门送去主世界。 */
+    private static final int ORB_PORTAL_COOLDOWN = Integer.MAX_VALUE;
+
     /** 末影水晶全部位于中央岛，96 格范围足以覆盖所有柱子。 */
     private static final AABB CRYSTAL_AREA = new AABB(-96.0D, -64.0D, -96.0D, 96.0D, 320.0D, 96.0D);
 
@@ -172,6 +185,7 @@ public final class EnderDragonEmpowerment {
     public static void onServerTick(ServerTickEvent.Post event) {
         for (ServerLevel level : event.getServer().getAllLevels()) {
             if (level.dimension() != Level.END) continue;
+            tickExperienceDrops(level);
             List<Entity> entities = new ArrayList<>();
             level.getAllEntities().forEach(entities::add);
             for (Entity entity : entities) {
@@ -179,6 +193,72 @@ public final class EnderDragonEmpowerment {
                     tickDragon(level, dragon);
                 }
             }
+        }
+    }
+
+    /**
+     * 排队一次末影龙经验掉落：在死亡点分多波逐颗掉落。
+     *
+     * <p>同一时刻最多只存在一颗经验球，上一颗被拾取或被清除后才生成下一颗，
+     * 因此 Clumps 之类「就近合并」的模组没有可合并的目标，也不会触发 short 上限截断。</p>
+     */
+    public static void enqueueDragonExperience(ServerLevel level, Vec3 pos, int amount) {
+        if (level == null || pos == null || amount <= 0) return;
+        EXPERIENCE_DROPS.addLast(new ExperienceDrop(level, pos, amount));
+    }
+
+    /** 逐颗掉落队列：上一颗经验球消失后才生成下一颗，波与波之间留出可见间隔。 */
+    private static void tickExperienceDrops(ServerLevel level) {
+        Iterator<ExperienceDrop> iterator = EXPERIENCE_DROPS.iterator();
+        while (iterator.hasNext()) {
+            ExperienceDrop drop = iterator.next();
+            // 换服/重载后旧队列指向的世界已作废，顺手清理避免静态引用泄漏
+            if (drop.level.getServer() != level.getServer()) {
+                iterator.remove();
+                continue;
+            }
+            if (drop.level != level) continue;
+
+            // 上一颗球还在场就等它被拾取或自然消失，保证同一时刻只有一颗
+            if (drop.current != null) {
+                if (!drop.current.isRemoved()) continue;
+                drop.current = null;
+                drop.cooldown = EXPERIENCE_DROP_INTERVAL;
+            }
+            if (drop.cooldown > 0) {
+                drop.cooldown--;
+                continue;
+            }
+            if (drop.remaining <= 0) {
+                iterator.remove();
+                continue;
+            }
+
+            int amount = Math.min(drop.remaining, drop.dropSize);
+            ExperienceOrb orb = new ExperienceOrb(level, drop.pos.x, drop.pos.y, drop.pos.z, amount);
+            orb.setPortalCooldown(ORB_PORTAL_COOLDOWN);
+            level.addFreshEntity(orb);
+            drop.remaining -= amount;
+            drop.current = orb;
+        }
+    }
+
+    /** 一次末影龙经验掉落的排队状态。 */
+    private static final class ExperienceDrop {
+        private final ServerLevel level;
+        private final Vec3 pos;
+        /** 单波掉落量，总经验除以 {@link #EXPERIENCE_DROP_WAVES} 向下取整，至少 1。 */
+        private final int dropSize;
+        private int remaining;
+        private ExperienceOrb current;
+        private int cooldown;
+
+        private ExperienceDrop(ServerLevel level, Vec3 pos, int amount) {
+            this.level = level;
+            this.pos = pos;
+            this.dropSize = Math.max(1, amount / EXPERIENCE_DROP_WAVES);
+            this.remaining = amount;
+            this.cooldown = 0;
         }
     }
 

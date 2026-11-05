@@ -35,6 +35,16 @@ public class ModEntities {
                     .eyeHeight(1.74F)
                     .build("human_girl"));
 
+    /** Emberstar Sorceress：静止、无碰撞的限时奖励实体。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<EmberStarSorceress>> EMBERSTAR_SORCERESS =
+            ENTITY_TYPES.register("emberstar_sorceress",
+                    () -> EntityType.Builder.<EmberStarSorceress>of(EmberStarSorceress::new, MobCategory.CREATURE)
+                            .sized(0.6F, 1.8F)
+                            .eyeHeight(1.62F)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("emberstar_sorceress"));
+
     /** 「刺破长夜的黎明」剑气。 */
     public static final DeferredHolder<EntityType<?>, EntityType<DawnSwordQiEntity>> DAWN_SWORD_QI =
             ENTITY_TYPES.register("dawn_sword_qi",
@@ -52,4 +62,13 @@ public class ModEntities {
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("mother_wither_skull"));
+
+    /** Herobrine：仪式召唤的自定义 Boss，人形模型，每个玩家一份战斗目标。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<Herobrine>> HEROBRINE =
+            ENTITY_TYPES.register("herobrine",
+                    () -> EntityType.Builder.of(Herobrine::new, MobCategory.MONSTER)
+                            .sized(0.6F, 1.8F)
+                            .eyeHeight(1.62F)
+                            .clientTrackingRange(10)
+                            .build("herobrine"));
 }

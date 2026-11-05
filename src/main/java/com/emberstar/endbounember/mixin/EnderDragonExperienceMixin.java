@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.emberstar.endbounember.world.EnderDragonEmpowerment;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -20,22 +22,19 @@ import net.minecraft.world.phys.Vec3;
  *
  * <p>原版在 {@code tickDeath} 中用局部变量 {@code i} 表示总经验（首次 12000，重生 500），
  * 随后按 10 次 8% 与 1 次 20% 分批发放，合计正好等于 {@code i}。
- * 这里替换这两个常量，并把经验球合并：分批经验先累积到龙的持久数据里，
- * 死亡动画结束时再统一生成经验球，避免原版 {@code ExperienceOrb.award}
+ * 这里替换这两个常量，并把分批发放的经验先累积到龙的持久数据里，
+ * 死亡动画结束时再统一结算，避免原版 {@code ExperienceOrb.award}
  * 把大批经验拆成数十个小球带来额外实体开销。</p>
  *
- * <p>单颗经验球的经验值上限为 {@link #MAX_ORB_VALUE}：原版用 short 存读与同步
- * {@code Value}，超过 32767 会被截断（存档后变负值、客户端显示为最小球），
- * 因此结算时按上限拆成少数几颗。末影龙又恰好死在返回传送门上方，
- * 经验球会顺着传送门被送去主世界，生成时需给足传送冷却。</p>
+ * <p>结算时不在死亡点一次性抛出大量经验球：Clumps 等经验球模组会把同一位置的经验球合并，
+ * 合并后的总值受原版 {@code short} 上限截断而丢失。这里把总经验交给
+ * {@link EnderDragonEmpowerment#enqueueDragonExperience} 的分波掉落队列，
+ * 在死亡位置逐颗掉落、上一颗被拾取后才生成下一颗，同一时刻只存在一颗球，
+ * 从根本上避开合并与截断；玩家必须亲自到死亡点拾取，挂机不会分到经验。</p>
  */
 @Mixin(EnderDragon.class)
 public abstract class EnderDragonExperienceMixin {
     private static final String TAG_PENDING = "EndboundEmberDragonExperience";
-    /** 单颗经验球的最大经验值，留在 short 范围内。 */
-    private static final int MAX_ORB_VALUE = 30000;
-    /** 传送冷却设为最大值，经验球存活期间都不会被返回传送门传走。 */
-    private static final int PORTAL_COOLDOWN = Integer.MAX_VALUE;
 
     @ModifyConstant(method = "tickDeath", constant = @Constant(intValue = 12000))
     private int endboundEmber$firstKillExperience(int original) {
@@ -70,7 +69,7 @@ public abstract class EnderDragonExperienceMixin {
     }
 
     @Inject(method = "tickDeath", at = @At("TAIL"))
-    private void endboundEmber$spawnExperienceOrbs(CallbackInfo ci) {
+    private void endboundEmber$awardExperience(CallbackInfo ci) {
         EnderDragon self = (EnderDragon) (Object) this;
         CompoundTag data = self.getPersistentData();
         int pending = data.getInt(TAG_PENDING);
@@ -78,13 +77,8 @@ public abstract class EnderDragonExperienceMixin {
         if (pending <= 0 || self.dragonDeathTime < 200 || !(self.level() instanceof ServerLevel level)) return;
 
         data.putInt(TAG_PENDING, 0);
-        while (pending > 0) {
-            int amount = Math.min(pending, MAX_ORB_VALUE);
-            pending -= amount;
-            ExperienceOrb orb = new ExperienceOrb(level, self.getX(), self.getY(), self.getZ(), amount);
-            // 末影龙死在返回传送门上方，不设冷却的话经验球会被传送门送去主世界
-            orb.setPortalCooldown(PORTAL_COOLDOWN);
-            level.addFreshEntity(orb);
-        }
+        // 单点多次掉落：同一时刻只存在一颗经验球，Clumps 没有可合并的目标
+        EnderDragonEmpowerment.enqueueDragonExperience(level, self.position(), pending);
     }
 }
+

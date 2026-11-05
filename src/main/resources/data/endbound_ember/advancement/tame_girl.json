@@ -1,0 +1,17 @@
+{
+  "parent": "endbound_ember:friendly_undead",
+  "display": {
+    "icon": {"id": "minecraft:beef"},
+    "title": {"translate": "advancements.endbound_ember.tame_girl.title"},
+    "description": {"translate": "advancements.endbound_ember.tame_girl.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

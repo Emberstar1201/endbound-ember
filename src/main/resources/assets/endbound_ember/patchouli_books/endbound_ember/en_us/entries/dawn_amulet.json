@@ -1,0 +1,51 @@
+{
+  "name": "Dawn Amulet",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_amulet",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_amulet",
+      "title": "Dawn Amulet",
+      "text": "§lObtaining:§r Complete the ritual at the altar.$(br2)Base: a 7×7 area of any full light-emitting block. Redstone-powered lights do not count.$(br2)Place 8 pedestals on the base edge.$(br2)Put a Dawn enchanted book on the center pedestal.$(br2)When the ritual ends, it becomes the Dawn Amulet."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Dawn Amulet Altar",
+      "multiblock": {
+        "pattern": [
+          [
+            "p  p  p",
+            "       ",
+            "       ",
+            "p  0  p",
+            "       ",
+            "       ",
+            "p  p  p"
+          ],
+          [
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg"
+          ]
+        ],
+        "mapping": {
+          "g": "minecraft:glowstone",
+          "p": "endbound_ember:display_pedestal",
+          "0": "endbound_ember:display_pedestal"
+        },
+        "symmetrical": true
+      },
+      "text": "Glowstone is only an example."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "§lSetup:§r$(br2)Center: Dawn enchanted book$(br)Edge midpoints: blaze powder$(br)Corners: stardust$(br2)Right-click the center pedestal to begin."
+    }
+  ]
+}

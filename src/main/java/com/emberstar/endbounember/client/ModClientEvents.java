@@ -4,7 +4,9 @@ import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.entity.DrownedGirl;
 import com.emberstar.endbounember.entity.HumanGirl;
+import com.emberstar.endbounember.entity.Herobrine;
 import com.emberstar.endbounember.entity.ZombieGirl;
+import com.emberstar.endbounember.entity.EmberStarSorceress;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -14,6 +16,8 @@ import net.minecraft.world.item.Items;
 
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -22,8 +26,11 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,6 +53,7 @@ public class ModClientEvents {
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "drowned_girl"), "main");
     public static final ModelLayerLocation HUMAN_GIRL_LAYER = new ModelLayerLocation(
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "human_girl"), "main");
+    public static final ModelLayerLocation EMBERSTAR_SORCERESS_LAYER = ModelLayers.PLAYER_SLIM;
 
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -59,8 +67,10 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.ZOMBIE_GIRL.get(), ZombieGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.DROWNED_GIRL.get(), DrownedGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.HUMAN_GIRL.get(), HumanGirlRenderer::new);
+        event.registerEntityRenderer(ModEntities.EMBERSTAR_SORCERESS.get(), EmberStarSorceressRenderer::new);
         event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
         event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
+        event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DISPLAY_PEDESTAL_BLOCK_ENTITY.get(),
                 DisplayPedestalRenderer::new);
     }
@@ -238,6 +248,112 @@ public class ModClientEvents {
         @Override
         public ResourceLocation getTextureLocation(ZombieGirl entity) {
             return variantTexture(entity.getSkinVariant());
+        }
+    }
+
+    public static class EmberStarSorceressRenderer extends MobRenderer<EmberStarSorceress, PlayerModel<EmberStarSorceress>> {
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
+                EndboundEmber.MODID, "textures/entity/emberstar_sorceress.png");
+
+        public EmberStarSorceressRenderer(EntityRendererProvider.Context context) {
+            // 使用 Alex（纤细）模型，贴合星尘魔女的形象设定。
+            super(context, new PlayerModel<>(context.bakeLayer(EMBERSTAR_SORCERESS_LAYER), true), 0.5F);
+            this.addLayer(new SorceressHaloLayer(this));
+        }
+
+        @Override
+        public ResourceLocation getTextureLocation(EmberStarSorceress entity) {
+            return TEXTURE;
+        }
+    }
+
+    /**
+     * Herobrine 的人形模型：复用原版 Steve 比例的烘焙层。
+     * <p>远程时双臂摆出拉弓姿势；近战挥击由攻击动画计时驱动。
+     */
+    public static class HerobrineModel<T extends Herobrine> extends HumanoidModel<T> {
+        public HerobrineModel(ModelPart root) {
+            super(root);
+        }
+
+        @Override
+        public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
+            this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
+            this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+            if (entity.isRangedStance()) {
+                this.rightArmPose = HumanoidModel.ArmPose.BOW_AND_ARROW;
+                this.leftArmPose = HumanoidModel.ArmPose.BOW_AND_ARROW;
+            }
+            super.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);
+        }
+
+        @Override
+        public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
+                float ageInTicks, float netHeadYaw, float headPitch) {
+            super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            // 近战挥臂：用已同步的攻击动画计时判断，不依赖客户端拿不到的目标
+            if (!entity.isRangedStance() && this.attackTime > 0.0F) {
+                AnimationUtils.animateZombieArms(this.leftArm, this.rightArm, true,
+                        this.attackTime, ageInTicks);
+            }
+        }
+    }
+
+    public static class HerobrineRenderer extends MobRenderer<Herobrine, HerobrineModel<Herobrine>> {
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
+                EndboundEmber.MODID, "textures/entity/herobrine.png");
+
+        public HerobrineRenderer(EntityRendererProvider.Context context) {
+            super(context, new HerobrineModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.5F);
+            this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+        }
+
+        @Override
+        public ResourceLocation getTextureLocation(Herobrine entity) {
+            return TEXTURE;
+        }
+
+        /**
+         * Herobrine 使用自定义死亡动画（升空 → 化烟），这里屏蔽原版依据 deathTime
+         * 做的倒地翻转，让模型在升空阶段保持直立。
+         */
+        @Override
+        protected void setupRotations(Herobrine entity, PoseStack poseStack, float ageInTicks,
+                float rotationYaw, float partialTick, float scale) {
+            int deathTime = entity.deathTime;
+            if (deathTime > 0) {
+                entity.deathTime = 0;
+                super.setupRotations(entity, poseStack, ageInTicks, rotationYaw, partialTick, scale);
+                entity.deathTime = deathTime;
+                return;
+            }
+            super.setupRotations(entity, poseStack, ageInTicks, rotationYaw, partialTick, scale);
+        }
+    }
+
+    /**
+     * 星尘魔女头顶光环渲染层。
+     * <p>直接挂在实体渲染层中，实体被移除时该层随渲染器一同不再调用，光环自然同步消失。
+     */
+    private static final class SorceressHaloLayer
+            extends net.minecraft.client.renderer.entity.layers.RenderLayer<EmberStarSorceress, PlayerModel<EmberStarSorceress>> {
+        /** 与玩家光环保持一致的头部上方悬浮偏移（模型空间 Y 轴翻转，负值向上）。 */
+        private static final double HEAD_OFFSET = -0.85D;
+
+        private SorceressHaloLayer(RenderLayerParent<EmberStarSorceress, PlayerModel<EmberStarSorceress>> parent) {
+            super(parent);
+        }
+
+        @Override
+        public void render(PoseStack pose, MultiBufferSource buffers, int packedLight,
+                EmberStarSorceress entity, float limbSwing, float limbSwingAmount, float partialTick,
+                float ageInTicks, float netHeadYaw, float headPitch) {
+            pose.pushPose();
+            getParentModel().head.translateAndRotate(pose);
+            pose.translate(0.0D, HEAD_OFFSET, -0.10D);
+            pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-12.0F));
+            HaloLayers.render(pose, buffers, ageInTicks, 1.0F, 255);
+            pose.popPose();
         }
     }
 

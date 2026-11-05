@@ -1,0 +1,23 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:time_halo"},
+    "title": {
+      "translate": "advancements.endbound_ember.visitor_of_the_fourth_dimension.title",
+      "color": "#9FE8FF"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.visitor_of_the_fourth_dimension.description",
+      "color": "#b8c6d9"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

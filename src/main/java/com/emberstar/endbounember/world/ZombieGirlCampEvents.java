@@ -3,19 +3,24 @@ package com.emberstar.endbounember.world;
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.entity.ModEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -28,7 +33,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Optional;
@@ -50,6 +57,8 @@ public final class ZombieGirlCampEvents {
     private static final int SPAWN_CAMP_CHUNK_OFFSET = 5;
     /** 出生点营地唯一的地形条件。 */
     private static final int SPAWN_CAMP_MIN_Y = 60;
+    /** 两座营地包围盒之间额外保留的水平间隙。 */
+    private static final int CAMP_GAP = 16;
     /**
      * 生成少女时的地面层搜索高度：只在营地底部向上这几格内找落脚点，避免刷到屋顶。
      * 结构底部 0~3 层是地基与地砖，第 4 层才是可站的室内地面，再向上留两格容错。
@@ -114,25 +123,9 @@ public final class ZombieGirlCampEvents {
 
     private static void start(PendingCamp pending) {
         ServerLevel level = pending.level();
-        StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+        StructureTemplate template = loadTemplate(level);
         if (template == null) {
-            Optional<Resource> resource = level.getServer().getResourceManager().getResource(CAMP_RESOURCE);
-            if (resource.isEmpty()) {
-                EndboundEmber.LOGGER.error("[营地生成] 结构模板 {} 加载失败：ResourceManager 中不存在 {}", CAMP, CAMP_RESOURCE);
-                return;
-            }
-
-            try (java.io.InputStream in = resource.get().open()) {
-                net.minecraft.nbt.CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(
-                        in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
-                template = new StructureTemplate();
-                template.load(level.holderLookup(net.minecraft.core.registries.Registries.BLOCK), tag);
-                EndboundEmber.LOGGER.warn("[营地生成] StructureManager 未返回模板，已使用手动加载模板，size={}",
-                        template.getSize());
-            } catch (Throwable e) {
-                EndboundEmber.LOGGER.error("[营地生成] 手动加载结构模板失败", e);
-                return;
-            }
+            return;
         }
 
         ChunkPos chunk = pending.chunk();
@@ -155,6 +148,25 @@ public final class ZombieGirlCampEvents {
             return;
         }
 
+        Vec3i size = template.getSize();
+        ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
+        // 作物保护：营地一旦盖在农田上就会把作物顶掉，命中即放弃这块候选。
+        if (hasCropsAround(level, surface, size)) {
+            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：结构范围内存在农田或作物，位置 {}", chunk, surface);
+            return;
+        }
+        // 营地互斥：按结构水平对角线 + 间隙判定，保证两座营地的包围盒不会重叠或相接。
+        if (!spawnCamp) {
+            int minDistance = minCampDistance(size);
+            BlockPos spawnCampCorner = getSpawnCampCorner(level.getSharedSpawnPos());
+            if (data.isNearCamp(surface, minDistance)
+                    || isTooCloseHorizontally(surface, spawnCampCorner, minDistance)) {
+                EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：与已有营地（或出生点营地保留位置）距离小于 {} 格",
+                        chunk, minDistance);
+                return;
+            }
+        }
+
         BlockPos origin = surface;
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false)
@@ -164,12 +176,64 @@ public final class ZombieGirlCampEvents {
             return;
         }
         EndboundEmber.LOGGER.info("[营地生成] 营地已放置于 {}，区块 {}（出生点营地={}）", origin, chunk, spawnCamp);
-        finish(level, chunk, origin, template.getSize(), level.getRandom());
+        finish(level, chunk, origin, size, level.getRandom());
+    }
+
+    /** 从 StructureManager 或资源包中加载营地模板，失败时返回 null。 */
+    @Nullable
+    private static StructureTemplate loadTemplate(ServerLevel level) {
+        StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+        if (template != null) {
+            return template;
+        }
+        Optional<Resource> resource = level.getServer().getResourceManager().getResource(CAMP_RESOURCE);
+        if (resource.isEmpty()) {
+            EndboundEmber.LOGGER.error("[营地生成] 结构模板 {} 加载失败：ResourceManager 中不存在 {}", CAMP, CAMP_RESOURCE);
+            return null;
+        }
+
+        try (java.io.InputStream in = resource.get().open()) {
+            net.minecraft.nbt.CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(
+                    in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+            template = new StructureTemplate();
+            template.load(level.holderLookup(net.minecraft.core.registries.Registries.BLOCK), tag);
+            EndboundEmber.LOGGER.warn("[营地生成] StructureManager 未返回模板，已使用手动加载模板，size={}",
+                    template.getSize());
+            return template;
+        } catch (Throwable e) {
+            EndboundEmber.LOGGER.error("[营地生成] 手动加载结构模板失败", e);
+            return null;
+        }
+    }
+
+    /**
+     * 测试指令用：以给定位置为中心立即放置一座营地（含战利品与少女）。
+     * 与自然生成共用同一套模板加载与收尾逻辑，并写入存档记录避免同区块重复生成。
+     */
+    public static boolean placeCampAt(ServerLevel level, BlockPos center) {
+        StructureTemplate template = loadTemplate(level);
+        if (template == null) {
+            return false;
+        }
+        Vec3i size = template.getSize();
+        // 结构原点是最小角：水平居中到玩家，垂直下移 4 格让玩家落在营地室内地面上。
+        BlockPos origin = center.offset(-size.getX() / 2, -4, -size.getZ() / 2);
+        StructurePlaceSettings settings = new StructurePlaceSettings()
+                .setIgnoreEntities(false)
+                .setKnownShape(true);
+        if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2)) {
+            EndboundEmber.LOGGER.error("[营地生成] 测试指令放置失败，位置 {}", origin);
+            return false;
+        }
+        EndboundEmber.LOGGER.info("[营地生成] 测试指令已在 {} 放置营地", origin);
+        finish(level, new ChunkPos(origin), origin, size, level.getRandom());
+        return true;
     }
 
     private static void finish(ServerLevel level, ChunkPos chunk, BlockPos origin,
                                Vec3i size, RandomSource random) {
-        ZombieGirlCampSavedData.get(level).addCamp(origin.above(7), chunk);
+        ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
+        data.addCamp(origin.above(7), chunk);
         BlockPos end = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
         BlockPos min = new BlockPos(Math.min(origin.getX(), end.getX()), Math.min(origin.getY(), end.getY()),
                 Math.min(origin.getZ(), end.getZ()));
@@ -179,7 +243,7 @@ public final class ZombieGirlCampEvents {
         int containers = 0;
         for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
             if (level.getBlockEntity(pos) instanceof RandomizableContainerBlockEntity container) {
-                fillCampLoot(container, random);
+                fillCampLoot(level, container, random);
                 container.setChanged();
                 containers++;
             }
@@ -188,25 +252,86 @@ public final class ZombieGirlCampEvents {
         spawnCampGirls(level, min, max, random);
     }
 
-    private static void fillCampLoot(RandomizableContainerBlockEntity container, RandomSource random) {
+    /** 任意生肉：牛、猪、鸡、羊、兔、鳕鱼、鲑鱼。 */
+    private static final Item[] RAW_MEATS = {
+            Items.BEEF, Items.PORKCHOP, Items.CHICKEN, Items.MUTTON, Items.RABBIT, Items.COD, Items.SALMON
+    };
+    /** 常见作物：小麦、胡萝卜、马铃薯、甜菜根。 */
+    private static final Item[] CROPS = {
+            Items.WHEAT, Items.CARROT, Items.POTATO, Items.BEETROOT
+    };
+    /** 铁制工具与盔甲。 */
+    private static final Item[] IRON_GEAR = {
+            Items.IRON_SWORD, Items.IRON_PICKAXE, Items.IRON_AXE, Items.IRON_SHOVEL, Items.IRON_HOE,
+            Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS, Items.IRON_BOOTS
+    };
+
+    private static void fillCampLoot(ServerLevel level, RandomizableContainerBlockEntity container,
+                                     RandomSource random) {
         int rolls = 2 + random.nextInt(3);
         for (int i = 0; i < rolls; i++) {
-            ItemStack stack;
-            int choice = random.nextInt(20);
-            if (choice < 8) {
-                stack = new ItemStack(Items.IRON_INGOT, 2 + random.nextInt(5));
-            } else if (choice < 14) {
-                stack = new ItemStack(Items.ROTTEN_FLESH, 2 + random.nextInt(7));
-            } else if (choice < 17) {
-                stack = new ItemStack(Items.GOLD_INGOT, 1 + random.nextInt(3));
-            } else if (choice < 19) {
-                stack = new ItemStack(Items.BOOK);
-            } else {
-                stack = new ItemStack(Items.DIAMOND, 1 + random.nextInt(2));
-            }
+            ItemStack stack = rollCampLoot(level, random);
             int slot = random.nextInt(container.getContainerSize());
             container.setItem(slot, stack);
         }
+    }
+
+    /** 按权重随机一件营地战利品。 */
+    private static ItemStack rollCampLoot(ServerLevel level, RandomSource random) {
+        int choice = random.nextInt(36);
+        if (choice < 4) {
+            return new ItemStack(Items.IRON_INGOT, 2 + random.nextInt(5));
+        }
+        if (choice < 8) {
+            return new ItemStack(Items.ROTTEN_FLESH, 2 + random.nextInt(7));
+        }
+        if (choice < 11) {
+            return new ItemStack(Items.GOLD_INGOT, 1 + random.nextInt(3));
+        }
+        if (choice < 13) {
+            return new ItemStack(Items.BOOK);
+        }
+        if (choice < 14) {
+            return new ItemStack(Items.DIAMOND, 1 + random.nextInt(2));
+        }
+        if (choice < 17) {
+            return new ItemStack(Items.LAPIS_LAZULI, 4 + random.nextInt(9));
+        }
+        if (choice < 19) {
+            return new ItemStack(Items.BREAD, 1 + random.nextInt(3));
+        }
+        if (choice < 22) {
+            return new ItemStack(randomItem(RAW_MEATS, random), 1 + random.nextInt(3));
+        }
+        if (choice < 25) {
+            return new ItemStack(randomItem(CROPS, random), 1 + random.nextInt(3));
+        }
+        if (choice < 29) {
+            return new ItemStack(randomItem(IRON_GEAR, random));
+        }
+        if (choice < 33) {
+            return randomEnchantedBook(level, random, "minecraft");
+        }
+        return randomEnchantedBook(level, random, EndboundEmber.MODID);
+    }
+
+    private static Item randomItem(Item[] items, RandomSource random) {
+        return items[random.nextInt(items.length)];
+    }
+
+    /** 从指定命名空间的附魔中随机挑一个，生成 1 级附魔书；诅咒附魔不掉落。 */
+    private static ItemStack randomEnchantedBook(ServerLevel level, RandomSource random, String namespace) {
+        HolderLookup.Provider registries = level.registryAccess();
+        List<ResourceKey<Enchantment>> keys = registries.lookupOrThrow(Registries.ENCHANTMENT)
+                .listElements()
+                .filter(holder -> holder.key().location().getNamespace().equals(namespace))
+                .filter(holder -> !holder.is(EnchantmentTags.CURSE))
+                .map(holder -> holder.key())
+                .toList();
+        if (keys.isEmpty()) {
+            return new ItemStack(Items.BOOK);
+        }
+        return EndboundEmber.createEnchantedBook(registries, keys.get(random.nextInt(keys.size())), 1);
     }
 
     private static void spawnCampGirls(ServerLevel level, BlockPos min, BlockPos max, RandomSource random) {
@@ -260,6 +385,47 @@ public final class ZombieGirlCampEvents {
         // 向东偏移 5 区块，中心距离出生点约 80 格。
         return new ChunkPos((spawnPos.getX() >> 4) + SPAWN_CAMP_CHUNK_OFFSET,
                 spawnPos.getZ() >> 4);
+    }
+
+    /** 出生点营地的确定性保留位置（结构最小角），用于普通营地避让。 */
+    private static BlockPos getSpawnCampCorner(BlockPos spawnPos) {
+        ChunkPos chunk = getSpawnCampChunk(spawnPos);
+        return new BlockPos(chunk.getMinBlockX() + 8, 0, chunk.getMinBlockZ() + 8);
+    }
+
+    /**
+     * 两座营地之间的最小角对角水平距离：结构水平对角线向上取整，再加上 {@link #CAMP_GAP} 的间隙。
+     * 以结构最小角为基准比较，可保证两个包围盒既不相交也不贴边。
+     */
+    private static int minCampDistance(Vec3i size) {
+        return (int) Math.ceil(Math.sqrt((double) size.getX() * size.getX()
+                + (double) size.getZ() * size.getZ())) + CAMP_GAP;
+    }
+
+    /** 两个位置的水平距离（忽略高度）是否小于给定值。 */
+    private static boolean isTooCloseHorizontally(BlockPos a, BlockPos b, int minDistance) {
+        long dx = (long) a.getX() - b.getX();
+        long dz = (long) a.getZ() - b.getZ();
+        return dx * dx + dz * dz < (long) minDistance * minDistance;
+    }
+
+    /**
+     * 结构将要覆盖的体积内是否存在农田或作物。高度图返回的是最高方块上方一格，
+     * 作物实际位于原点下方，因此向下多扫两格；命中即放弃这块候选，避免把作物顶掉。
+     */
+    private static boolean hasCropsAround(ServerLevel level, BlockPos origin, Vec3i size) {
+        BlockPos min = origin.offset(0, -2, 0);
+        BlockPos max = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
+        for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(BlockTags.CROPS)
+                    || state.is(BlockTags.MAINTAINS_FARMLAND)
+                    || state.is(Blocks.FARMLAND)
+                    || state.is(Blocks.SUGAR_CANE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** 每 4×4 个区块分区保证一个确定性候选，不再额外以概率跳过。 */

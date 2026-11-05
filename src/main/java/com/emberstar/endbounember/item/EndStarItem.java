@@ -134,6 +134,11 @@ public class EndStarItem extends Item {
             level.addFreshEntity(star);
         }
 
+        /** 每 10 个经验等级提升 1% 伤害。 */
+        private static final int LEVELS_PER_PERCENT = 10;
+        /** 经验加伤的百分比上限：10000 级封顶（+1000%）。 */
+        private static final int MAX_BONUS_PERCENT = 1000;
+
         @SubscribeEvent
         public static void onAttackBonus(LivingIncomingDamageEvent event) {
             if (event.getEntity().level().isClientSide) return;
@@ -143,8 +148,9 @@ public class EndStarItem extends Item {
                 return;
             }
 
-            // 经验加伤：每 10 点经验提升 1%，无上限。
-            int bonusPercent = Math.floorDiv(attacker.totalExperience, 10);
+            // 经验加伤：每 10 个经验等级提升 1%，最多 +1000%（即 10000 级封顶）。
+            int bonusPercent = Math.min(MAX_BONUS_PERCENT,
+                    Math.floorDiv(attacker.experienceLevel, LEVELS_PER_PERCENT));
             if (bonusPercent > 0) {
                 event.setAmount(event.getAmount() * (1.0F + bonusPercent / 100.0F));
             }

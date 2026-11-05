@@ -62,6 +62,6 @@ public interface YsmGeoRendererMixin {
     private void endboundEmber$renderHalo(@Coerce Object animatedModel, @Coerce Object animatable,
             float tickDelta, PoseStack pose, MultiBufferSource buffers, VertexConsumer vertexConsumer,
             int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
-        YsmHaloRenderer.render(YsmRenderContext.resolve(animatable), pose, buffers, light, overlay);
+        YsmHaloRenderer.render(YsmRenderContext.resolve(animatable), pose, buffers, light, overlay, tickDelta);
     }
 }

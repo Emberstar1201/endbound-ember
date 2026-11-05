@@ -59,12 +59,8 @@ public class SwordOfTheFreeWillItem extends Item {
     private static final int ENHANCED_COLOR = 0x6FB8FF;
     /** 首次击杀凋灵后写入玩家持久数据的标记。 */
     private static final String OBTAINED_TAG = "EndboundEmberFreeWillObtained";
-    /** 玩家夜间击杀凋灵的次数，用于第二次夜间击杀时授予后续成就。 */
-    private static final String NIGHT_WITHER_KILLS_TAG = "EndboundEmberNightWitherKills";
     private static final ResourceLocation FIRST_WITHER_ADVANCEMENT =
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "we_fall_we_remain");
-    private static final ResourceLocation SECOND_WITHER_ADVANCEMENT =
-            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "so_called_dawn_will_be_free");
     /** 上一次挥出剑气的时间点，用于同一次横扫命中多个目标时只挥出一道剑气。 */
     private static final String LAST_QI_TICK_TAG = "EndboundEmberLastQiTick";
 
@@ -271,28 +267,18 @@ public class SwordOfTheFreeWillItem extends Item {
 
             Collection<ItemEntity> drops = event.getDrops();
             var data = player.getPersistentData();
-            // 终章成就完成后，人权剑与晨曦之星都不再掉落
-            if (hasAdvancement(player, SECOND_WITHER_ADVANCEMENT)) return;
-
             if (!data.getBoolean(OBTAINED_TAG)) {
-                // 首次击杀：先点亮「我们逝去，我们永恒」，再掉落人权剑
+                // 首次击杀：先点亮「我们逝去，我们永恒」
                 data.putBoolean(OBTAINED_TAG, true);
                 awardAdvancement(player, FIRST_WITHER_ADVANCEMENT);
-                drops.add(spawnDrop(level, event.getEntity(),
-                        new ItemStack(EndboundEmber.SWORD_OF_THE_FREE_WILL.get())));
-                return;
-            }
-            // 旧存档已经拿过人权剑，但成就未点亮时补发第一阶段成就
-            if (!hasAdvancement(player, FIRST_WITHER_ADVANCEMENT)) {
+            } else if (!hasAdvancement(player, FIRST_WITHER_ADVANCEMENT)) {
+                // 旧存档已经拿过人权剑，但成就未点亮时补发第一阶段成就
                 awardAdvancement(player, FIRST_WITHER_ADVANCEMENT);
-                return;
             }
-            if (!level.isNight()) return;
 
-            // 成就完成后，夜间第二次击杀点亮「所谓破晓，终将自由」
-            int nightKills = data.getInt(NIGHT_WITHER_KILLS_TAG) + 1;
-            data.putInt(NIGHT_WITHER_KILLS_TAG, nightKills);
-            if (nightKills >= 2) awardAdvancement(player, SECOND_WITHER_ADVANCEMENT);
+            // 下界挑战凋灵：人权剑与晨曦之星一同掉落
+            drops.add(spawnDrop(level, event.getEntity(),
+                    new ItemStack(EndboundEmber.SWORD_OF_THE_FREE_WILL.get())));
             drops.add(spawnDrop(level, event.getEntity(), new ItemStack(EndboundEmber.DAWN_STAR.get())));
         }
 
@@ -308,10 +294,7 @@ public class SwordOfTheFreeWillItem extends Item {
             if (server == null) return;
             var advancement = server.getAdvancements().get(advancementId);
             if (advancement != null) {
-                String criterion = advancementId.equals(FIRST_WITHER_ADVANCEMENT)
-                        ? "kill_wither_for_free_will"
-                        : "second_night_wither_kill";
-                player.getAdvancements().award(advancement, criterion);
+                player.getAdvancements().award(advancement, "kill_wither_for_free_will");
             }
         }
 
@@ -322,6 +305,8 @@ public class SwordOfTheFreeWillItem extends Item {
             item.setInvulnerable(true);
             item.setPickUpDelay(10);
             item.setGlowingTag(true);
+            // 物品本身已声明 fireResistant，这里再清掉可能残留的燃烧状态
+            item.setRemainingFireTicks(0);
             return item;
         }
     }

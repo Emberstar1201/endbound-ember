@@ -1,6 +1,7 @@
 package com.emberstar.endbounember.world;
 
 import com.emberstar.endbounember.EndboundEmber;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.ChatFormatting;
@@ -17,22 +18,53 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-/** 营地定位指令：与原版 /locate 行为一致，坐标可点击传送，支持跨维度查询。 */
+/** 营地指令：定位最近营地与测试用的营地放置。 */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class ModCommands {
     private static final SimpleCommandExceptionType ERROR_NOT_FOUND =
             new SimpleCommandExceptionType(Component.translatable(
                     "commands.endbound_ember.locate_camp.failed"));
+    private static final SimpleCommandExceptionType ERROR_PLACE_FAILED =
+            new SimpleCommandExceptionType(Component.translatable(
+                    "commands.endbound_ember.summon_camp.failed"));
 
     private ModCommands() {}
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("endbound_ember")
-                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("locate")
+                        .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("camp")
-                                .executes(context -> locateCamp(context.getSource())))));
+                                .executes(context -> locateCamp(context.getSource()))))
+                .then(Commands.literal("summon")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.literal("camp")
+                                .executes(context -> summonCamp(context.getSource()))))
+                // 时间乱流进入申请的处理，由聊天栏按钮调用，因此不限制权限等级
+                .then(Commands.literal("turbulence")
+                        .then(Commands.literal("accept")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(1))
+                                        .executes(context -> TimeTurbulenceAccess.decide(
+                                                context.getSource().getPlayerOrException(),
+                                                context.getArgument("id", Integer.class), true))))
+                        .then(Commands.literal("deny")
+                                .then(Commands.argument("id", IntegerArgumentType.integer(1))
+                                        .executes(context -> TimeTurbulenceAccess.decide(
+                                                context.getSource().getPlayerOrException(),
+                                                context.getArgument("id", Integer.class), false))))));
+    }
+
+    /** 测试用：在指令执行位置立即放置一座营地，省去等待自然生成。 */
+    private static int summonCamp(CommandSourceStack source) throws CommandSyntaxException {
+        BlockPos origin = BlockPos.containing(source.getPosition());
+        if (!ZombieGirlCampEvents.placeCampAt(source.getLevel(), origin)) {
+            throw ERROR_PLACE_FAILED.create();
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "commands.endbound_ember.summon_camp.success",
+                origin.getX(), origin.getY(), origin.getZ()), false);
+        return 1;
     }
 
     private static int locateCamp(CommandSourceStack source) throws CommandSyntaxException {

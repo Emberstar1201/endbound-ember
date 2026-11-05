@@ -1,0 +1,20 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:void_star"},
+    "title": {"translate": "advancements.endbound_ember.void_star.title"},
+    "description": {"translate": "advancements.endbound_ember.void_star.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_void_star": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "endbound_ember:void_star"}]
+      }
+    }
+  }
+}

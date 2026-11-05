@@ -1,0 +1,17 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "endbound_ember:zombie_girl_spawn_egg"},
+    "title": {"translate": "advancements.endbound_ember.friendly_undead.title"},
+    "description": {"translate": "advancements.endbound_ember.friendly_undead.description"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

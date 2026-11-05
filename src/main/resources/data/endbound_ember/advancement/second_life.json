@@ -1,0 +1,17 @@
+{
+  "parent": "endbound_ember:tame_girl",
+  "display": {
+    "icon": {"id": "endbound_ember:life_star"},
+    "title": {"translate": "advancements.endbound_ember.second_life.title"},
+    "description": {"translate": "advancements.endbound_ember.second_life.description"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "Survivor Girl",
   "category": "endbound_ember:creatures",
-  "icon": "minecraft:player_head",
+  "icon": "endbound_ember:human_girl_spawn_egg",
   "sortnum": 2,
   "pages": [
     {

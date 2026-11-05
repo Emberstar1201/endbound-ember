@@ -31,7 +31,9 @@ import com.emberstar.endbounember.item.LifeStarItem;
 import com.emberstar.endbounember.item.ModArmorMaterials;
 import com.emberstar.endbounember.item.OceanStarItem;
 import com.emberstar.endbounember.item.StardustCordBraceletItem;
+import com.emberstar.endbounember.item.DawnAmuletItem;
 import com.emberstar.endbounember.item.StardustWitchHaloItem;
+import com.emberstar.endbounember.item.TimeHaloItem;
 import com.emberstar.endbounember.item.StarlightStarItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
@@ -151,6 +153,10 @@ public class EndboundEmber {
     public static final DeferredHolder<SoundEvent, SoundEvent> HOME_BELL_SOUND = registerSound("home_bell");
     public static final DeferredHolder<SoundEvent, SoundEvent> STARLIGHT = registerSound("starlight");
     public static final DeferredHolder<SoundEvent, SoundEvent> HALO_RITUAL = registerSound("halo_ritual");
+    /** 时间乱流的秒针 / 分针走动声 */
+    public static final DeferredHolder<SoundEvent, SoundEvent> TIME_TICK_SOUND = registerSound("time_tick");
+    /** 时间乱流的整点钟声 */
+    public static final DeferredHolder<SoundEvent, SoundEvent> TIME_CHIME_SOUND = registerSound("time_chime");
 
     /** 星尘光环的获取仪式：需要消耗的经验值总量 */
     public static final int HALO_RITUAL_EXPERIENCE_COST = 120_000;
@@ -162,6 +168,26 @@ public class EndboundEmber {
     public static final int HALO_RITUAL_PEDESTAL_COUNT = 8;
     /** 星尘光环的获取仪式：底座必须是用末地石铺成的 7×7 正方形 */
     public static final int ALTAR_BASE_SIZE = 7;
+
+    /** 晨曦护符的获取仪式：动画总时长（tick），15 秒 */
+    public static final int AMULET_RITUAL_DURATION = 300;
+    /** 晨曦护符的获取仪式：动画结束前多少 tick 完成护符替换 */
+    public static final int AMULET_RITUAL_SWAP_TICK = 280;
+    /** 晨曦护符的获取仪式：环绕展示台数量（上下左右 + 四个斜角） */
+    public static final int AMULET_RITUAL_PEDESTAL_COUNT = 8;
+
+    /** Herobrine 召唤仪式：动画总时长（tick），15 秒 */
+    public static final int HEROBRINE_RITUAL_DURATION = 300;
+    /** Herobrine 召唤仪式：能量汇聚完毕、Boss 现身的时间点（tick） */
+    public static final int HEROBRINE_RITUAL_SUMMON_TICK = 240;
+    /** Herobrine 召唤仪式：四角展示台数量 */
+    public static final int HEROBRINE_RITUAL_PEDESTAL_COUNT = 4;
+    /** Herobrine 召唤仪式：四角展示台相对中心的最大搜索半径（格） */
+    public static final int HEROBRINE_ALTAR_RADIUS = 3;
+
+    /** 星尘系列物品标签：晨曦祭坛四角可放置任意星尘变体 */
+    public static final TagKey<Item> EMBERSTARS = TagKey.create(Registries.ITEM,
+            ResourceLocation.fromNamespaceAndPath(MODID, "emberstars"));
 
     // 成就「星尘的祝福」
     public static final ResourceLocation STARDUST_BLESSING_ADVANCEMENT =
@@ -203,9 +229,22 @@ public class EndboundEmber {
     public static final DeferredItem<StardustCordBraceletItem> STARDUST_CORD_BRACELET = ITEMS.register(
             "stardust_cord_bracelet", () -> new StardustCordBraceletItem(new Item.Properties().stacksTo(1)));
 
+    // 晨曦护符：免疫黑暗 / 失明 / 凋零，强化对亡灵与 BOSS 的伤害，周期性释放虚空冲击
+    public static final DeferredItem<DawnAmuletItem> DAWN_AMULET = ITEMS.register(
+            "dawn_amulet", () -> new DawnAmuletItem(new Item.Properties().rarity(Rarity.RARE).fireResistant()));
+
     public static final DeferredItem<StardustWitchHaloItem> STARDUST_WITCH_HALO = ITEMS.register(
             "stardust_witch_halo", () -> new StardustWitchHaloItem(ModArmorMaterials.STARDUST_WITCH_HALO,
                     new Item.Properties().rarity(Rarity.RARE)));
+
+    public static final DeferredItem<TimeHaloItem> TIME_HALO = ITEMS.register(
+            "time_halo", () -> new TimeHaloItem(ModArmorMaterials.STARDUST_WITCH_HALO,
+                    new Item.Properties().rarity(Rarity.RARE)));
+
+    // 永恒图腾：击败万灵之主掉落，30 耐久；手持时抵挡一次致死伤害并回满生命
+    public static final DeferredItem<Item> ETERNAL_TOTEM = ITEMS.registerSimpleItem("eternal_totem",
+            new Item.Properties().stacksTo(1).durability(30).rarity(Rarity.EPIC).fireResistant()
+                    .component(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true));
 
     public static final DeferredItem<UnownedStardustItem> UNOWNED_STARDUST = ITEMS.register(
             "unowned_stardust", () -> new UnownedStardustItem(new Item.Properties()
@@ -227,7 +266,7 @@ public class EndboundEmber {
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
                     .attributes(SwordOfTheFreeWillItem.attributes(39.0D, 0.5D, 100.0D, 25.0D))));
 
-    // 晨曦之星：夜间再次击杀凋灵获得，锻造升级素材
+    // 晨曦之星：下界挑战凋灵时与人权剑一同掉落，锻造升级素材
     public static final DeferredItem<Item> DAWN_STAR = ITEMS.registerSimpleItem("dawn_star",
             new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant());
 
@@ -246,6 +285,8 @@ public class EndboundEmber {
             () -> new SpawnEggItem(ModEntities.ZOMBIE_GIRL.get(), 0x4A5B4A, 0xB7B7B7, new Item.Properties()));
     public static final DeferredItem<SpawnEggItem> DROWNED_GIRL_SPAWN_EGG = ITEMS.register("drowned_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.DROWNED_GIRL.get(), 0x2B5D66, 0x5AB5D1, new Item.Properties()));
+    public static final DeferredItem<SpawnEggItem> HUMAN_GIRL_SPAWN_EGG = ITEMS.register("human_girl_spawn_egg",
+            () -> new SpawnEggItem(ModEntities.HUMAN_GIRL.get(), 0xD9A97E, 0x6B4A2F, new Item.Properties()));
 
     // 物品分区：星尘、生命之星、手绳等道具，图标使用虚无星尘
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ITEMS_TAB = CREATIVE_MODE_TABS.register("items",
@@ -263,6 +304,8 @@ public class EndboundEmber {
                         output.accept(HOME_BELL.get());
                         output.accept(STARDUST_CORD_BRACELET.get());
                         output.accept(STARDUST_WITCH_HALO.get());
+                        output.accept(TIME_HALO.get());
+                        output.accept(ETERNAL_TOTEM.get());
                         output.accept(UNOWNED_STARDUST.get());
                         output.accept(DISPLAY_PEDESTAL_ITEM.get());
                         output.accept(EMBERSTAR.get());
@@ -274,6 +317,7 @@ public class EndboundEmber {
                         output.accept(SWORD_OF_THE_FREE_WILL_ENHANCED.get());
                         output.accept(DAWN_STAR.get());
                         output.accept(DAWN_TEMPLATE.get());
+                        output.accept(DAWN_AMULET.get());
                         ItemStack guideBook = createGuideBook();
                         if (!guideBook.isEmpty()) output.accept(guideBook);
                     }).build());
@@ -287,6 +331,7 @@ public class EndboundEmber {
                     .displayItems((parameters, output) -> {
                         output.accept(ZOMBIE_GIRL_SPAWN_EGG.get());
                         output.accept(DROWNED_GIRL_SPAWN_EGG.get());
+                        output.accept(HUMAN_GIRL_SPAWN_EGG.get());
                     }).build());
 
     // 附魔书分区：本模组的附魔书集中在此，避免混在原版附魔书里难以查找
@@ -377,7 +422,7 @@ public class EndboundEmber {
                             }).build());
 
     /** 构建一本只带指定附魔与等级的附魔书。 */
-    private static ItemStack createEnchantedBook(HolderLookup.Provider registries, ResourceKey<Enchantment> key,
+    public static ItemStack createEnchantedBook(HolderLookup.Provider registries, ResourceKey<Enchantment> key,
             int level) {
         ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
         ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -413,6 +458,8 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.CloudArrowVelocityPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.FlywheelDashPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.ChainBreakerPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.TimeTurbulenceTogglePayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.TimeHaloSkillPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -424,6 +471,7 @@ public class EndboundEmber {
         MENU_TYPES.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
+        com.emberstar.endbounember.effect.ModEffects.MOB_EFFECTS.register(modEventBus);
         ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so entities get registered
         ModEntities.ENTITY_TYPES.register(modEventBus);
@@ -441,13 +489,6 @@ public class EndboundEmber {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
-        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-        }
-
-        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
-
-        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

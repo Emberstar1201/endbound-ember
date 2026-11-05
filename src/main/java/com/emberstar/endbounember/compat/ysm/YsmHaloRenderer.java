@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.client.HaloLayers;
+import com.emberstar.endbounember.client.TimeHaloLayers;
 import com.emberstar.endbounember.compat.CuriosCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -51,6 +52,22 @@ public final class YsmHaloRenderer {
     /** YSM 模型空间（Y 轴朝上）的光环前倾角度（度），符号与原版相反才能得到相同的视觉效果 */
     private static final float YSM_TILT_DEGREES = -12.0F;
 
+    /**
+     * 时光光环相对 Head locator pivot 的头顶偏移（格）。
+     * <p>pivot 在脖子处，头顶约在其上方 0.5 格；再抬高 0.22 格让光环压在头顶上方，
+     * 与原版渲染路径保持一致。YSM 骨骼空间 Y 轴朝上，因此取正值。
+     */
+    private static final double YSM_TIME_HALO_HEAD_OFFSET = 0.72D;
+    /** Head locator 不可用时的兜底高度（格），取玩家头顶上方 */
+    private static final double YSM_TIME_HALO_FALLBACK_Y = 1.82D;
+    /**
+     * 头顶时钟的后仰角度（度）。
+     * <p>环面默认平躺、正面朝上。绕 X 轴正向旋转会让环面前缘抬起，
+     * 从斜后上方看过去能看到完整表盘与指针。YSM 空间 Y 轴朝上、与原版模型空间相反，
+     * 所以这里的符号也跟原版路径相反。
+     */
+    private static final float YSM_TIME_HALO_TILT = 30.0F;
+
     /** 是否启用 YSM 光环渲染，可由客户端指令切换；关闭后光环完全交给原版路径或干脆不画 */
     private static volatile boolean enabled = true;
 
@@ -78,7 +95,7 @@ public final class YsmHaloRenderer {
      * @param overlay 打包覆盖层值
      */
     public static void render(LivingEntity entity, PoseStack pose, MultiBufferSource buffers, int light,
-            int overlay) {
+            int overlay, float partialTick) {
         if (!(entity instanceof Player player)) {
             return;
         }
@@ -86,14 +103,14 @@ public final class YsmHaloRenderer {
             return;
         }
         try {
-            renderHalo(player, pose, buffers);
+            renderHalo(player, pose, buffers, partialTick);
         } finally {
             // 每次渲染后立即丢弃捕获结果，保证下次渲染重新读取头部姿态
             YsmHeadCapture.remove(player.getUUID());
         }
     }
 
-    private static void renderHalo(Player player, PoseStack pose, MultiBufferSource buffers) {
+    private static void renderHalo(Player player, PoseStack pose, MultiBufferSource buffers, float partialTick) {
         boolean wearing = wearingHalo(player);
         Matrix4f ysmHead = YsmHeadCapture.get(player.getUUID());
         if (!wearing || player.isInvisible() || player.isSpectator()) {
@@ -102,6 +119,24 @@ public final class YsmHaloRenderer {
 
         pose.pushPose();
         try {
+            if (wearingTimeHalo(player)) {
+                // 时光光环戴在头顶：跟随 Head locator 的姿态，环面后仰一点方便第三人称看清表盘
+                if (ysmHead != null) {
+                    // ysmHead 的原点在脖子 pivot，直接叠加到渲染入口的根变换上，
+                    // 头部俯仰 / 转头都会带动光环，与原版路径的行为一致
+                    pose.last().pose().mul(ysmHead);
+                    pose.translate(0.0D, YSM_TIME_HALO_HEAD_OFFSET, 0.0D);
+                } else {
+                    pose.translate(0.0D, YSM_TIME_HALO_FALLBACK_Y, 0.0D);
+                }
+                if (player.isCrouching()) {
+                    pose.translate(0.0D, -YSM_CROUCH_DROP, 0.0D);
+                }
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(YSM_TIME_HALO_TILT));
+                TimeHaloLayers.render(pose, buffers, player, partialTick);
+                return;
+            }
+
             if (ysmHead != null) {
                 // ysmHead 是 Head locator 骨骼链相对实体原点的局部矩阵，原点落在 Head 的
                 // pivot 上，朝向也与模型头部一致。渲染入口的 pose 栈顶已经带着根变换，
@@ -125,11 +160,22 @@ public final class YsmHaloRenderer {
 
     /** 头盔栏或 Curios 光环饰品栏佩戴均渲染 */
     private static boolean wearingHalo(Player player) {
-        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())
+                || player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.TIME_HALO.get())) {
             return true;
         }
         // Curios 为运行时软依赖，仅在已加载时检查饰品栏，避免未安装时链接错误
         return ModList.get().isLoaded("curios")
-                && CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get());
+                && (CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get())
+                        || CuriosCompat.isEquipped(player, EndboundEmber.TIME_HALO.get()));
+    }
+
+    /** 当前佩戴的物品是否为时光光环（渲染成时钟而非星尘光环） */
+    private static boolean wearingTimeHalo(Player player) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.TIME_HALO.get())) {
+            return true;
+        }
+        return ModList.get().isLoaded("curios")
+                && CuriosCompat.isEquipped(player, EndboundEmber.TIME_HALO.get());
     }
 }

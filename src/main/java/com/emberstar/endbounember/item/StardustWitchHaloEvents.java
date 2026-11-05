@@ -1,11 +1,14 @@
 package com.emberstar.endbounember.item;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.compat.CuriosCompat;
+import com.emberstar.endbounember.world.TimeTurbulenceLevels;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +17,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -39,27 +44,29 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 星尘魔女的光环能力（戴在头盔栏或 Curios 光环饰品栏时生效）：
- * <ul>
- * <li>虚无中的微光：头部放置 15 级移动光源，攻击恢复速度提升 250%</li>
- * <li>创造模式飞行：佩戴时获得飞行能力，摘下后恢复原状态</li>
- * <li>soulless heart：99% 全伤害减伤</li>
- * <li>虚无的存在：生物对佩戴者强制中立，只有被佩戴者主动攻击后才会转为敌对</li>
- * <li>直面于虚无：免疫虚空与真实伤害，坠落虚空后跨维度送回最近的重生点</li>
- * <li>存在的意义？：每次致命伤免死；改写、强制清除类攻击（如无尽贪婪、莱特兰恶意的强制击杀）一律无效，无法被禁用</li>
- * </ul>
+ * 光环通用事件（星尘光环 + 时光光环共享），细分两种光环专属规则：
+ * <p>
+ * <b>星尘光环</b>：虚无中的微光（移动光源 + 攻击速度 +250%）、创造模式飞行、99% 全伤害减伤、
+ * 生物强制中立、免疫虚空 / 真实伤害、致命伤免死。
+ * <br>
+ * <b>时光光环</b>：创造模式飞行、50% 伤害减伤、维度传送轮盘（见 {@code TimeTurbulenceLevels}）。
+ * <p>
+ * <b>两者共有</b>：挖掘惩罚（水下 / 悬空）免疫、移动减速效果与负向移速修饰符清除。
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class StardustWitchHaloEvents {
-    /** soulless heart：伤害减免至原来的 1%（99% 减伤） */
-    private static final float DAMAGE_MULTIPLIER = 0.01F;
-    /** 虚无中的微光：攻击恢复速度 +250% 的属性修饰符标识 */
+    /** 星尘光环 soulless heart：伤害减免至原来的 1%（99% 减伤） */
+    private static final float STARDUST_DAMAGE_MULTIPLIER = 0.01F;
+    /** 时光光环：伤害减免至原来的 50% */
+    private static final float TIME_DAMAGE_MULTIPLIER = 0.5F;
+
+    /** 虚无中的微光：攻击恢复速度 +250% 的属性修饰符标识（仅星尘光环） */
     private static final ResourceLocation ATTACK_SPEED_ID =
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_witch_halo_swiftness");
-    /** 移动光源：记录每名佩戴者上一次放置光源方块的位置，便于移动后清除 */
+    /** 移动光源：记录每名星尘光环佩戴者上一次放置光源方块的位置，便于移动后清除 */
     private static final Map<UUID, BlockPos> HALO_LIGHT_POSITIONS = new ConcurrentHashMap<>();
 
-    /** 飞行：佩戴者当前是否处于「光环授予飞行」状态 */
+    /** 飞行：佩戴者当前是否处于「光环授予飞行」状态（两种光环共用同一份状态） */
     private static final String FLIGHT_GRANTED = "EndboundEmberHaloFlightGranted";
     /** 飞行：授予飞行前是否本来就能飞（创造模式等） */
     private static final String FLIGHT_PREV_MAYFLY = "EndboundEmberHaloFlightPrevMayfly";
@@ -69,15 +76,40 @@ public final class StardustWitchHaloEvents {
     private StardustWitchHaloEvents() {
     }
 
-    // ===== 直面于虚无：免疫虚空伤害与真实伤害；坠落虚空送回最近的重生点 =====
+    // ===== 光环判定助手 =====
+    /** 是否佩戴星尘光环（头盔栏或 Curios） */
+    public static boolean wearingStardustHalo(LivingEntity entity) {
+        if (!(entity instanceof Player player)) {
+            return false;
+        }
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())) {
+            return true;
+        }
+        return ModList.get().isLoaded("curios")
+                && CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get());
+    }
+
+    /** 是否佩戴时光光环（头盔栏或 Curios） */
+    public static boolean wearingTimeHalo(LivingEntity entity) {
+        if (!(entity instanceof Player player)) {
+            return false;
+        }
+        return TimeTurbulenceLevels.wearsTimeHalo(player);
+    }
+
+    /** 两种光环任意其一佩戴 */
+    private static boolean wearingAnyHalo(LivingEntity entity) {
+        return wearingStardustHalo(entity) || wearingTimeHalo(entity);
+    }
+
+    // ===== 直面于虚无（仅星尘光环）：免疫虚空伤害与真实伤害；坠落虚空送回最近的重生点 =====
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!wearingHalo(event.getEntity())) {
+        if (!wearingStardustHalo(event.getEntity())) {
             return;
         }
         if (event.getSource().is(DamageTypes.FELL_OUT_OF_WORLD)) {
             event.setCanceled(true);
-            // 跨维度送回最近的重生点（床/重生锚），无重生点则回该维度世界出生点
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
                 returnToNearestSpawn(serverPlayer);
             }
@@ -93,58 +125,46 @@ public final class StardustWitchHaloEvents {
         }
     }
 
-    // ===== soulless heart：99% 减伤；存在的意义？：减免后仍致命的伤害直接无效化 =====
+    // ===== 减伤（两种光环独立）：星尘 1%、时光 50% =====
     @SubscribeEvent
     public static void onLivingDamagePre(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
-        if (!wearingHalo(entity)) {
-            return;
+        if (wearingStardustHalo(entity)) {
+            float reduced = event.getOriginalDamage() * STARDUST_DAMAGE_MULTIPLIER;
+            if (reduced >= entity.getHealth()) {
+                event.setNewDamage(0.0F);
+                return;
+            }
+            event.setNewDamage(reduced);
+        } else if (wearingTimeHalo(entity)) {
+            float reduced = event.getOriginalDamage() * TIME_DAMAGE_MULTIPLIER;
+            event.setNewDamage(reduced);
         }
-        // 该事件在所有减伤计算之后触发，直接按原始伤害的 1% 结算
-        float reduced = event.getOriginalDamage() * DAMAGE_MULTIPLIER;
-        if (reduced >= entity.getHealth()) {
-            event.setNewDamage(0.0F);
-            return;
-        }
-        event.setNewDamage(reduced);
     }
 
-    // ===== 存在的意义？：兜底免死，拦截 setHealth(0)/kill() 等改写类强制击杀 =====
+    // ===== 存在的意义？（仅星尘光环）：兜底免死，拦截 setHealth(0)/kill() 等强制击杀 =====
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if (!wearingHalo(event.getEntity())) {
+        if (!wearingStardustHalo(event.getEntity())) {
             return;
         }
         event.setCanceled(true);
         event.getEntity().setHealth(event.getEntity().getMaxHealth());
     }
 
-    // ===== 虚无的存在：生物对佩戴者保持强制中立（被佩戴者攻击后才转为敌对） =====
-    /**
-     * 强制中立：生物不会主动把佩戴者设为攻击目标。
-     * <p>
-     * 但「强制中立」不等于「永久中立」：一旦佩戴者主动攻击某个生物，该生物会正常转为敌对并反击，
-     * 因此这里放行「该生物正被佩戴者攻击」的情况，其余索敌仍一律拦截。
-     */
+    // ===== 虚无的存在（仅星尘光环）：生物对佩戴者保持强制中立 =====
     @SubscribeEvent
     public static void onChangeTarget(LivingChangeTargetEvent event) {
         LivingEntity newTarget = event.getNewAboutToBeSetTarget();
-        if (newTarget == null || !wearingHalo(newTarget)) {
+        if (newTarget == null || !wearingStardustHalo(newTarget)) {
             return;
         }
-        // 佩戴者主动打过它：允许它把佩戴者当作目标，正常反击
         if (event.getEntity() instanceof Mob mob && isProvokedBy(mob, newTarget)) {
             return;
         }
         event.setNewAboutToBeSetTarget(null);
     }
 
-    /**
-     * 强制中立补强：每 tick 清掉生物对佩戴者的仇恨。
-     * <p>
-     * 与 {@link #onChangeTarget} 保持一致：被佩戴者攻击过的生物保留目标，可以正常反击；
-     * 未被攻击过的生物则始终无法把佩戴者当作目标。
-     */
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         LivingEntity entity = event.getEntity() instanceof LivingEntity living ? living : null;
@@ -152,26 +172,18 @@ public final class StardustWitchHaloEvents {
             return;
         }
         LivingEntity target = mob.getTarget();
-        if (target != null && wearingHalo(target) && !isProvokedBy(mob, target)) {
+        if (target != null && wearingStardustHalo(target) && !isProvokedBy(mob, target)) {
             mob.setTarget(null);
         }
     }
 
-    /**
-     * 强制中立补强：未被佩戴者攻击过的生物无法对佩戴者造成伤害。
-     * <p>
-     * 覆盖近战、弹射物、碰撞挤压（史莱姆/岩浆怪）、爆炸等一切由生物发起的伤害；
-     * 佩戴者自己造成的伤害（摔落、火焰、虚空等环境伤害）不受影响。
-     * 佩戴者主动攻击过的生物可以正常还手，与索敌规则保持一致。
-     */
     @SubscribeEvent
     public static void onLivingHurt(LivingIncomingDamageEvent event) {
         LivingEntity victim = event.getEntity();
-        if (!wearingHalo(victim) || event.getSource().getEntity() == victim) {
+        if (!wearingStardustHalo(victim) || event.getSource().getEntity() == victim) {
             return;
         }
         if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker != victim) {
-            // 佩戴者打过它：允许它反击造成伤害
             if (attacker instanceof Mob mob && isProvokedBy(mob, victim)) {
                 return;
             }
@@ -179,34 +191,33 @@ public final class StardustWitchHaloEvents {
         }
     }
 
-    /**
-     * 生物是否正被佩戴者主动攻击（即已被激怒，可以正常反击）。
-     * <p>
-     * 同时检查「最后伤害来源」与「最后攻击过的生物」：前者覆盖被佩戴者打中的情况，
-     * 后者覆盖佩戴者用弹射物、范围伤害等间接方式攻击的情况。
-     */
     private static boolean isProvokedBy(Mob mob, LivingEntity haloWearer) {
         return mob.getLastHurtByMob() == haloWearer || mob.getLastHurtMob() == haloWearer;
     }
 
-    // ===== 虚无中的微光：移动光源与攻击恢复速度提升（服务端每 tick 维护） =====
+    // ===== 每 tick 维护：飞行（两光环）、光源（仅星尘）、攻击速度（仅星尘）、惩罚免疫（两光环） =====
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         if (player.level().isClientSide) {
             return;
         }
-        boolean wearing = wearingHalo(player);
-        updateHaloLight(player, wearing);
-        updateAttackSpeed(player, wearing);
-        updateFlight(player, wearing);
+        boolean stardust = wearingStardustHalo(player);
+        boolean time = wearingTimeHalo(player);
+        boolean any = stardust || time;
+
+        updateFlight(player, any);
+        updatePenaltyClearing(player, any);
+
+        // 星尘光环专属：移动光源 + 攻击恢复速度
+        updateHaloLight(player, stardust);
+        updateAttackSpeed(player, stardust);
     }
 
     /**
-     * 创造模式飞行：佩戴光环时授予飞行能力，摘下后恢复原状态。
+     * 创造模式飞行：两种光环均可授予。摘下光环（两种都不戴）后恢复原状态。
      * <p>
-     * 创造与旁观模式的飞行由原版管理，这里不覆盖其状态，避免摘下光环后
-     * 把创造模式的飞行能力一并收回。
+     * 创造与旁观模式的飞行由原版管理，这里不覆盖其状态，避免摘下光环后把创造模式的飞行能力一并收回。
      */
     private static void updateFlight(Player player, boolean wearing) {
         CompoundTag data = player.getPersistentData();
@@ -236,7 +247,6 @@ public final class StardustWitchHaloEvents {
         }
 
         if (granted) {
-            // 只回收由光环授予的能力，原本就能飞的（如其他模组赋予）保持原样
             if (!data.getBoolean(FLIGHT_PREV_MAYFLY)) {
                 player.getAbilities().mayfly = false;
                 player.getAbilities().flying = false;
@@ -248,7 +258,57 @@ public final class StardustWitchHaloEvents {
         }
     }
 
-    /** 在头部放置 15 级光源方块形成移动光源，移动后清除旧位置 */
+    /**
+     * 惩罚免疫：清除挖掘疲劳、缓慢等原版负面移速 / 挖掘减速效果，
+     * 以及任何负向的 MOVEMENT_SPEED 属性修饰符（药水、模组等来源）。
+     */
+    private static void updatePenaltyClearing(Player player, boolean wearing) {
+        if (!wearing) {
+            return;
+        }
+        if (player.hasEffect(MobEffects.DIG_SLOWDOWN)) {
+            player.removeEffect(MobEffects.DIG_SLOWDOWN);
+        }
+        if (player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+            player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        }
+        AttributeInstance moveSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (moveSpeed != null) {
+            List<ResourceLocation> negatives = new ArrayList<>();
+            for (AttributeModifier modifier : moveSpeed.getModifiers()) {
+                if (modifier.amount() < 0.0D) {
+                    negatives.add(modifier.id());
+                }
+            }
+            for (ResourceLocation id : negatives) {
+                moveSpeed.removeModifier(id);
+            }
+        }
+    }
+
+    /** 挖掘速度事件：两种光环都免疫水下 / 悬空惩罚（抵消原版 ÷5 的逻辑） */
+    @SubscribeEvent
+    public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        Player player = event.getEntity();
+        if (!wearingAnyHalo(player)) {
+            return;
+        }
+        float speed = event.getNewSpeed();
+        // 水中惩罚：除以原版算出来的「水下挖掘速度」（若有水下速掘则 ≈1，相除等于 1；默认为 0.2）
+        if (player.isEyeInFluid(FluidTags.WATER)) {
+            double submerged = player.getAttributeValue(Attributes.SUBMERGED_MINING_SPEED);
+            if (submerged > 0.0D) {
+                speed /= (float) submerged;
+            }
+        }
+        // 空中惩罚：原版在离地时除以 5，这里乘回去
+        if (!player.onGround()) {
+            speed *= 5.0F;
+        }
+        event.setNewSpeed(speed);
+    }
+
+    /** 在头部放置 15 级光源方块形成移动光源，移动后清除旧位置（仅星尘光环） */
     private static void updateHaloLight(Player player, boolean wearing) {
         UUID id = player.getUUID();
         BlockPos last = HALO_LIGHT_POSITIONS.get(id);
@@ -272,12 +332,11 @@ public final class StardustWitchHaloEvents {
             level.setBlock(headPos, Blocks.LIGHT.defaultBlockState().setValue(BlockStateProperties.LEVEL, 15), 3);
             HALO_LIGHT_POSITIONS.put(id, headPos);
         } else {
-            // 头部处于实体方块内时不放置，下一 tick 继续尝试
             HALO_LIGHT_POSITIONS.remove(id);
         }
     }
 
-    /** 攻击恢复速度 +250%：佩戴时挂载属性修饰符，摘下时移除 */
+    /** 攻击恢复速度 +250%（仅星尘光环）：佩戴时挂载属性修饰符，摘下时移除 */
     private static void updateAttackSpeed(Player player, boolean wearing) {
         AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
         if (attackSpeed == null) {
@@ -313,7 +372,6 @@ public final class StardustWitchHaloEvents {
         if (last == null || player.getServer() == null) {
             return;
         }
-        // 跨维度场景下不确定光源位于哪个维度，遍历所有已加载维度清除
         for (ServerLevel level : player.getServer().getAllLevels()) {
             clearLight(level, last);
         }
@@ -340,18 +398,5 @@ public final class StardustWitchHaloEvents {
                 player.getYRot(), player.getXRot());
         player.setDeltaMovement(Vec3.ZERO);
         player.fallDistance = 0.0F;
-    }
-
-    /** 头盔栏或 Curios 光环饰品栏佩戴均生效 */
-    private static boolean wearingHalo(LivingEntity entity) {
-        if (!(entity instanceof Player player)) {
-            return false;
-        }
-        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())) {
-            return true;
-        }
-        // Curios 为运行时软依赖，仅在已加载时检查饰品栏，避免未安装时链接错误
-        return ModList.get().isLoaded("curios")
-                && CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get());
     }
 }

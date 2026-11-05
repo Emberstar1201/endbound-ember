@@ -1,0 +1,21 @@
+{
+  "parent": "endbound_ember:we_fall_we_remain",
+  "display": {
+    "icon": {"id": "endbound_ember:sword_of_the_free_will_enhanced"},
+    "title": {"translate": "advancements.endbound_ember.eternal_spark.title"},
+    "description": {"translate": "advancements.endbound_ember.eternal_spark.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_enhanced_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "endbound_ember:sword_of_the_free_will_enhanced"}]
+      }
+    }
+  },
+  "rewards": {"experience": 100}
+}

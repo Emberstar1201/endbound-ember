@@ -14,9 +14,11 @@ import com.emberstar.endbounember.entity.DrownedGirl;
 import com.emberstar.endbounember.entity.HumanGirl;
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.entity.ZombieGirl;
+import com.emberstar.endbounember.world.ModAdvancements;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -246,6 +248,11 @@ public class LifeStarItem extends Item {
             replacement.setLifeStarDiarySource(old.diaryVariant());
             old.remove(Entity.RemovalReason.DISCARDED);
             level.addFreshEntity(replacement);
+            // 治愈成就「驶向第2次生命」：发给该少女的主人
+            Player owner = replacement.getOwnerPlayer();
+            if (owner instanceof ServerPlayer serverOwner) {
+                ModAdvancements.award(serverOwner, ModAdvancements.SECOND_LIFE);
+            }
         }
 
         private static void replaceWithUndead(ServerLevel level, HumanGirl old) {

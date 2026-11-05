@@ -4,8 +4,24 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EnderDragonExperienceMixin",
+    "DisplayInfoAccessor",
     "ItemStackMaxDamageMixin",
-    "ItemStackMadeInChinaMixin"
+    "ItemStackMadeInChinaMixin",
+    "LevelTimeStopBlockEntityMixin",
+    "MinecraftServerAccessor",
+    "MobEffectInstanceDurationMixin",
+    "MonsterPeacefulMixin",
+    "PlayerListDimensionMixin",
+    "RangedAttributeAccessor",
+    "ServerLevelTimeStopMixin",
+    "ServerPlayerTeleportMixin",
+    "TeleportCommandFeedbackMixin"
+  ],
+  "client": [
+    "AdvancementToastMixin",
+    "AdvancementWidgetGarbledTitleMixin",
+    "ClientLevelTimeStopMixin",
+    "ParticleEngineTimeStopMixin"
   ],
   "injectors": {
     "defaultRequire": 1

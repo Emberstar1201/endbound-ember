@@ -1,7 +1,6 @@
 package com.emberstar.endbounember.enchantment;
 
 import java.util.Optional;
-import java.util.Set;
 
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
@@ -24,9 +23,7 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -78,16 +75,11 @@ public final class FreeWillEnchantments {
 
     /** 星火不灭 1~3 级对应的最大生命值比例，索引 0 不使用。 */
     public static final double[] ETERNAL_SPARK_RATIOS = {0.0D, 0.05D, 0.10D, 0.15D};
-    /** 蓝火状态下生物远离玩家的判定半径。 */
-    public static final double FLEE_RADIUS = 12.0D;
     /** 星火不灭扩散特效的半径（格）。 */
     private static final double SPARK_SPREAD_RADIUS = 5.0D;
 
     private static final String INSTANT_KILL_COOLDOWN_TAG = "EndboundEmberHopeBloomCooldown";
     private static final int HOPE_RESISTANCE_DURATION = 100;
-    /** 驱散光环不作用的 BOSS 生物（原版 BOSS 全家桶）。 */
-    private static final Set<EntityType<?>> BOSSES = Set.of(EntityType.WITHER, EntityType.ENDER_DRAGON,
-            EntityType.ELDER_GUARDIAN, EntityType.WARDEN);
 
     private FreeWillEnchantments() {
     }
@@ -127,31 +119,13 @@ public final class FreeWillEnchantments {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         ItemStack weapon = player.getMainHandItem();
-        if (!(weapon.getItem() instanceof SwordOfTheFreeWillItem sword)) return;
+        if (!(weapon.getItem() instanceof SwordOfTheFreeWillItem)) return;
 
         // 希望之花：低血量时持续获得抗性提升 II
         boolean lowHealth = player.getHealth() <= player.getMaxHealth() * HOPE_THRESHOLD;
         if (hasHopeBloom(weapon) && lowHealth && player.tickCount % 20 == 0) {
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,
                     HOPE_RESISTANCE_DURATION, HOPE_RESISTANCE_AMPLIFIER, true, false, true));
-        }
-
-        // 强化人权剑的固有技能：周围非 BOSS 生物远离玩家。
-        if (sword.isEnhanced() && player.tickCount % 10 == 0) repelMobs(player);
-    }
-
-    /** 让周围非 BOSS、非友方的生物远离玩家。 */
-    private static void repelMobs(ServerPlayer player) {
-        ServerLevel level = (ServerLevel) player.level();
-        for (Mob mob : level.getEntitiesOfClass(Mob.class,
-                player.getBoundingBox().inflate(FLEE_RADIUS),
-                candidate -> !BOSSES.contains(candidate.getType())
-                        && DawnEnchantment.canHit(player, candidate))) {
-            Vec3 away = mob.position().subtract(player.position());
-            if (away.lengthSqr() < 0.0001D) away = new Vec3(1.0D, 0.0D, 0.0D);
-            away = away.normalize().scale(6.0D);
-            mob.setTarget(null);
-            mob.getNavigation().moveTo(mob.getX() + away.x, mob.getY() + away.y, mob.getZ() + away.z, 1.4D);
         }
     }
 

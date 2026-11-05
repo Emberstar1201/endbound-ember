@@ -1,6 +1,6 @@
 # Endbound Ember
 
-Endbound Ember 是一个面向 Minecraft 1.21.1 NeoForge官方重置官方重置 Enchant-expansion 的原版拓展模组。
+Endbound Ember 是一个面向 Minecraft 1.21.1 NeoForge官方重置 Enchant-expansion 的原版拓展模组。
 
 ## 1.0.0
 

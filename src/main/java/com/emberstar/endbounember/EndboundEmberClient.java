@@ -1,6 +1,8 @@
 package com.emberstar.endbounember;
 
 import com.emberstar.endbounember.client.HaloLayers;
+import com.emberstar.endbounember.client.TimeHaloLayers;
+import com.emberstar.endbounember.client.TimeTurbulenceSkyEffects;
 import com.emberstar.endbounember.compat.CuriosCompat;
 import com.emberstar.endbounember.compat.ysm.YsmAdapter;
 import com.emberstar.endbounember.compat.ysm.YsmHeadCapture;
@@ -45,6 +47,13 @@ public class EndboundEmberClient {
     static void onClientSetup(FMLClientSetupEvent event) {
         EndboundEmber.LOGGER.info("HELLO FROM CLIENT SETUP");
         EndboundEmber.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+    }
+
+    /** 为时间乱流维度类型注册纯白天空与巨型时钟的天空特效 */
+    @SubscribeEvent
+    static void registerDimensionEffects(
+            net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent event) {
+        event.register(EndboundEmber.id("time_turbulence"), new TimeTurbulenceSkyEffects());
     }
 
     @SubscribeEvent
@@ -123,6 +132,18 @@ public class EndboundEmberClient {
          */
         private static final double VANILLA_HEAD_OFFSET = -0.85D;
 
+        /**
+         * 时光光环悬浮在头顶的高度（格）。
+         * <p>头部模型顶端位于 -0.5，这里取 -0.72，让光环压在头顶上方约 0.22 格。
+         */
+        private static final double TIME_HALO_HEAD_OFFSET = -0.72D;
+        /**
+         * 头顶时钟的后仰角度（度）。
+         * <p>环面默认平躺、正面朝上。模型空间的 X 轴旋转会被实体渲染器的 Y 轴翻转取反，
+         * 因此这里取负值，世界空间里就变成让环面后仰，第三人称镜头从斜后上方看过去能看到完整表盘与指针。
+         */
+        private static final float TIME_HALO_TILT = -30.0F;
+
         private HaloLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
             super(parent);
         }
@@ -140,22 +161,41 @@ public class EndboundEmberClient {
             }
 
             pose.pushPose();
-            getParentModel().head.translateAndRotate(pose);
-            // 头部模型原点在头部中心，向上移动到皮肤上方并保留原有视觉偏移。
-            pose.translate(0.0D, VANILLA_HEAD_OFFSET, -0.10D);
-            pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-12.0F));
-            HaloLayers.render(pose, buffers, ageInTicks, 1.0F, 255);
+            if (wearingTimeHalo(player)) {
+                // 时光光环戴在头顶：跟随头部姿态，环面后仰一点方便第三人称看清表盘
+                getParentModel().head.translateAndRotate(pose);
+                pose.translate(0.0D, TIME_HALO_HEAD_OFFSET, 0.0D);
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(TIME_HALO_TILT));
+                TimeHaloLayers.render(pose, buffers, player, partialTick);
+            } else {
+                getParentModel().head.translateAndRotate(pose);
+                // 头部模型原点在头部中心，向上移动到皮肤上方并保留原有视觉偏移。
+                pose.translate(0.0D, VANILLA_HEAD_OFFSET, -0.10D);
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-12.0F));
+                HaloLayers.render(pose, buffers, ageInTicks, 1.0F, 255);
+            }
             pose.popPose();
         }
     }
 
     /** 头盔栏或 Curios 光环饰品栏佩戴均渲染 */
     private static boolean wearingHalo(Player player) {
-        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.STARDUST_WITCH_HALO.get())
+                || player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.TIME_HALO.get())) {
             return true;
         }
         // Curios 为运行时软依赖，仅在已加载时检查饰品栏，避免未安装时链接错误
         return ModList.get().isLoaded("curios")
-                && CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get());
+                && (CuriosCompat.isEquipped(player, EndboundEmber.STARDUST_WITCH_HALO.get())
+                        || CuriosCompat.isEquipped(player, EndboundEmber.TIME_HALO.get()));
+    }
+
+    /** 判定玩家当前佩戴的是时光光环（区别于星尘光环，渲染成时钟） */
+    private static boolean wearingTimeHalo(Player player) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(EndboundEmber.TIME_HALO.get())) {
+            return true;
+        }
+        return ModList.get().isLoaded("curios")
+                && CuriosCompat.isEquipped(player, EndboundEmber.TIME_HALO.get());
     }
 }

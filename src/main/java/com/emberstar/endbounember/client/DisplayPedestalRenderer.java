@@ -1,6 +1,5 @@
 package com.emberstar.endbounember.client;
 
-import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.block.DisplayPedestalBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -60,7 +59,7 @@ public class DisplayPedestalRenderer implements BlockEntityRenderer<DisplayPedes
         // 仪式进度 0~1，未进行时为 0
         int elapsed = pedestal.getRitualElapsed(partialTick);
         float progress = elapsed < 0 ? 0.0F
-                : Mth.clamp(elapsed / (float) EndboundEmber.HALO_RITUAL_DURATION, 0.0F, 1.0F);
+                : Mth.clamp(elapsed / (float) pedestal.getRitualDuration(), 0.0F, 1.0F);
         // 前半段蓄力、后半段释放，用正弦曲线让升降与缩放更平滑
         float ritualCurve = Mth.sin(progress * Mth.PI);
 

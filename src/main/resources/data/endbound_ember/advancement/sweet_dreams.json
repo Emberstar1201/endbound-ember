@@ -1,0 +1,17 @@
+{
+  "parent": "endbound_ember:second_life",
+  "display": {
+    "icon": {"id": "minecraft:red_bed"},
+    "title": {"translate": "advancements.endbound_ember.sweet_dreams.title"},
+    "description": {"translate": "advancements.endbound_ember.sweet_dreams.description"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
