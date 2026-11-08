@@ -1,0 +1,13 @@
+{
+  "name": "翱翔",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 59,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "翱翔",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 鞘翅$(br2)§l效果：§r 滑翔时无需烟花火箭即可持续获得推进力，疾跑状态下推进更强。速度上限约 1.6 格/tick，避免失控。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

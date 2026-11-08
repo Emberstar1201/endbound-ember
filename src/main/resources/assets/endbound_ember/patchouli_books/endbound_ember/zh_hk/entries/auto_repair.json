@@ -1,0 +1,13 @@
+{
+  "name": "自動修復",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 56,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "自動修復",
+      "text": "§l最高等級：§r III$(br2)§l適用物品：§r 所有可損耗耐久的物品$(br2)§l效果：§r 裝備中的附魔物品每 5 秒自動恢復耐久：I 級 1~3 點、II 級 5~7 點、III 級 10~12 點。$(br2)§l衝突：§r 無$(br2)§l獲取方式：§r 寶箱（寶藏附魔）"
+    }
+  ]
+}

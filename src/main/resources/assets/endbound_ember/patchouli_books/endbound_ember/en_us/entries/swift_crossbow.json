@@ -1,0 +1,13 @@
+{
+  "name": "Swift Crossbow",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 49,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Swift Crossbow",
+      "text": "§lMax Level: §r IV$(br2)§lApplicable Items: §r Crossbow$(br2)§lEffect: §r Bolts deal extra armor-ignoring magic damage: I +2, II +4, III +6, IV +8. Reload time is reduced: I -0.25s, II -0.5s, III -1.0s, IV nearly instant.$(br2)§lConflicts: §r Mutually exclusive with Quick Charge.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

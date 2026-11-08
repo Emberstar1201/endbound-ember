@@ -1,0 +1,9 @@
+{
+  "parent": "endbound_ember:block/template_glass_stairs_outer",
+  "textures": {
+    "particle": "minecraft:block/blue_stained_glass",
+    "side": "minecraft:block/blue_stained_glass",
+    "top": "minecraft:block/blue_stained_glass",
+    "bottom": "minecraft:block/blue_stained_glass"
+  }
+}

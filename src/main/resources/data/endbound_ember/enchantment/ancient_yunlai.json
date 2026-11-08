@@ -1,0 +1,22 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.ancient_yunlai"
+  },
+  "supported_items": "#minecraft:enchantable/bow",
+  "primary_items": "#minecraft:enchantable/bow",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 0
+  },
+  "max_cost": {
+    "base": 35,
+    "per_level_above_first": 0
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/ancient_yunlai"
+}

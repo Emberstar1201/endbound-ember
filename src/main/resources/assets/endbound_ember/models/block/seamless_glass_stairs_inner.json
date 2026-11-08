@@ -1,0 +1,9 @@
+{
+  "parent": "endbound_ember:block/template_seamless_stairs_inner",
+  "textures": {
+    "particle": "minecraft:block/glass",
+    "side": "minecraft:block/glass",
+    "top": "minecraft:block/glass",
+    "bottom": "minecraft:block/glass"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "狙击",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 47,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "狙击",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 弓、弩$(br2)§l效果：§r 箭矢飞得越远伤害越高：每 1 格增加 4% 伤害，最多 +100%（25 格满额）。命中时向射手显示当前距离与加成。$(br2)§l获取方式：§r 附魔台、村民交易、钓鱼"
+    }
+  ]
+}

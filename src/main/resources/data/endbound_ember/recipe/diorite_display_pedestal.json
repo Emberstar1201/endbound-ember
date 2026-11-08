@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:diorite_slab"
+    },
+    "B": {
+      "item": "minecraft:diorite"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:diorite_display_pedestal",
+    "count": 1
+  }
+}

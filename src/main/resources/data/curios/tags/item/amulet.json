@@ -1,4 +1,7 @@
 {
   "replace": false,
-  "values": ["endbound_ember:dawn_amulet"]
+  "values": [
+    "endbound_ember:dawn_amulet",
+    "endbound_ember:anahita_firstlight_liddell"
+  ]
 }

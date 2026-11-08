@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:waxed_exposed_cut_copper_slab"
+    },
+    "B": {
+      "item": "minecraft:waxed_exposed_cut_copper"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:waxed_exposed_cut_copper_display_pedestal",
+    "count": 1
+  }
+}

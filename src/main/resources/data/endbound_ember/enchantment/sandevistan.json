@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.sandevistan"
+  },
+  "supported_items": "#minecraft:enchantable/chest_armor",
+  "primary_items": "#minecraft:enchantable/chest_armor",
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": {
+    "base": 18,
+    "per_level_above_first": 14
+  },
+  "max_cost": {
+    "base": 33,
+    "per_level_above_first": 14
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "chest"
+  ]
+}

@@ -28,8 +28,11 @@ public final class ZombieGirlSpawnEvents {
     private static final int PLAYER_RANGE = 32;
     private static final int SPAWN_ATTEMPTS = 8;
     private static final int MAX_NEARBY = 12;
-    /** 营地水平范围内不补刷：营地屋顶同样满足地表条件，会导致少女被刷到房顶上。 */
-    private static final int CAMP_EXCLUSION_RADIUS = 24;
+    /**
+     * 营地中心水平范围内不补刷：营地屋顶同样满足地表条件，会导致少女被刷到房顶上。
+     * 营地结构为 34×34，中心到四角约 24.04 格，取 26 才能覆盖整个营地。
+     */
+    private static final int CAMP_EXCLUSION_RADIUS = 26;
 
     private ZombieGirlSpawnEvents() {
     }

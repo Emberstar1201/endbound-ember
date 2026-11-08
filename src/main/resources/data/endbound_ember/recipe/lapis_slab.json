@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:lapis_block"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:lapis_slab",
+    "count": 6
+  }
+}

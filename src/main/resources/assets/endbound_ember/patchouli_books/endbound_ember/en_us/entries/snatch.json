@@ -1,0 +1,13 @@
+{
+  "name": "Snatch",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 39,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Snatch",
+      "text": "§lMax Level: §r V$(br2)§lApplicable Items: §r Melee Weapons$(br2)§lEffect: §r Attacks have a chance to disarm the target's main-hand weapon, then independently disarm one piece of armor at half that chance. Weapon chance: I=10%, II=20%, III=40%, IV=60%, V=80%.$(br2)§lConflicts: §r Looting.$(br2)§lAcquisition: §r I~III from Enchanting Table, loot chests and villager trades; IV~V from loot chests only"
+    }
+  ]
+}

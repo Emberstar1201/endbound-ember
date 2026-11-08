@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "minecraft:block/netherite_block",
+    "top": "minecraft:block/netherite_block",
+    "side": "minecraft:block/netherite_block",
+    "particle": "minecraft:block/netherite_block"
+  }
+}

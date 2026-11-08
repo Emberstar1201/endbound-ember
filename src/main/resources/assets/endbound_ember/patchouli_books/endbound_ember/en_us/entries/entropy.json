@@ -1,0 +1,13 @@
+{
+  "name": "Entropy",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 37,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Entropy",
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Melee Weapons$(br2)§lEffect: §r Attacks stack entropy marks; 2 stacks slow the target by 15%; at 3 stacks it detonates for true damage equal to 30% of the target's lost health, and spreads 50% of that damage to hostile mobs within 8 blocks.$(br2)§lConflicts: §r Mutually exclusive with other melee damage/growth enchantments; only one may be applied to a weapon.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

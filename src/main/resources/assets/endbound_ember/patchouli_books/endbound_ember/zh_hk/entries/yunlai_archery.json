@@ -1,0 +1,13 @@
+{
+  "name": "雲來弓法",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 48,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "雲來弓法",
+      "text": "§l最高等級：§r I$(br2)§l適用物品：§r 弓$(br2)§l效果：§r 拉弓蓄力時間縮短至約 0.45 秒，箭矢出膛速度 ×1.15、基礎傷害 +1。$(br2)§l衝突：§r 與其他雲來弓系附魔互斥。$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易"
+    }
+  ]
+}

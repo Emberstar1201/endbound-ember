@@ -18,6 +18,7 @@ public final class ZombieGirlCampSavedData extends SavedData {
     private static final String NAME = "endbound_ember_zombie_girl_camps";
     private final List<BlockPos> camps = new ArrayList<>();
     private final Set<Long> generatedChunks = new HashSet<>();
+    private final Set<Long> protectedCropFarmland = new HashSet<>();
 
     public static ZombieGirlCampSavedData get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
@@ -40,6 +41,9 @@ public final class ZombieGirlCampSavedData extends SavedData {
         for (long key : tag.getLongArray("GeneratedChunks")) {
             data.generatedChunks.add(key);
         }
+        for (long key : tag.getLongArray("ProtectedCropFarmland")) {
+            data.protectedCropFarmland.add(key);
+        }
         return data;
     }
 
@@ -55,6 +59,7 @@ public final class ZombieGirlCampSavedData extends SavedData {
         }
         tag.put("Positions", positions);
         tag.putLongArray("GeneratedChunks", generatedChunks.stream().mapToLong(Long::longValue).toArray());
+        tag.putLongArray("ProtectedCropFarmland", protectedCropFarmland.stream().mapToLong(Long::longValue).toArray());
         return tag;
     }
 
@@ -62,12 +67,23 @@ public final class ZombieGirlCampSavedData extends SavedData {
         return generatedChunks.contains(ChunkPos.asLong(chunk.x, chunk.z));
     }
 
+    /** 记录一座营地；{@code pos} 是营地中心（室内地面高度），不是结构最小角。 */
     public void addCamp(BlockPos pos, ChunkPos chunk) {
         long key = ChunkPos.asLong(chunk.x, chunk.z);
         if (generatedChunks.add(key)) {
             camps.add(pos.immutable());
             setDirty();
         }
+    }
+
+    public void addProtectedCropFarmland(BlockPos pos) {
+        if (protectedCropFarmland.add(pos.asLong())) {
+            setDirty();
+        }
+    }
+
+    public boolean isProtectedCropFarmland(BlockPos pos) {
+        return protectedCropFarmland.contains(pos.asLong());
     }
 
     public BlockPos findNearest(BlockPos from) {

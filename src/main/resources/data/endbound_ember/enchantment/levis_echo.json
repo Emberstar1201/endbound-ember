@@ -1,0 +1,22 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.levis_echo"
+  },
+  "supported_items": "#endbound_ember:weapon_enchantable",
+  "primary_items": "#endbound_ember:weapon_enchantable",
+  "weight": 5,
+  "max_level": 5,
+  "min_cost": {
+    "base": 12,
+    "per_level_above_first": 7
+  },
+  "max_cost": {
+    "base": 27,
+    "per_level_above_first": 7
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/levis_echo"
+}

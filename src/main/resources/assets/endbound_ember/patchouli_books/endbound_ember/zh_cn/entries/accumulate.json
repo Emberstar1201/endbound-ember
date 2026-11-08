@@ -1,0 +1,13 @@
+{
+  "name": "蓄积",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 58,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蓄积",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 剑、斧、三叉戟$(br2)§l效果：§r 长按右键蓄力，每 5 秒积累一阶（上限等于附魔等级）。蓄力完成后下一次近战攻击每阶造成 +50% 伤害，并按阶数击退目标。切换主手物品、受到伤害或完成一次攻击都会清空蓄力。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

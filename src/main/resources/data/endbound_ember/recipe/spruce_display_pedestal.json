@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:spruce_slab"
+    },
+    "B": {
+      "item": "minecraft:spruce_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:spruce_display_pedestal",
+    "count": 1
+  }
+}

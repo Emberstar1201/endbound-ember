@@ -1,0 +1,7 @@
+{
+  "parent": "endbound_ember:block/display_pedestal_template",
+  "textures": {
+    "0": "minecraft:block/calcite",
+    "particle": "minecraft:block/calcite"
+  }
+}

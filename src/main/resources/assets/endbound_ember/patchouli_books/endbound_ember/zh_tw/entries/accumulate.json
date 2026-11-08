@@ -1,0 +1,13 @@
+{
+  "name": "蓄積",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 58,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蓄積",
+      "text": "§l最高等級：§r III$(br2)§l適用物品：§r 劍、斧、三叉戟$(br2)§l效果：§r 長按右鍵蓄力，每 5 秒積累一階（上限等於附魔等級）。蓄力完成後下一次近戰攻擊每階造成 +50% 傷害，並按階數擊退目標。切換主手物品、受到傷害或完成一次攻擊都會清空蓄力。$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易"
+    }
+  ]
+}

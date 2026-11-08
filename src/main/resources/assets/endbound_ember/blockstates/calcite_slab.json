@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/calcite_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/calcite_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/calcite"
+    }
+  }
+}

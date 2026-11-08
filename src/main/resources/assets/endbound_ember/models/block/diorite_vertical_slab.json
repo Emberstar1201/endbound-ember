@@ -1,0 +1,8 @@
+{
+  "parent": "endbound_ember:block/vertical_slab",
+  "textures": {
+    "side": "minecraft:block/diorite",
+    "top": "minecraft:block/diorite",
+    "bottom": "minecraft:block/diorite"
+  }
+}

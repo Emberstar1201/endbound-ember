@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:smooth_red_sandstone_slab"
+    },
+    "B": {
+      "item": "minecraft:smooth_red_sandstone"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:smooth_red_sandstone_display_pedestal",
+    "count": 1
+  }
+}

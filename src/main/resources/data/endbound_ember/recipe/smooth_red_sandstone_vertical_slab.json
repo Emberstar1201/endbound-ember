@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:smooth_red_sandstone"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:smooth_red_sandstone_vertical_slab",
+    "count": 6
+  }
+}

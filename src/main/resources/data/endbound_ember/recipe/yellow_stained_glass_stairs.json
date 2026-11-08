@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:yellow_stained_glass"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:yellow_stained_glass_stairs",
+    "count": 4
+  }
+}

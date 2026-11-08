@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/pink_concrete_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/pink_concrete_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/pink_concrete"
+    }
+  }
+}

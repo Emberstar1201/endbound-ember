@@ -1,0 +1,13 @@
+{
+  "name": "貫穿鏈條",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 45,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "貫穿鏈條",
+      "text": "§l最高等級：§r III$(br2)§l適用物品：§r 弓、弩$(br2)§l效果：§r 箭矢命中實體後彈射至 10 格內最近的敵人：I 級彈射 1 次、II 級 2 次、III 級 3 次，每次造成箭矢基礎傷害的 80%。與爆破箭矢衝突。$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易"
+    }
+  ]
+}

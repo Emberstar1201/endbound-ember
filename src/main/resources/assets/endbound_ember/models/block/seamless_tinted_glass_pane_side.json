@@ -1,0 +1,7 @@
+{
+  "parent": "endbound_ember:block/template_seamless_pane_side",
+  "textures": {
+    "pane": "endbound_ember:block/seamless_tinted_glass",
+    "edge": "endbound_ember:block/seamless_tinted_glass"
+  }
+}

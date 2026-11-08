@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:smooth_quartz_slab"
+    },
+    "B": {
+      "item": "minecraft:smooth_quartz"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:smooth_quartz_display_pedestal",
+    "count": 1
+  }
+}

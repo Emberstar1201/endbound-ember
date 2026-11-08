@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "minecraft:block/calcite",
+    "top": "minecraft:block/calcite",
+    "side": "minecraft:block/calcite",
+    "particle": "minecraft:block/calcite"
+  }
+}

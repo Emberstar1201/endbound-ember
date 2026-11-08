@@ -45,5 +45,13 @@
   "time_chime": {
     "subtitle": "subtitles.endbound_ember.time_chime",
     "sounds": ["endbound_ember:time_chime"]
+  },
+  "herobrine_boss_music": {
+    "sounds": [
+      {
+        "name": "endbound_ember:music/herobrine_boss_music",
+        "stream": true
+      }
+    ]
   }
 }

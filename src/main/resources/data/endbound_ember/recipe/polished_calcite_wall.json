@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "endbound_ember:polished_calcite"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:polished_calcite_wall",
+    "count": 6
+  }
+}

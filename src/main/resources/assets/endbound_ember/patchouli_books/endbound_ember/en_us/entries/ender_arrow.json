@@ -1,0 +1,13 @@
+{
+  "name": "Ender Arrow",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 46,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Ender Arrow",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bow, Crossbow$(br2)§lEffect: §r When the arrow hits a creature, the shooter teleports in front of it. Hitting a block does nothing and does not consume the cooldown. Cooldown: 3 seconds.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

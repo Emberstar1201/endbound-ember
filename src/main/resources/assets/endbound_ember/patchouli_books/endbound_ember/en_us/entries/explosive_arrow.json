@@ -1,0 +1,13 @@
+{
+  "name": "Explosive Arrow",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 44,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Explosive Arrow",
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Bow, Crossbow$(br2)§lEffect: §r Arrows explode on impact without destroying terrain. Level I: 2 block radius / 6 damage, II: 3 blocks / 9 damage, III: 4 blocks / 12 damage. The directly hit target takes full damage; nearby mobs take falloff damage. Conflicts with Chain Arrow.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

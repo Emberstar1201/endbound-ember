@@ -60,6 +60,7 @@ public class ModClientEvents {
         event.registerLayerDefinition(ZOMBIE_GIRL_LAYER, ZombieGirlModel::createBodyLayer);
         event.registerLayerDefinition(DROWNED_GIRL_LAYER, ZombieGirlModel::createBodyLayer);
         event.registerLayerDefinition(HUMAN_GIRL_LAYER, ZombieGirlModel::createBodyLayer);
+        event.registerLayerDefinition(NetherMeteorModel.LAYER, NetherMeteorModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -71,10 +72,13 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
         event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
+        event.registerEntityRenderer(ModEntities.NETHER_METEOR.get(), NetherMeteorRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DISPLAY_PEDESTAL_BLOCK_ENTITY.get(),
                 DisplayPedestalRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.MIXED_VERTICAL_SLAB_BLOCK_ENTITY.get(),
                 MixedVerticalSlabRenderer::new);
+        event.registerBlockEntityRenderer(EndboundEmber.DOOM_PILLAR_BLOCK_ENTITY.get(),
+                DoomPillarRenderer::new);
     }
 
     @SubscribeEvent

@@ -1,0 +1,13 @@
+{
+  "name": "古·云来剑法",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 42,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "古·云来剑法",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 剑$(br2)§l效果：§r 手持时攻击速度 +5.0、攻击距离 +5.0 格、近战伤害 ×1.50；命中时 75% 概率斩出射程 10 格的剑气，造成本次攻击 75% 的伤害。$(br2)§l冲突：§r 云来剑法，以及其他近战伤害/成长型附魔，同一把武器仅可附加一个。$(br2)§l获取方式：§r 仅宝箱中的附魔书（宝藏附魔，附魔台与村民交易无法获得）"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "贯穿链条",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 45,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "贯穿链条",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 弓、弩$(br2)§l效果：§r 箭矢命中实体后弹射至 10 格内最近的敌人：I 级弹射 1 次、II 级 2 次、III 级 3 次，每次造成箭矢基础伤害的 80%。与爆破箭矢冲突。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

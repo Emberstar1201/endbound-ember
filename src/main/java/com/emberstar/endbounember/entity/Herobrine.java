@@ -11,12 +11,14 @@ import java.util.function.Predicate;
 
 import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.block.DoomPillarBlock;
 import com.emberstar.endbounember.block.DoomPillarBlockEntity;
 import com.emberstar.endbounember.compat.CuriosCompat;
 import com.emberstar.endbounember.effect.ModEffects;
 import com.emberstar.endbounember.enchantment.DawnEnchantment;
 import com.emberstar.endbounember.enchantment.FreeWillEnchantments;
 import com.emberstar.endbounember.item.DawnAmuletItem;
+import com.emberstar.endbounember.item.AnahitaFirstlightLiddellItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.mixin.RangedAttributeAccessor;
 
@@ -91,10 +93,12 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -173,13 +177,12 @@ public class Herobrine extends Monster implements RangedAttackMob {
     /** 雷罚预警：预警圈持续时间（tick）与结算半径（格） */
     private static final int THUNDER_WARNING_TICKS = 30;
     private static final double THUNDER_WARNING_RADIUS = 2.6D;
-    /** 下界流星：预警持续时间（tick）、坠落高度（格）与结算半径（格） */
-    private static final int METEOR_WARNING_TICKS = 45;
-    private static final double METEOR_FALL_HEIGHT = 14.0D;
+    /** 下界流星：预警持续时间（tick，与流星实体共用）与结算半径（格） */
+    private static final int METEOR_WARNING_TICKS = NetherMeteor.FALL_TICKS;
     private static final double METEOR_WARNING_RADIUS = 3.4D;
     /** 两类预警技能结算的伤害 */
-    private static final float TELEGRAPH_THUNDER_DAMAGE = 8.0F;
-    private static final float TELEGRAPH_METEOR_DAMAGE = 14.0F;
+    private static final float TELEGRAPH_THUNDER_DAMAGE = 5.0F;
+    private static final float TELEGRAPH_METEOR_DAMAGE = 8.0F;
     /** 预警圈的重绘间隔（tick），用来控制粒子包的数量 */
     private static final int WARNING_REDRAW_INTERVAL = 2;
 
@@ -198,11 +201,15 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int PHASE_TWO = 2;
     /** 二阶段开场的无敌帧（tick），给玩家一点反应时间 */
     private static final int PHASE_TWO_GRACE_TICKS = 60;
+    /** 二阶段呼唤亡灵时场上精锐的上限，覆盖词条提供的召唤上限 */
+    private static final int PHASE_TWO_SUMMON_CAP = 20;
     /** 亡者之柱：数量、召唤半径（格） */
     private static final int DOOM_PILLAR_COUNT = 3;
     private static final double DOOM_PILLAR_RADIUS = 7.5D;
-    /** 存活柱子会共同分摊掉的伤害比例（剩余部分才落到本体） */
+    /** 只剩 1 根柱子时的分摊比例，每多存活 1 根按 {@link #DOOM_PILLAR_SHARE_STEP} 递增 */
     private static final float DOOM_PILLAR_SHARE = 0.6F;
+    /** 每多一根存活柱子带来的分摊比例增量：1 根 60%、2 根 75%、3 根 90% */
+    private static final float DOOM_PILLAR_SHARE_STEP = 0.15F;
     /** 指示线：间隔、持续时间与重绘间隔（tick） */
     private static final int PILLAR_HINT_INTERVAL = 140;
     private static final int PILLAR_HINT_DURATION = 50;
@@ -232,7 +239,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
     /** 连射时每支箭的间隔（tick）：20 tick（1 秒）内正好射出 10 支 */
     private static final int BURST_INTERVAL = 2;
     /** 每支箭的基础伤害 */
-    private static final double ARROW_DAMAGE = 8.0D;
+    private static final double ARROW_DAMAGE = 4.5D;
 
     /** 远程走位：距离小于此值时主动后撤，避免被贴脸 */
     private static final double RANGED_KEEP_MIN = 7.0D;
@@ -501,7 +508,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
                 .add(Attributes.ARMOR, ARMOR)
-                .add(Attributes.ATTACK_DAMAGE, 15.0D)
+                .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D);
@@ -646,17 +653,17 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (!ignoresDamageCap(source)) {
             finalAmount = Math.min(finalAmount, DAMAGE_CAP);
         }
-        // 第二阶段：存活的亡者之柱先分摊掉一部分伤害，剩余部分才落到本体
-        if (this.phase >= PHASE_TWO && !voidDamage) {
-            finalAmount = this.splitDamageToPillars(finalAmount);
-        }
         // 不死执念：这一击会致命时把血量锁在 1 点
+        // 柱子分摊改到 LivingDamageEvent.Pre 结算，这里按当前存活柱子预估真正落到本体的伤害
         boolean locked = false;
-        if (this.lockAvailable && !voidDamage && this.getHealth() - finalAmount <= 0.0F) {
-            finalAmount = Math.max(0.0F, this.getHealth() - 1.0F);
-            this.lockAvailable = false;
-            this.lockUsed = true;
-            locked = true;
+        if (this.lockAvailable && !voidDamage) {
+            float projected = this.projectDamageAfterPillars(finalAmount);
+            if (this.getHealth() - projected <= 0.0F) {
+                finalAmount = Math.max(0.0F, this.getHealth() - 1.0F);
+                this.lockAvailable = false;
+                this.lockUsed = true;
+                locked = true;
+            }
         }
         boolean damaged = super.hurt(source, finalAmount);
         if (damaged) {
@@ -704,7 +711,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         return attacker.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem
                 || attacker.getOffhandItem().getItem() instanceof SwordOfTheFreeWillItem
-                || DawnAmuletItem.isEquipped(attacker);
+                || DawnAmuletItem.isEquipped(attacker)
+                || AnahitaFirstlightLiddellItem.isEquipped(attacker);
     }
 
     /** 攻击者手持武器上的亡灵杀手等级 */
@@ -834,12 +842,16 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (!(this.level() instanceof ServerLevel level)) {
             return 0;
         }
+        // 二阶段改用固定上限 20，避免词条叠加后场上精锐无限堆积
+        int cap = this.phase >= PHASE_TWO ? PHASE_TWO_SUMMON_CAP : this.titleStats.summonCap;
         int nearby = this.countNearbyElites();
-        if (nearby >= this.titleStats.summonCap) {
+        if (nearby >= cap) {
             return 0;
         }
         int count = this.titleStats.summonMin
                 + this.getRandom().nextInt(this.titleStats.summonMax - this.titleStats.summonMin + 1);
+        // 单次召唤也不允许越过上限
+        count = Math.min(count, cap - nearby);
         int spawned = 0;
         for (int i = 0; i < count; i++) {
             boolean skeleton = this.getRandom().nextBoolean();
@@ -959,6 +971,10 @@ public class Herobrine extends Monster implements RangedAttackMob {
         Vec3 pos = groundPosition(level, target.position());
         this.telegraphs.add(new Telegraph(pos, meteor,
                 meteor ? METEOR_WARNING_TICKS : THUNDER_WARNING_TICKS));
+        if (meteor) {
+            // 落地前先放一颗真正会掉下来的岩块，给玩家明确的视觉预警
+            level.addFreshEntity(new NetherMeteor(level, pos));
+        }
         level.playSound(null, BlockPos.containing(pos), SoundEvents.SOUL_ESCAPE.value(),
                 SoundSource.HOSTILE, 0.8F, 0.6F);
     }
@@ -979,7 +995,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
     }
 
-    /** 地面预警圈：脚下画一圈灵魂火；下界流星额外画一道从高空垂落的火线 */
+    /** 地面预警圈：脚下画一圈灵魂火；坠落的岩块本身由 {@link NetherMeteor} 显示 */
     private void renderWarning(Telegraph telegraph) {
         if (!(this.level() instanceof ServerLevel level)
                 || telegraph.ticksLeft % WARNING_REDRAW_INTERVAL != 0) {
@@ -996,12 +1012,6 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         level.sendParticles(ParticleTypes.END_ROD, pos.x, pos.y + 0.1D, pos.z,
                 1, 0.1D, 0.05D, 0.1D, 0.0D);
-        if (telegraph.meteor) {
-            double progress = 1.0D - telegraph.ticksLeft / (double) METEOR_WARNING_TICKS;
-            double fallY = pos.y + METEOR_FALL_HEIGHT * (1.0D - progress);
-            level.sendParticles(ParticleTypes.FLAME, pos.x, fallY, pos.z, 5, 0.12D, 0.3D, 0.12D, 0.02D);
-            level.sendParticles(ParticleTypes.LAVA, pos.x, fallY, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        }
     }
 
     /** 预警结束：雷罚直接落雷，下界流星砸出范围伤害、击退与火焰 */
@@ -1380,15 +1390,16 @@ public class Herobrine extends Monster implements RangedAttackMob {
         player.setItemSlot(slot, ItemStack.EMPTY);
     }
 
-    /** 配置白名单中的物品，以及精妙背包模组的背包、两个光环与晨曦护符，永远不会被夺走 */
+    /** 配置白名单中的物品，以及精妙背包模组的背包、两个光环、晨曦护符与生命之星，永远不会被夺走 */
     private static boolean isPlunderProtected(ItemStack stack) {
         if (stack.isEmpty()) {
             return true;
         }
-        // 两个光环是头盔位装备，必须在这里拦住，否则会被「盔甲四件套」一并取走
+        // 固定保护物品均在此拦截，避免被装备槽或背包夺取逻辑取走
         if (stack.is(EndboundEmber.STARDUST_WITCH_HALO.get())
                 || stack.is(EndboundEmber.TIME_HALO.get())
-                || stack.is(EndboundEmber.DAWN_AMULET.get())) {
+                || stack.is(EndboundEmber.DAWN_AMULET.get())
+                || stack.is(EndboundEmber.LIFE_STAR.get())) {
             return true;
         }
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -1550,7 +1561,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
             if (base == null) {
                 continue;
             }
-            level.setBlockAndUpdate(base, EndboundEmber.DOOM_PILLAR.get().defaultBlockState());
+            DoomPillarBlock.placePillar(level, base);
             this.doomPillars.add(base.immutable());
             level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                     base.getX() + 0.5D, base.getY() + 0.5D, base.getZ() + 0.5D, 40,
@@ -1640,15 +1651,46 @@ public class Herobrine extends Monster implements RangedAttackMob {
     }
 
     /**
-     * 把伤害按比例分摊给存活柱子。
+     * 把伤害按当前存活柱子数量分摊给柱子。
      *
      * @return 分摊后真正落到本体身上的伤害
      */
     private float splitDamageToPillars(float amount) {
-        if (amount <= 0.0F || !(this.level() instanceof ServerLevel level) || this.doomPillars.isEmpty()) {
+        if (amount <= 0.0F) {
             return amount;
         }
+        List<DoomPillarBlockEntity> alive = this.aliveDoomPillars();
+        if (alive.isEmpty()) {
+            return amount;
+        }
+        float absorbed = amount * pillarShare(alive.size());
+        float each = absorbed / alive.size();
+        for (DoomPillarBlockEntity pillar : alive) {
+            pillar.applyDamage(each);
+        }
+        return amount - absorbed;
+    }
+
+    /** 预估分摊后落到本体的伤害，仅用于锁血判定，不真正扣柱子血量 */
+    private float projectDamageAfterPillars(float amount) {
+        if (this.phase < PHASE_TWO) {
+            return amount;
+        }
+        int alive = this.aliveDoomPillars().size();
+        return alive <= 0 ? amount : amount * (1.0F - pillarShare(alive));
+    }
+
+    /** 存活柱子的分摊比例：1 根 60%、2 根 75%、3 根 90%，更多按 90% 封顶 */
+    private static float pillarShare(int aliveCount) {
+        return Math.min(0.9F, DOOM_PILLAR_SHARE + DOOM_PILLAR_SHARE_STEP * (aliveCount - 1));
+    }
+
+    /** 收集仍能分摊伤害的柱子，同时清掉已经失效的记录 */
+    private List<DoomPillarBlockEntity> aliveDoomPillars() {
         List<DoomPillarBlockEntity> alive = new ArrayList<>();
+        if (!(this.level() instanceof ServerLevel level) || this.doomPillars.isEmpty()) {
+            return alive;
+        }
         for (Iterator<BlockPos> it = this.doomPillars.iterator(); it.hasNext();) {
             BlockPos pos = it.next();
             if (level.getBlockEntity(pos) instanceof DoomPillarBlockEntity pillar
@@ -1658,24 +1700,14 @@ public class Herobrine extends Monster implements RangedAttackMob {
                 it.remove();
             }
         }
-        if (alive.isEmpty()) {
-            return amount;
-        }
-        float absorbed = amount * DOOM_PILLAR_SHARE;
-        float each = absorbed / alive.size();
-        for (DoomPillarBlockEntity pillar : alive) {
-            pillar.applyDamage(each);
-        }
-        return amount - absorbed;
+        return alive;
     }
 
     /** 清掉场上所有亡者之柱（本体死亡或重置时调用） */
     private void removeDoomPillars() {
         if (this.level() instanceof ServerLevel level) {
             for (BlockPos pos : this.doomPillars) {
-                if (level.getBlockState(pos).is(EndboundEmber.DOOM_PILLAR.get())) {
-                    level.destroyBlock(pos, false);
-                }
+                DoomPillarBlock.removePillar(level, pos);
             }
         }
         this.doomPillars.clear();
@@ -1911,13 +1943,34 @@ public class Herobrine extends Monster implements RangedAttackMob {
             }
         }
 
+        /**
+         * 第二阶段亡者之柱分摊最终伤害。
+         * <p>必须放在 LivingDamageEvent.Pre（LOWEST 优先级）：此时护甲、附魔与所有
+         * LivingIncomingDamageEvent 里追加的伤害（千破·青溟、拂晓附魔、难度馈赠等）都已结算完毕，
+         * 否则追加伤害会绕过柱子分摊直接打到本体；同时该事件只在伤害真正生效时触发，
+         * 不会出现 Boss 处于无敌帧、柱子却被白白扣血的情况。</p>
+         */
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onDamagePre(LivingDamageEvent.Pre event) {
+            if (!(event.getEntity() instanceof Herobrine boss)) {
+                return;
+            }
+            if (boss.isPhantom() || boss.phase < PHASE_TWO || boss.level().isClientSide()) {
+                return;
+            }
+            if (isVoidDamage(event.getSource())) {
+                return;
+            }
+            event.setNewDamage(boss.splitDamageToPillars(event.getNewDamage()));
+        }
+
         /** 破晓之敌对毕业装玩家增伤；箭雨统帅的箭会让玩家短暂无法疾跑 */
         @SubscribeEvent
         public static void onIncomingDamage(LivingIncomingDamageEvent event) {
             if (event.getSource().getEntity() instanceof Herobrine boss
                     && event.getEntity() instanceof ServerPlayer player) {
                 if (boss.titleStats.baneOfDawn && holdsDawnGear(player)) {
-                    event.setAmount(event.getAmount() * 1.2F);
+                    event.setAmount(event.getAmount() * 1.1F);
                 }
                 return;
             }
@@ -1959,9 +2012,11 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
     }
 
-    /** 是否免疫亡灵诅咒：携带晨曦护符，或佩戴本模组的光环 */
+    /** 是否免疫亡灵诅咒：携带晨曦护符（含上位护符），或佩戴本模组的光环 */
     private static boolean isCurseImmune(ServerPlayer player) {
-        return DawnAmuletItem.isEquipped(player) || wearsHalo(player);
+        return DawnAmuletItem.isEquipped(player)
+                || AnahitaFirstlightLiddellItem.isEquipped(player)
+                || wearsHalo(player);
     }
 
     /** 光环属于头盔类护甲，也可能被放进饰品栏，两种位置都算携带 */
@@ -1980,9 +2035,10 @@ public class Herobrine extends Monster implements RangedAttackMob {
                 || CuriosCompat.isEquipped(player, EndboundEmber.TIME_HALO.get());
     }
 
-    /** 是否持有晨曦护符或破晓武器（主手 / 副手） */
+    /** 是否持有晨曦护符（含上位护符）或破晓武器（主手 / 副手） */
     private static boolean holdsDawnGear(ServerPlayer player) {
         return DawnAmuletItem.isEquipped(player)
+                || AnahitaFirstlightLiddellItem.isEquipped(player)
                 || DawnEnchantment.levelOf(player.getMainHandItem()) > 0
                 || DawnEnchantment.levelOf(player.getOffhandItem()) > 0;
     }

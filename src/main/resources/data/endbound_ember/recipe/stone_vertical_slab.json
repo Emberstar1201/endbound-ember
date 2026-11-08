@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:stone"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:stone_vertical_slab",
+    "count": 6
+  }
+}

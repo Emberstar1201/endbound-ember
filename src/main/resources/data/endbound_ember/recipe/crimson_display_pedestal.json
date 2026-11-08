@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:crimson_slab"
+    },
+    "B": {
+      "item": "minecraft:crimson_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:crimson_display_pedestal",
+    "count": 1
+  }
+}

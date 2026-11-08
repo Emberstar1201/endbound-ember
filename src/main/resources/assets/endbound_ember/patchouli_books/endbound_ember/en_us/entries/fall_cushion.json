@@ -1,0 +1,13 @@
+{
+  "name": "Fall Cushion",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 52,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Fall Cushion",
+      "text": "§lMax Level:§r II$(br2)§lApplicable to:§r Boots$(br2)§lEffect:§r Fall damage is reduced by 50% (75% at level II). Landing after a fall of more than 3 blocks creates a shockwave that knocks back nearby creatures (level I: 3 blocks, strength 1.0; level II: 5 blocks, strength 2.0).$(br2)§lConflicts:§r Elegant Catwalk$(br2)§lObtained via:§r Enchanting table, loot chests, villager trades"
+    }
+  ]
+}

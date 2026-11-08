@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:mud_bricks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:mud_brick_vertical_slab",
+    "count": 6
+  }
+}

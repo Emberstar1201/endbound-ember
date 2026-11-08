@@ -1,0 +1,117 @@
+﻿{
+  "multipart": [
+    {
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_base"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "north": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_up_north"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "south": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_up_south"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "west": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_up_west"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "east": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_up_east"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "north": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_down_north"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "south": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_down_south"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "west": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_down_west"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "east": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_down_east"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "west": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_north_west"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "east": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_north_east"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "west": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_south_west"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "east": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_lime_stained_glass_south_east"
+      }
+    }
+  ]
+}

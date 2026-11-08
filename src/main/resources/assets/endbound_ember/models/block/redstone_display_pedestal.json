@@ -1,0 +1,7 @@
+{
+  "parent": "endbound_ember:block/display_pedestal_template",
+  "textures": {
+    "0": "minecraft:block/redstone_block",
+    "particle": "minecraft:block/redstone_block"
+  }
+}

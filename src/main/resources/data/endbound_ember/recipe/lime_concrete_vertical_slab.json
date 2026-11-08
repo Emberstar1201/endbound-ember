@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:lime_concrete"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:lime_concrete_vertical_slab",
+    "count": 6
+  }
+}

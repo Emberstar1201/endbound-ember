@@ -1,6 +1,23 @@
 {
   "values": [
     "endbound_ember:deepslate_brick_vertical_slab",
-    "endbound_ember:polished_deepslate_vertical_slab"
+    "endbound_ember:polished_deepslate_vertical_slab",
+    "endbound_ember:cut_copper_vertical_slab",
+    "endbound_ember:exposed_cut_copper_vertical_slab",
+    "endbound_ember:weathered_cut_copper_vertical_slab",
+    "endbound_ember:oxidized_cut_copper_vertical_slab",
+    "endbound_ember:waxed_cut_copper_vertical_slab",
+    "endbound_ember:waxed_exposed_cut_copper_vertical_slab",
+    "endbound_ember:waxed_weathered_cut_copper_vertical_slab",
+    "endbound_ember:waxed_oxidized_cut_copper_vertical_slab",
+    "endbound_ember:iron_stairs",
+    "endbound_ember:iron_slab",
+    "endbound_ember:iron_vertical_slab",
+    "endbound_ember:copper_stairs",
+    "endbound_ember:copper_slab",
+    "endbound_ember:copper_vertical_slab",
+    "endbound_ember:lapis_stairs",
+    "endbound_ember:lapis_slab",
+    "endbound_ember:lapis_vertical_slab"
   ]
 }

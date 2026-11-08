@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:mangrove_slab"
+    },
+    "B": {
+      "item": "minecraft:mangrove_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:mangrove_display_pedestal",
+    "count": 1
+  }
+}

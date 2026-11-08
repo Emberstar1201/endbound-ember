@@ -1,5 +1,6 @@
 package com.emberstar.endbounember;
 
+import com.emberstar.endbounember.client.BossMusicConfigScreen;
 import com.emberstar.endbounember.client.HaloLayers;
 import com.emberstar.endbounember.client.TimeHaloLayers;
 import com.emberstar.endbounember.client.TimeTurbulenceSkyEffects;
@@ -10,7 +11,9 @@ import com.emberstar.endbounember.compat.ysm.YsmHaloRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -40,11 +43,35 @@ public class EndboundEmberClient {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        container.registerExtensionPoint(IConfigScreenFactory.class,
+                (minecraft, parent) -> new ConfigurationScreen(container, parent,
+                        (screen, type, config, title) -> new BossMusicConfigScreen(screen, type, config, title)));
     }
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            for (var block : EndboundEmber.SEAMLESS_GLASS_BLOCKS) {
+                // 与原版保持一致：普通玻璃 cutout，染色与遮光玻璃 translucent
+                RenderType renderType = block == EndboundEmber.SEAMLESS_GLASS
+                        ? RenderType.cutout()
+                        : RenderType.translucent();
+                ItemBlockRenderTypes.setRenderLayer(block.get(), renderType);
+            }
+            for (var block : EndboundEmber.SEAMLESS_GLASS_PANE_BLOCKS) {
+                // 玻璃板与原版规则一致
+                RenderType renderType = block == EndboundEmber.SEAMLESS_GLASS_PANE
+                        ? RenderType.cutout()
+                        : RenderType.translucent();
+                ItemBlockRenderTypes.setRenderLayer(block.get(), renderType);
+            }
+            for (var block : EndboundEmber.GLASS_SHAPE_CUTOUT_BLOCKS) {
+                ItemBlockRenderTypes.setRenderLayer(block.get(), RenderType.cutout());
+            }
+            for (var block : EndboundEmber.GLASS_SHAPE_TRANSLUCENT_BLOCKS) {
+                ItemBlockRenderTypes.setRenderLayer(block.get(), RenderType.translucent());
+            }
+        });
         EndboundEmber.LOGGER.info("HELLO FROM CLIENT SETUP");
         EndboundEmber.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }

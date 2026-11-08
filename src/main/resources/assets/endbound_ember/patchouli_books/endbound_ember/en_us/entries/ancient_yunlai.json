@@ -1,0 +1,13 @@
+{
+  "name": "Ancient YunLai Archery",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 41,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Ancient YunLai Archery",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bows$(br2)§lEffect: §r Draw time is reduced to about 0.5 seconds, arrow flight velocity and base damage are increased to 3.5×, and arrows leave an end rod trail.$(br2)§lConflicts: §r Yunlai Archery and Ancient Cloud Bow Arts.$(br2)§lAcquisition: §r Loot Chests and Villager Trades only (Treasure; not available from the Enchanting Table)"
+    }
+  ]
+}

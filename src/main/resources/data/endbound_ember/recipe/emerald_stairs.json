@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:emerald_block"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:emerald_stairs",
+    "count": 4
+  }
+}

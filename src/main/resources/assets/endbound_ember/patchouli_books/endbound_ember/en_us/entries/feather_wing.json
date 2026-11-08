@@ -1,0 +1,13 @@
+{
+  "name": "Feather Wing",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 53,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Feather Wing",
+      "text": "§lMax Level:§r I$(br2)§lApplicable to:§r Elytra$(br2)§lEffect:§r While flying with an elytra, you are completely immune to fly-into-wall damage.$(br2)§lConflicts:§r None$(br2)§lObtained via:§r End ship and end city chests (treasure enchantment)"
+    }
+  ]
+}

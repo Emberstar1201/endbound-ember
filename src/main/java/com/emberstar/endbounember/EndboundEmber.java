@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import com.emberstar.endbounember.enchantment.AllNatureReviveEnchantment;
 import com.emberstar.endbounember.enchantment.AutoSmeltEnchantment;
 import com.emberstar.endbounember.enchantment.CloudBowEnchantments;
-import com.emberstar.endbounember.enchantment.ChainBreakerEnchantment;
 import com.emberstar.endbounember.enchantment.CraftsmanshipEnchantment;
 import com.emberstar.endbounember.enchantment.DawnEnchantment;
 import com.emberstar.endbounember.enchantment.DifficultyGiftEnchantment;
@@ -33,12 +32,15 @@ import com.emberstar.endbounember.item.ModArmorMaterials;
 import com.emberstar.endbounember.item.OceanStarItem;
 import com.emberstar.endbounember.item.StardustCordBraceletItem;
 import com.emberstar.endbounember.item.DawnAmuletItem;
+import com.emberstar.endbounember.item.AnahitaFirstlightLiddellItem;
 import com.emberstar.endbounember.item.StardustWitchHaloItem;
 import com.emberstar.endbounember.item.TimeHaloItem;
 import com.emberstar.endbounember.item.StarlightStarItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
 import com.emberstar.endbounember.item.VoidStarItem;
+import com.emberstar.endbounember.block.SeamlessGlassBlock;
+import com.emberstar.endbounember.block.SeamlessGlassPaneBlock;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 
@@ -68,6 +70,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.api.distmarker.Dist;
@@ -79,6 +82,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -106,6 +110,9 @@ public class EndboundEmber {
     public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
 
+    /** 展示台爆炸抗性：与原版黑曜石同级，TNT、苦力怕、末地水晶均无法炸毁，台面存放的物品随之保留 */
+    public static final float DISPLAY_PEDESTAL_BLAST_RESISTANCE = 1200.0F;
+
     /** 展示台方块：可放置任意物品并悬浮展示，后续作为仪式方块 */
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.DisplayPedestalBlock> DISPLAY_PEDESTAL =
             BLOCKS.registerBlock("display_pedestal",
@@ -113,19 +120,32 @@ public class EndboundEmber {
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.STONE)
                             // 徒手挖掘约 10 秒（无工具需求时破坏速度按 hardness × 30 tick 计算）
-                            .strength(6.7F, 6.0F)
+                            .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
                             .noOcclusion()
                             // 使用完整方块的遮挡形状，避免空手/持物右键时被判定为「可穿过」而不触发交互
                             .isViewBlocking((state, level, pos) -> true)
                             .isSuffocating((state, level, pos) -> false));
 
+    /** 展示台材质变种：与建筑分区现有竖半砖材质一致（混凝土除外） */
+    public static final java.util.List<DeferredHolder<Block, com.emberstar.endbounember.block.DisplayPedestalBlock>>
+            DISPLAY_PEDESTAL_VARIANTS = new java.util.ArrayList<>();
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>>
+            DISPLAY_PEDESTAL_VARIANT_ITEMS = new java.util.ArrayList<>();
+
     public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>,
             net.minecraft.world.level.block.entity.BlockEntityType<com.emberstar.endbounember.block.DisplayPedestalBlockEntity>>
             DISPLAY_PEDESTAL_BLOCK_ENTITY = BLOCK_ENTITIES.register("display_pedestal",
-                    () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
-                            .of(com.emberstar.endbounember.block.DisplayPedestalBlockEntity::new,
-                                    DISPLAY_PEDESTAL.get())
-                            .build(null));
+                    () -> {
+                        java.util.List<Block> blocks = new java.util.ArrayList<>();
+                        blocks.add(DISPLAY_PEDESTAL.get());
+                        for (var variant : DISPLAY_PEDESTAL_VARIANTS) {
+                            blocks.add(variant.get());
+                        }
+                        return net.minecraft.world.level.block.entity.BlockEntityType.Builder
+                                .of(com.emberstar.endbounember.block.DisplayPedestalBlockEntity::new,
+                                        blocks.toArray(new Block[0]))
+                                .build(null);
+                    });
 
     /** 亡者之柱：Herobrine 第二阶段召出的黑曜石柱，平摊本体伤害并有独立血条 */
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.DoomPillarBlock> DOOM_PILLAR =
@@ -149,6 +169,218 @@ public class EndboundEmber {
                             .of(com.emberstar.endbounember.block.DoomPillarBlockEntity::new,
                                     DOOM_PILLAR.get())
                             .build(null));
+
+    // ===== 无缝玻璃：原生六方向连接状态，资源侧使用 multipart 模型 =====
+    public static final java.util.List<DeferredHolder<Block, SeamlessGlassBlock>> SEAMLESS_GLASS_BLOCKS =
+            new java.util.ArrayList<>();
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> SEAMLESS_GLASS_ITEMS =
+            new java.util.ArrayList<>();
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_GLASS = registerSeamlessGlass(
+            "seamless_glass", MapColor.NONE, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_TINTED_GLASS = registerSeamlessGlass(
+            "seamless_tinted_glass", MapColor.COLOR_GRAY, true);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_WHITE_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_white_stained_glass", MapColor.SNOW, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_ORANGE_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_orange_stained_glass", MapColor.COLOR_ORANGE, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_MAGENTA_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_magenta_stained_glass", MapColor.COLOR_MAGENTA, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_LIGHT_BLUE_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_light_blue_stained_glass", MapColor.COLOR_LIGHT_BLUE, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_YELLOW_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_yellow_stained_glass", MapColor.COLOR_YELLOW, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_LIME_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_lime_stained_glass", MapColor.COLOR_LIGHT_GREEN, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_PINK_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_pink_stained_glass", MapColor.COLOR_PINK, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_GRAY_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_gray_stained_glass", MapColor.COLOR_GRAY, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_LIGHT_GRAY_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_light_gray_stained_glass", MapColor.COLOR_LIGHT_GRAY, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_CYAN_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_cyan_stained_glass", MapColor.COLOR_CYAN, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_PURPLE_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_purple_stained_glass", MapColor.COLOR_PURPLE, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_BLUE_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_blue_stained_glass", MapColor.COLOR_BLUE, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_BROWN_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_brown_stained_glass", MapColor.COLOR_BROWN, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_GREEN_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_green_stained_glass", MapColor.COLOR_GREEN, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_RED_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_red_stained_glass", MapColor.COLOR_RED, false);
+    public static final DeferredHolder<Block, SeamlessGlassBlock> SEAMLESS_BLACK_STAINED_GLASS = registerSeamlessGlass(
+            "seamless_black_stained_glass", MapColor.COLOR_BLACK, false);
+
+    private static DeferredHolder<Block, SeamlessGlassBlock> registerSeamlessGlass(
+            String name, MapColor mapColor, boolean tinted) {
+        DeferredHolder<Block, SeamlessGlassBlock> block = BLOCKS.registerBlock(name,
+                properties -> new SeamlessGlassBlock(properties, tinted),
+                BlockBehaviour.Properties.of()
+                        .mapColor(mapColor)
+                        .instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.HAT)
+                        .strength(0.3F)
+                        .sound(SoundType.GLASS)
+                        .noOcclusion()
+                        .isValidSpawn((state, level, pos, entityType) -> false)
+                        .isRedstoneConductor((state, level, pos) -> false)
+                        .isSuffocating((state, level, pos) -> false)
+                        .isViewBlocking((state, level, pos) -> false));
+        SEAMLESS_GLASS_BLOCKS.add(block);
+        SEAMLESS_GLASS_ITEMS.add(ITEMS.registerSimpleBlockItem(name, block));
+        return block;
+    }
+
+    // ===== 无缝玻璃板：连接规则沿用铁栏杆，资源侧自定义模型去掉方块边界的竖线 =====
+    public static final java.util.List<DeferredHolder<Block, SeamlessGlassPaneBlock>> SEAMLESS_GLASS_PANE_BLOCKS =
+            new java.util.ArrayList<>();
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> SEAMLESS_GLASS_PANE_ITEMS =
+            new java.util.ArrayList<>();
+    /** 普通无缝玻璃板：唯一使用 cutout 渲染层的一个 */
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_glass", MapColor.NONE, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_TINTED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_tinted_glass", MapColor.COLOR_GRAY, true);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_WHITE_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_white_stained_glass", MapColor.SNOW, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_ORANGE_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_orange_stained_glass", MapColor.COLOR_ORANGE, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_MAGENTA_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_magenta_stained_glass", MapColor.COLOR_MAGENTA, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_LIGHT_BLUE_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_light_blue_stained_glass", MapColor.COLOR_LIGHT_BLUE, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_YELLOW_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_yellow_stained_glass", MapColor.COLOR_YELLOW, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_LIME_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_lime_stained_glass", MapColor.COLOR_LIGHT_GREEN, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_PINK_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_pink_stained_glass", MapColor.COLOR_PINK, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_GRAY_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_gray_stained_glass", MapColor.COLOR_GRAY, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_LIGHT_GRAY_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_light_gray_stained_glass", MapColor.COLOR_LIGHT_GRAY, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_CYAN_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_cyan_stained_glass", MapColor.COLOR_CYAN, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_PURPLE_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_purple_stained_glass", MapColor.COLOR_PURPLE, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_BLUE_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_blue_stained_glass", MapColor.COLOR_BLUE, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_BROWN_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_brown_stained_glass", MapColor.COLOR_BROWN, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_GREEN_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_green_stained_glass", MapColor.COLOR_GREEN, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_RED_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_red_stained_glass", MapColor.COLOR_RED, false);
+    public static final DeferredHolder<Block, SeamlessGlassPaneBlock> SEAMLESS_BLACK_STAINED_GLASS_PANE = registerSeamlessGlassPane(
+            "seamless_black_stained_glass", MapColor.COLOR_BLACK, false);
+
+    private static DeferredHolder<Block, SeamlessGlassPaneBlock> registerSeamlessGlassPane(
+            String name, MapColor mapColor, boolean tinted) {
+        String paneName = name + "_pane";
+        DeferredHolder<Block, SeamlessGlassPaneBlock> block = BLOCKS.registerBlock(paneName,
+                properties -> new SeamlessGlassPaneBlock(properties, tinted),
+                BlockBehaviour.Properties.of()
+                        .mapColor(mapColor)
+                        .instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.HAT)
+                        .strength(0.3F)
+                        .sound(SoundType.GLASS)
+                        .noOcclusion()
+                        .isValidSpawn((state, level, pos, entityType) -> false)
+                        .isRedstoneConductor((state, level, pos) -> false)
+                        .isSuffocating((state, level, pos) -> false)
+                        .isViewBlocking((state, level, pos) -> false));
+        SEAMLESS_GLASS_PANE_BLOCKS.add(block);
+        SEAMLESS_GLASS_PANE_ITEMS.add(ITEMS.registerSimpleBlockItem(paneName, block));
+        return block;
+    }
+
+    // ===== 玻璃楼梯、半砖与竖半砖：原版玻璃家族与无缝玻璃家族各 18 种 =====
+
+    /** 玻璃家族名称，顺序与原版创造分区一致，同时用于无缝玻璃家族（加 seamless_ 前缀） */
+    private static final String[] GLASS_FAMILY_NAMES = {
+            "glass", "tinted_glass",
+            "white_stained_glass", "orange_stained_glass", "magenta_stained_glass",
+            "light_blue_stained_glass", "yellow_stained_glass", "lime_stained_glass",
+            "pink_stained_glass", "gray_stained_glass", "light_gray_stained_glass",
+            "cyan_stained_glass", "purple_stained_glass", "blue_stained_glass",
+            "brown_stained_glass", "green_stained_glass", "red_stained_glass",
+            "black_stained_glass"
+    };
+
+    /** 与原版玻璃家族一一对应的原版方块，用于复制属性 */
+    private static final Block[] GLASS_FAMILY_VANILLA = {
+            Blocks.GLASS, Blocks.TINTED_GLASS,
+            Blocks.WHITE_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.MAGENTA_STAINED_GLASS,
+            Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.YELLOW_STAINED_GLASS, Blocks.LIME_STAINED_GLASS,
+            Blocks.PINK_STAINED_GLASS, Blocks.GRAY_STAINED_GLASS, Blocks.LIGHT_GRAY_STAINED_GLASS,
+            Blocks.CYAN_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS,
+            Blocks.BROWN_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.RED_STAINED_GLASS,
+            Blocks.BLACK_STAINED_GLASS
+    };
+
+    /** 全部玻璃楼梯 / 半砖 / 竖半砖方块，供创造栏注入使用 */
+    public static final java.util.List<DeferredHolder<Block, ? extends Block>> GLASS_SHAPE_BLOCKS =
+            new java.util.ArrayList<>();
+
+    /** 使用 cutout 渲染层的玻璃建筑形状（仅普通玻璃与普通无缝玻璃） */
+    public static final java.util.List<DeferredHolder<Block, ? extends Block>> GLASS_SHAPE_CUTOUT_BLOCKS =
+            new java.util.ArrayList<>();
+
+    /** 使用 translucent 渲染层的玻璃建筑形状（遮光玻璃与 16 色染色玻璃） */
+    public static final java.util.List<DeferredHolder<Block, ? extends Block>> GLASS_SHAPE_TRANSLUCENT_BLOCKS =
+            new java.util.ArrayList<>();
+
+    static {
+        for (int i = 0; i < GLASS_FAMILY_NAMES.length; i++) {
+            Block vanilla = GLASS_FAMILY_VANILLA[i];
+            // 与原版渲染层保持一致：普通玻璃 cutout，遮光与染色玻璃 translucent
+            boolean cutout = vanilla == Blocks.GLASS;
+
+            registerGlassBuildingShapes(GLASS_FAMILY_NAMES[i], vanilla,
+                    vanilla::defaultBlockState, cutout);
+
+            DeferredHolder<Block, SeamlessGlassBlock> seamless = SEAMLESS_GLASS_BLOCKS.get(i);
+            registerGlassBuildingShapes("seamless_" + GLASS_FAMILY_NAMES[i], vanilla,
+                    () -> seamless.get().defaultBlockState(), cutout);
+        }
+    }
+
+    /**
+     * 为一种玻璃材质注册楼梯、半砖与竖半砖。
+     *
+     * @param name           基础名称，例如 glass 或 seamless_red_stained_glass
+     * @param copySource     属性复制来源的原版玻璃方块
+     * @param baseState      楼梯基底状态，用于判断楼梯能否与该方块连接
+     * @param cutout         true 使用 cutout 渲染层，false 使用 translucent
+     */
+    private static void registerGlassBuildingShapes(String name, Block copySource,
+            java.util.function.Supplier<BlockState> baseState, boolean cutout) {
+        String stairsName = name + "_stairs";
+        DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> stairs = BLOCKS.registerBlock(
+                stairsName,
+                properties -> new net.minecraft.world.level.block.StairBlock(baseState.get(), properties),
+                BlockBehaviour.Properties.ofFullCopy(copySource));
+        ITEMS.registerSimpleBlockItem(stairsName, stairs);
+        GLASS_SHAPE_BLOCKS.add(stairs);
+
+        String slabName = name + "_slab";
+        DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> slab = BLOCKS.registerBlock(
+                slabName,
+                net.minecraft.world.level.block.SlabBlock::new,
+                BlockBehaviour.Properties.ofFullCopy(copySource));
+        ITEMS.registerSimpleBlockItem(slabName, slab);
+        GLASS_SHAPE_BLOCKS.add(slab);
+
+        String verticalSlabName = name + "_vertical_slab";
+        DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> verticalSlab =
+                registerVerticalSlab(verticalSlabName, BlockBehaviour.Properties.ofFullCopy(copySource));
+        GLASS_SHAPE_BLOCKS.add(verticalSlab);
+
+        var target = cutout ? GLASS_SHAPE_CUTOUT_BLOCKS : GLASS_SHAPE_TRANSLUCENT_BLOCKS;
+        target.add(stairs);
+        target.add(slab);
+        target.add(verticalSlab);
+    }
 
     // ===== 竖半砖方块：高度一格、宽度半格的非完整方块，适合立柱、薄墙与装饰边框 =====
 
@@ -278,6 +510,354 @@ public class EndboundEmber {
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WARPED_VERTICAL_SLAB =
             registerVerticalSlab("warped_vertical_slab", woodVerticalSlabProperties(MapColor.NETHER));
 
+    /** 石头竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> STONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("stone_vertical_slab", Blocks.STONE);
+    /** 花岗岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> GRANITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("granite_vertical_slab", Blocks.GRANITE);
+    /** 磨制花岗岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_GRANITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_granite_vertical_slab", Blocks.POLISHED_GRANITE);
+    /** 闪长岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> DIORITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("diorite_vertical_slab", Blocks.DIORITE);
+    /** 磨制闪长岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_DIORITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_diorite_vertical_slab", Blocks.POLISHED_DIORITE);
+    /** 安山岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> ANDESITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("andesite_vertical_slab", Blocks.ANDESITE);
+    /** 磨制安山岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_ANDESITE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_andesite_vertical_slab", Blocks.POLISHED_ANDESITE);
+    /** 圆石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> COBBLESTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("cobblestone_vertical_slab", Blocks.COBBLESTONE);
+    /** 苔石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> MOSSY_COBBLESTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("mossy_cobblestone_vertical_slab", Blocks.MOSSY_COBBLESTONE);
+    /** 砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("sandstone_vertical_slab", Blocks.SANDSTONE);
+    /** 平滑砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SMOOTH_SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("smooth_sandstone_vertical_slab", Blocks.SMOOTH_SANDSTONE);
+    /** 切制砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CUT_SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("cut_sandstone_vertical_slab", Blocks.CUT_SANDSTONE);
+    /** 红砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> RED_SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("red_sandstone_vertical_slab", Blocks.RED_SANDSTONE);
+    /** 平滑红砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SMOOTH_RED_SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("smooth_red_sandstone_vertical_slab", Blocks.SMOOTH_RED_SANDSTONE);
+    /** 切制红砂岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CUT_RED_SANDSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("cut_red_sandstone_vertical_slab", Blocks.CUT_RED_SANDSTONE);
+    /** 红砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("brick_vertical_slab", Blocks.BRICKS);
+    /** 泥砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> MUD_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("mud_brick_vertical_slab", Blocks.MUD_BRICKS);
+    /** 深板岩圆石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> COBBLED_DEEPSLATE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("cobbled_deepslate_vertical_slab", Blocks.COBBLED_DEEPSLATE);
+    /** 深板岩瓦竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> DEEPSLATE_TILE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("deepslate_tile_vertical_slab", Blocks.DEEPSLATE_TILES);
+    /** 凝灰岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> TUFF_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("tuff_vertical_slab", Blocks.TUFF);
+    /** 磨制凝灰岩竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_TUFF_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_tuff_vertical_slab", Blocks.POLISHED_TUFF);
+    /** 凝灰岩砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> TUFF_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("tuff_brick_vertical_slab", Blocks.TUFF_BRICKS);
+    /** 黑石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> BLACKSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("blackstone_vertical_slab", Blocks.BLACKSTONE);
+    /** 磨制黑石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_BLACKSTONE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_blackstone_vertical_slab", Blocks.POLISHED_BLACKSTONE);
+    /** 磨制黑石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> POLISHED_BLACKSTONE_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("polished_blackstone_brick_vertical_slab", Blocks.POLISHED_BLACKSTONE_BRICKS);
+    /** 末地石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> END_STONE_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("end_stone_brick_vertical_slab", Blocks.END_STONE_BRICKS);
+    /** 紫珀竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> PURPUR_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("purpur_vertical_slab", Blocks.PURPUR_BLOCK);
+    /** 海晶石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> PRISMARINE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("prismarine_vertical_slab", Blocks.PRISMARINE);
+    /** 海晶石砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> PRISMARINE_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("prismarine_brick_vertical_slab", Blocks.PRISMARINE_BRICKS);
+    /** 暗海晶石竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> DARK_PRISMARINE_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("dark_prismarine_vertical_slab", Blocks.DARK_PRISMARINE);
+    /** 下界砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> NETHER_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("nether_brick_vertical_slab", Blocks.NETHER_BRICKS);
+    /** 红色下界砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> RED_NETHER_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("red_nether_brick_vertical_slab", Blocks.RED_NETHER_BRICKS);
+    /** 竹马赛克竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> BAMBOO_MOSAIC_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("bamboo_mosaic_vertical_slab", Blocks.BAMBOO_MOSAIC);
+    /** 切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("cut_copper_vertical_slab", Blocks.CUT_COPPER);
+    /** 斑驳的切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> EXPOSED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("exposed_cut_copper_vertical_slab", Blocks.EXPOSED_CUT_COPPER);
+    /** 锈蚀的切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WEATHERED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("weathered_cut_copper_vertical_slab", Blocks.WEATHERED_CUT_COPPER);
+    /** 氧化的切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> OXIDIZED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("oxidized_cut_copper_vertical_slab", Blocks.OXIDIZED_CUT_COPPER);
+    /** 涂蜡的切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WAXED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("waxed_cut_copper_vertical_slab", Blocks.WAXED_CUT_COPPER);
+    /** 涂蜡的斑驳切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WAXED_EXPOSED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("waxed_exposed_cut_copper_vertical_slab", Blocks.WAXED_EXPOSED_CUT_COPPER);
+    /** 涂蜡的锈蚀切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WAXED_WEATHERED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("waxed_weathered_cut_copper_vertical_slab", Blocks.WAXED_WEATHERED_CUT_COPPER);
+    /** 涂蜡的氧化切制铜竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> WAXED_OXIDIZED_CUT_COPPER_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("waxed_oxidized_cut_copper_vertical_slab", Blocks.WAXED_OXIDIZED_CUT_COPPER);
+
+    // ===== 26.4 版本新方块移植：冰砖与雪砖（含楼梯与竖半砖） =====
+
+    /** 冰砖：属性与浮冰一致（低摩擦、玻璃音效，任意工具均可掉落） */
+    public static final DeferredHolder<Block, Block> PACKED_ICE_BRICKS =
+            BLOCKS.registerSimpleBlock("packed_ice_bricks",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> PACKED_ICE_BRICKS_ITEM =
+            ITEMS.registerSimpleBlockItem("packed_ice_bricks", PACKED_ICE_BRICKS);
+
+    /** 雪砖：属性与雪块一致（铲子挖掘才会掉落） */
+    public static final DeferredHolder<Block, Block> SNOW_BRICKS =
+            BLOCKS.registerSimpleBlock("snow_bricks",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> SNOW_BRICKS_ITEM =
+            ITEMS.registerSimpleBlockItem("snow_bricks", SNOW_BRICKS);
+
+    /** 冰砖楼梯 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> PACKED_ICE_BRICK_STAIRS =
+            BLOCKS.registerBlock("packed_ice_brick_stairs",
+                    properties -> new net.minecraft.world.level.block.StairBlock(
+                            PACKED_ICE_BRICKS.get().defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> PACKED_ICE_BRICK_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("packed_ice_brick_stairs", PACKED_ICE_BRICK_STAIRS);
+
+    /** 冰砖半砖 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> PACKED_ICE_BRICK_SLAB =
+            BLOCKS.registerBlock("packed_ice_brick_slab",
+                    net.minecraft.world.level.block.SlabBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> PACKED_ICE_BRICK_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("packed_ice_brick_slab", PACKED_ICE_BRICK_SLAB);
+
+    /** 冰砖墙 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.WallBlock> PACKED_ICE_BRICK_WALL =
+            BLOCKS.registerBlock("packed_ice_brick_wall",
+                    net.minecraft.world.level.block.WallBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> PACKED_ICE_BRICK_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem("packed_ice_brick_wall", PACKED_ICE_BRICK_WALL);
+
+    /** 雕纹冰砖 */
+    public static final DeferredHolder<Block, Block> CHISELED_PACKED_ICE =
+            BLOCKS.registerSimpleBlock("chiseled_packed_ice",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> CHISELED_PACKED_ICE_ITEM =
+            ITEMS.registerSimpleBlockItem("chiseled_packed_ice", CHISELED_PACKED_ICE);
+
+    /** 雪砖楼梯 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> SNOW_BRICK_STAIRS =
+            BLOCKS.registerBlock("snow_brick_stairs",
+                    properties -> new net.minecraft.world.level.block.StairBlock(
+                            SNOW_BRICKS.get().defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> SNOW_BRICK_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("snow_brick_stairs", SNOW_BRICK_STAIRS);
+
+    /** 冰砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> PACKED_ICE_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("packed_ice_brick_vertical_slab", Blocks.PACKED_ICE);
+
+    /** 雪砖竖半砖 */
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> SNOW_BRICK_VERTICAL_SLAB =
+            registerCopiedVerticalSlab("snow_brick_vertical_slab", Blocks.SNOW_BLOCK);
+
+    // ===== 高版本内容移植：16 色混凝土楼梯、混凝土半砖与混凝土竖半砖 =====
+
+    /** 混凝土颜色，顺序与原版创造分区一致 */
+    private static final String[] CONCRETE_COLORS = {
+            "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+            "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"
+    };
+
+    /** 对应颜色的原版混凝土方块，用于复制属性并作为楼梯基底 */
+    private static final Block[] CONCRETE_BLOCKS = {
+            Blocks.WHITE_CONCRETE, Blocks.ORANGE_CONCRETE, Blocks.MAGENTA_CONCRETE,
+            Blocks.LIGHT_BLUE_CONCRETE, Blocks.YELLOW_CONCRETE, Blocks.LIME_CONCRETE,
+            Blocks.PINK_CONCRETE, Blocks.GRAY_CONCRETE, Blocks.LIGHT_GRAY_CONCRETE,
+            Blocks.CYAN_CONCRETE, Blocks.PURPLE_CONCRETE, Blocks.BLUE_CONCRETE,
+            Blocks.BROWN_CONCRETE, Blocks.GREEN_CONCRETE, Blocks.RED_CONCRETE,
+            Blocks.BLACK_CONCRETE
+    };
+
+    /** 混凝土楼梯物品，按颜色顺序存放，供原版建筑分区使用 */
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> CONCRETE_STAIRS_ITEMS =
+            new java.util.ArrayList<>();
+
+    /** 混凝土半砖物品，按颜色顺序存放，供原版建筑分区使用 */
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> CONCRETE_SLAB_ITEMS =
+            new java.util.ArrayList<>();
+
+    /** 混凝土竖半砖方块，按颜色顺序存放，供模组建筑分区使用 */
+    public static final java.util.List<DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock>> CONCRETE_VERTICAL_SLABS =
+            new java.util.ArrayList<>();
+
+    static {
+        for (int i = 0; i < CONCRETE_COLORS.length; i++) {
+            String color = CONCRETE_COLORS[i];
+            Block concrete = CONCRETE_BLOCKS[i];
+
+            String stairsName = color + "_concrete_stairs";
+            DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> stairs =
+                    BLOCKS.registerBlock(stairsName,
+                            properties -> new net.minecraft.world.level.block.StairBlock(
+                                    concrete.defaultBlockState(), properties),
+                            BlockBehaviour.Properties.ofFullCopy(concrete));
+            CONCRETE_STAIRS_ITEMS.add(ITEMS.registerSimpleBlockItem(stairsName, stairs));
+
+            String slabName = color + "_concrete_slab";
+            DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> slab =
+                    BLOCKS.registerBlock(slabName,
+                            net.minecraft.world.level.block.SlabBlock::new,
+                            BlockBehaviour.Properties.ofFullCopy(concrete));
+            CONCRETE_SLAB_ITEMS.add(ITEMS.registerSimpleBlockItem(slabName, slab));
+
+            CONCRETE_VERTICAL_SLABS.add(
+                    registerCopiedVerticalSlab(color + "_concrete_vertical_slab", concrete));
+        }
+    }
+
+    // ===== 高版本内容移植：方解石家族（柱、楼梯、半砖、墙与磨制变体） =====
+
+    /** 方解石柱 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.RotatedPillarBlock> CALCITE_PILLAR =
+            BLOCKS.registerBlock("calcite_pillar",
+                    net.minecraft.world.level.block.RotatedPillarBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 方解石楼梯 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> CALCITE_STAIRS =
+            BLOCKS.registerBlock("calcite_stairs",
+                    properties -> new net.minecraft.world.level.block.StairBlock(
+                            Blocks.CALCITE.defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 方解石半砖 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> CALCITE_SLAB =
+            BLOCKS.registerBlock("calcite_slab",
+                    net.minecraft.world.level.block.SlabBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 方解石墙 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.WallBlock> CALCITE_WALL =
+            BLOCKS.registerBlock("calcite_wall",
+                    net.minecraft.world.level.block.WallBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石 */
+    public static final DeferredHolder<Block, Block> POLISHED_CALCITE =
+            BLOCKS.registerBlock("polished_calcite", Block::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石楼梯 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> POLISHED_CALCITE_STAIRS =
+            BLOCKS.registerBlock("polished_calcite_stairs",
+                    properties -> new net.minecraft.world.level.block.StairBlock(
+                            POLISHED_CALCITE.get().defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石半砖 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> POLISHED_CALCITE_SLAB =
+            BLOCKS.registerBlock("polished_calcite_slab",
+                    net.minecraft.world.level.block.SlabBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石墙 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.WallBlock> POLISHED_CALCITE_WALL =
+            BLOCKS.registerBlock("polished_calcite_wall",
+                    net.minecraft.world.level.block.WallBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石砖 */
+    public static final DeferredHolder<Block, Block> POLISHED_CALCITE_BRICKS =
+            BLOCKS.registerBlock("polished_calcite_bricks", Block::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石砖楼梯 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> POLISHED_CALCITE_BRICKS_STAIRS =
+            BLOCKS.registerBlock("polished_calcite_bricks_stairs",
+                    properties -> new net.minecraft.world.level.block.StairBlock(
+                            POLISHED_CALCITE_BRICKS.get().defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石砖半砖 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> POLISHED_CALCITE_BRICKS_SLAB =
+            BLOCKS.registerBlock("polished_calcite_bricks_slab",
+                    net.minecraft.world.level.block.SlabBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 磨制方解石砖墙 */
+    public static final DeferredHolder<Block, net.minecraft.world.level.block.WallBlock> POLISHED_CALCITE_BRICKS_WALL =
+            BLOCKS.registerBlock("polished_calcite_bricks_wall",
+                    net.minecraft.world.level.block.WallBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE));
+
+    /** 方解石家族物品，按方块家族顺序存放，供原版建筑分区使用 */
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> CALCITE_BUILDING_ITEMS =
+            new java.util.ArrayList<>();
+
+    /** 方解石家族竖半砖，供模组建筑分区使用 */
+    public static final java.util.List<DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock>> CALCITE_VERTICAL_SLABS =
+            new java.util.ArrayList<>();
+
+    static {
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("calcite_pillar", CALCITE_PILLAR));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("calcite_stairs", CALCITE_STAIRS));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("calcite_slab", CALCITE_SLAB));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("calcite_wall", CALCITE_WALL));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite", POLISHED_CALCITE));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_stairs", POLISHED_CALCITE_STAIRS));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_slab", POLISHED_CALCITE_SLAB));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_wall", POLISHED_CALCITE_WALL));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_bricks", POLISHED_CALCITE_BRICKS));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_bricks_stairs", POLISHED_CALCITE_BRICKS_STAIRS));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_bricks_slab", POLISHED_CALCITE_BRICKS_SLAB));
+        CALCITE_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem("polished_calcite_bricks_wall", POLISHED_CALCITE_BRICKS_WALL));
+
+        CALCITE_VERTICAL_SLABS.add(registerCopiedVerticalSlab("calcite_vertical_slab", Blocks.CALCITE));
+        CALCITE_VERTICAL_SLABS.add(registerVerticalSlab("polished_calcite_vertical_slab",
+                BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE).noOcclusion()));
+        CALCITE_VERTICAL_SLABS.add(registerVerticalSlab("polished_calcite_bricks_vertical_slab",
+                BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE).noOcclusion()));
+    }
+
     /** 混合竖半砖：两片不同材质竖半砖合并成的完整方块，材质数据存放在方块实体中，不可直接获取 */
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.MixedVerticalSlabBlock> MIXED_VERTICAL_SLAB =
             BLOCKS.registerBlock("mixed_vertical_slabs",
@@ -319,6 +899,12 @@ public class EndboundEmber {
         return block;
     }
 
+    /** 注册竖半砖：方块属性直接复制原版对应方块（硬度、音效与挖掘要求保持一致），强制关闭遮挡 */
+    private static DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> registerCopiedVerticalSlab(
+            String name, Block base) {
+        return registerVerticalSlab(name, BlockBehaviour.Properties.ofFullCopy(base).noOcclusion());
+    }
+
     /** 拂晓成长等级（1~100），与固定为 1 级的附魔等级分开存储。 */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> DAWN_LEVEL =
             DATA_COMPONENTS.register("dawn_level", () -> DataComponentType.<Integer>builder()
@@ -352,6 +938,11 @@ public class EndboundEmber {
     public static final DeferredHolder<SoundEvent, SoundEvent> TIME_TICK_SOUND = registerSound("time_tick");
     /** 时间乱流的整点钟声 */
     public static final DeferredHolder<SoundEvent, SoundEvent> TIME_CHIME_SOUND = registerSound("time_chime");
+    /**
+     * Him Boss 战背景音乐。
+     * <p>音频文件位置：assets/endbound_ember/sounds/music/herobrine_boss_music.ogg</p>
+     */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEROBRINE_BOSS_MUSIC = registerSound("herobrine_boss_music");
 
     /** 星尘光环的获取仪式：需要消耗的经验值总量 */
     public static final int HALO_RITUAL_EXPERIENCE_COST = 120_000;
@@ -370,6 +961,11 @@ public class EndboundEmber {
     public static final int AMULET_RITUAL_SWAP_TICK = 280;
     /** 晨曦护符的获取仪式：环绕展示台数量（上下左右 + 四个斜角） */
     public static final int AMULET_RITUAL_PEDESTAL_COUNT = 8;
+
+    /** 生命之星的获取仪式：动画总时长（tick），15 秒 */
+    public static final int LIFE_STAR_RITUAL_DURATION = 300;
+    /** 生命之星的获取仪式：动画结束前多少 tick 完成替换 */
+    public static final int LIFE_STAR_RITUAL_SWAP_TICK = 280;
 
     /** Herobrine 召唤仪式：动画总时长（tick），15 秒 */
     public static final int HEROBRINE_RITUAL_DURATION = 300;
@@ -428,6 +1024,12 @@ public class EndboundEmber {
     public static final DeferredItem<DawnAmuletItem> DAWN_AMULET = ITEMS.register(
             "dawn_amulet", () -> new DawnAmuletItem(new Item.Properties().rarity(Rarity.RARE).fireResistant()));
 
+    // 阿娜希塔·晨曦·莉德尔：晨曦护符的上位护符，效果介于晨曦护符与星尘光环之间
+    public static final DeferredItem<AnahitaFirstlightLiddellItem> ANAHITA_FIRSTLIGHT_LIDDELL =
+            ITEMS.register("anahita_firstlight_liddell",
+                    () -> new AnahitaFirstlightLiddellItem(
+                            new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant()));
+
     // 洛红雨：赤色刀锋，命中叠加赤雨印记，叠满引爆赤雨斩（属性值为相对玩家基础值的偏移）
     public static final DeferredItem<LuoHongyuItem> LUO_HONGYU = ITEMS.register(
             "luohongyu", () -> new LuoHongyuItem(new Item.Properties()
@@ -455,6 +1057,85 @@ public class EndboundEmber {
     /** 展示台的方块物品 */
     public static final DeferredItem<net.minecraft.world.item.BlockItem> DISPLAY_PEDESTAL_ITEM =
             ITEMS.registerSimpleBlockItem("display_pedestal", DISPLAY_PEDESTAL);
+
+    private static final String[] DISPLAY_PEDESTAL_MATERIALS = {
+            "smooth_quartz", "quartz", "stone_brick", "cracked_stone_brick", "mossy_stone_brick", "smooth_stone",
+            "deepslate_brick", "polished_deepslate", "oak", "spruce", "birch", "jungle", "acacia", "dark_oak",
+            "mangrove", "cherry", "bamboo", "crimson", "warped", "stone", "granite", "polished_granite", "diorite",
+            "polished_diorite", "andesite", "polished_andesite", "cobblestone", "mossy_cobblestone", "sandstone",
+            "smooth_sandstone", "cut_sandstone", "red_sandstone", "smooth_red_sandstone", "cut_red_sandstone",
+            "brick", "mud_brick", "cobbled_deepslate", "deepslate_tile", "tuff", "polished_tuff", "tuff_brick",
+            "blackstone", "polished_blackstone", "polished_blackstone_brick", "end_stone_brick", "purpur",
+            "prismarine", "prismarine_brick", "dark_prismarine", "nether_brick", "red_nether_brick",
+            "bamboo_mosaic", "cut_copper", "exposed_cut_copper", "weathered_cut_copper", "oxidized_cut_copper",
+            "waxed_cut_copper", "waxed_exposed_cut_copper", "waxed_weathered_cut_copper",
+            "waxed_oxidized_cut_copper", "packed_ice_brick", "snow_brick", "calcite", "polished_calcite",
+            "polished_calcite_bricks",
+            // 矿物展示台：从铁开始，煤炭不做
+            "iron", "copper", "gold", "redstone", "lapis", "emerald", "diamond", "netherite", "amethyst",
+    };
+
+    static {
+        for (String material : DISPLAY_PEDESTAL_MATERIALS) {
+            String name = material + "_display_pedestal";
+            DeferredHolder<Block, com.emberstar.endbounember.block.DisplayPedestalBlock> block =
+                    BLOCKS.registerBlock(name,
+                            com.emberstar.endbounember.block.DisplayPedestalBlock::new,
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.STONE)
+                                    .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
+                                    .noOcclusion()
+                                    .isViewBlocking((state, level, pos) -> true)
+                                    .isSuffocating((state, level, pos) -> false));
+            DISPLAY_PEDESTAL_VARIANTS.add(block);
+            DISPLAY_PEDESTAL_VARIANT_ITEMS.add(ITEMS.registerSimpleBlockItem(name, block));
+        }
+    }
+
+    /** 矿物建筑套件的材质名与纹理来源：从铁开始，煤炭不做。 */
+    private static final Object[][] MINERAL_FAMILIES = {
+            {"iron", Blocks.IRON_BLOCK},
+            {"copper", Blocks.COPPER_BLOCK},
+            {"gold", Blocks.GOLD_BLOCK},
+            {"redstone", Blocks.REDSTONE_BLOCK},
+            {"lapis", Blocks.LAPIS_BLOCK},
+            {"emerald", Blocks.EMERALD_BLOCK},
+            {"diamond", Blocks.DIAMOND_BLOCK},
+            {"netherite", Blocks.NETHERITE_BLOCK},
+            {"amethyst", Blocks.AMETHYST_BLOCK},
+    };
+
+    /** 矿物台阶与半砖物品，按材质顺序收集，供原版建筑分区使用。 */
+    public static final java.util.List<DeferredItem<net.minecraft.world.item.BlockItem>> MINERAL_BUILDING_ITEMS =
+            new java.util.ArrayList<>();
+
+    /** 矿物竖半砖方块，按材质顺序收集，供模组建筑分区使用。 */
+    public static final java.util.List<DeferredHolder<Block, ? extends Block>> MINERAL_VERTICAL_SLABS =
+            new java.util.ArrayList<>();
+
+    static {
+        for (Object[] family : MINERAL_FAMILIES) {
+            String name = (String) family[0];
+            Block base = (Block) family[1];
+
+            // 楼梯以原版矿物方块为基底，可与矿物方块直接衔接
+            String stairsName = name + "_stairs";
+            DeferredHolder<Block, net.minecraft.world.level.block.StairBlock> stairs = BLOCKS.registerBlock(
+                    stairsName,
+                    properties -> new net.minecraft.world.level.block.StairBlock(base.defaultBlockState(), properties),
+                    BlockBehaviour.Properties.ofFullCopy(base));
+            MINERAL_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem(stairsName, stairs));
+
+            String slabName = name + "_slab";
+            DeferredHolder<Block, net.minecraft.world.level.block.SlabBlock> slab = BLOCKS.registerBlock(
+                    slabName,
+                    net.minecraft.world.level.block.SlabBlock::new,
+                    BlockBehaviour.Properties.ofFullCopy(base));
+            MINERAL_BUILDING_ITEMS.add(ITEMS.registerSimpleBlockItem(slabName, slab));
+
+            MINERAL_VERTICAL_SLABS.add(registerCopiedVerticalSlab(name + "_vertical_slab", base));
+        }
+    }
 
     // 人权剑：攻击伤害 30 / 攻速 4.5 / 护甲 10（属性值为相对玩家基础值的偏移）
     public static final DeferredItem<SwordOfTheFreeWillItem> SWORD_OF_THE_FREE_WILL = ITEMS.register(
@@ -519,6 +1200,7 @@ public class EndboundEmber {
                         output.accept(DAWN_STAR.get());
                         output.accept(DAWN_TEMPLATE.get());
                         output.accept(DAWN_AMULET.get());
+                        output.accept(ANAHITA_FIRSTLIGHT_LIDDELL.get());
                         output.accept(LUO_HONGYU.get());
                         ItemStack guideBook = createGuideBook();
                         if (!guideBook.isEmpty()) output.accept(guideBook);
@@ -532,7 +1214,19 @@ public class EndboundEmber {
                             .withTabsBefore(ITEMS_TAB.getKey())
                             .icon(() -> DISPLAY_PEDESTAL_ITEM.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
+                                for (DeferredItem<net.minecraft.world.item.BlockItem> glass : SEAMLESS_GLASS_ITEMS) {
+                                    output.accept(glass.get());
+                                }
+                                for (DeferredItem<net.minecraft.world.item.BlockItem> pane : SEAMLESS_GLASS_PANE_ITEMS) {
+                                    output.accept(pane.get());
+                                }
+                                for (DeferredHolder<Block, ? extends Block> shape : GLASS_SHAPE_BLOCKS) {
+                                    output.accept(shape.get().asItem());
+                                }
                                 output.accept(DISPLAY_PEDESTAL_ITEM.get());
+                                for (DeferredItem<net.minecraft.world.item.BlockItem> pedestal : DISPLAY_PEDESTAL_VARIANT_ITEMS) {
+                                    output.accept(pedestal.get());
+                                }
                                 output.accept(SMOOTH_QUARTZ_VERTICAL_SLAB.get());
                                 output.accept(QUARTZ_VERTICAL_SLAB.get());
                                 output.accept(STONE_BRICK_VERTICAL_SLAB.get());
@@ -552,6 +1246,60 @@ public class EndboundEmber {
                                 output.accept(BAMBOO_VERTICAL_SLAB.get());
                                 output.accept(CRIMSON_VERTICAL_SLAB.get());
                                 output.accept(WARPED_VERTICAL_SLAB.get());
+                                output.accept(STONE_VERTICAL_SLAB.get());
+                                output.accept(GRANITE_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_GRANITE_VERTICAL_SLAB.get());
+                                output.accept(DIORITE_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_DIORITE_VERTICAL_SLAB.get());
+                                output.accept(ANDESITE_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_ANDESITE_VERTICAL_SLAB.get());
+                                output.accept(COBBLESTONE_VERTICAL_SLAB.get());
+                                output.accept(MOSSY_COBBLESTONE_VERTICAL_SLAB.get());
+                                output.accept(SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(SMOOTH_SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(CUT_SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(RED_SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(SMOOTH_RED_SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(CUT_RED_SANDSTONE_VERTICAL_SLAB.get());
+                                output.accept(BRICK_VERTICAL_SLAB.get());
+                                output.accept(MUD_BRICK_VERTICAL_SLAB.get());
+                                output.accept(COBBLED_DEEPSLATE_VERTICAL_SLAB.get());
+                                output.accept(DEEPSLATE_TILE_VERTICAL_SLAB.get());
+                                output.accept(TUFF_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_TUFF_VERTICAL_SLAB.get());
+                                output.accept(TUFF_BRICK_VERTICAL_SLAB.get());
+                                output.accept(BLACKSTONE_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_BLACKSTONE_VERTICAL_SLAB.get());
+                                output.accept(POLISHED_BLACKSTONE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(END_STONE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(PURPUR_VERTICAL_SLAB.get());
+                                output.accept(PRISMARINE_VERTICAL_SLAB.get());
+                                output.accept(PRISMARINE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(DARK_PRISMARINE_VERTICAL_SLAB.get());
+                                output.accept(NETHER_BRICK_VERTICAL_SLAB.get());
+                                output.accept(RED_NETHER_BRICK_VERTICAL_SLAB.get());
+                                output.accept(BAMBOO_MOSAIC_VERTICAL_SLAB.get());
+                                output.accept(CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(EXPOSED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(WEATHERED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(OXIDIZED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(WAXED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(WAXED_EXPOSED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(WAXED_WEATHERED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(WAXED_OXIDIZED_CUT_COPPER_VERTICAL_SLAB.get());
+                                output.accept(PACKED_ICE_BRICK_VERTICAL_SLAB.get());
+                                output.accept(SNOW_BRICK_VERTICAL_SLAB.get());
+                                for (DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> holder
+                                        : CONCRETE_VERTICAL_SLABS) {
+                                    output.accept(holder.get());
+                                }
+                                for (DeferredHolder<Block, com.emberstar.endbounember.block.VerticalSlabBlock> holder
+                                        : CALCITE_VERTICAL_SLABS) {
+                                    output.accept(holder.get());
+                                }
+                                for (DeferredHolder<Block, ? extends Block> holder : MINERAL_VERTICAL_SLABS) {
+                                    output.accept(holder.get().asItem());
+                                }
                             }).build());
 
     // 生物分区：仅放置刷怪蛋
@@ -647,10 +1395,6 @@ public class EndboundEmber {
                                     output.accept(createEnchantedBook(parameters.holders(),
                                             AutoSmeltEnchantment.KEY, level));
                                 }
-                                for (int level = 1; level <= 3; level++) {
-                                    output.accept(createEnchantedBook(parameters.holders(),
-                                            ChainBreakerEnchantment.KEY, level));
-                                }
                                 for (int level = 1; level <= 5; level++) {
                                     output.accept(createEnchantedBook(parameters.holders(),
                                             FreeWillEnchantments.STAGNATION_PIERCE, level));
@@ -688,14 +1432,15 @@ public class EndboundEmber {
     public EndboundEmber(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::addCreativeTabContents);
         modEventBus.addListener(com.emberstar.endbounember.network.GirlInteractionPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DawnSkillPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DawnEnergyPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.CloudArrowVelocityPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.FlywheelDashPayload::register);
-        modEventBus.addListener(com.emberstar.endbounember.network.ChainBreakerPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeTurbulenceTogglePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeHaloSkillPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -725,6 +1470,53 @@ public class EndboundEmber {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
+    }
+
+    /** 冰砖、雪砖及其楼梯注入原版建筑方块分区，作为砖块家族插在泥砖墙之后 */
+    private void addCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            ItemStack packedIceBricks = PACKED_ICE_BRICKS_ITEM.get().getDefaultInstance();
+            ItemStack packedIceBrickStairs = PACKED_ICE_BRICK_STAIRS_ITEM.get().getDefaultInstance();
+            ItemStack snowBricks = SNOW_BRICKS_ITEM.get().getDefaultInstance();
+            ItemStack snowBrickStairs = SNOW_BRICK_STAIRS_ITEM.get().getDefaultInstance();
+            event.insertAfter(Items.MUD_BRICK_WALL.getDefaultInstance(), packedIceBricks,
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(packedIceBricks, packedIceBrickStairs,
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(packedIceBrickStairs, snowBricks,
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.insertAfter(snowBricks, snowBrickStairs,
+                    CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
+
+        // 混凝土楼梯与半砖：高版本内容，追加到原版建筑方块分区
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            for (int i = 0; i < CONCRETE_STAIRS_ITEMS.size(); i++) {
+                event.accept(CONCRETE_STAIRS_ITEMS.get(i).get().getDefaultInstance());
+                event.accept(CONCRETE_SLAB_ITEMS.get(i).get().getDefaultInstance());
+            }
+        }
+
+        // 冰砖半砖、墙与雕纹冰砖：补齐高版本冰砖家族
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(PACKED_ICE_BRICK_SLAB_ITEM.get().getDefaultInstance());
+            event.accept(PACKED_ICE_BRICK_WALL_ITEM.get().getDefaultInstance());
+            event.accept(CHISELED_PACKED_ICE_ITEM.get().getDefaultInstance());
+        }
+
+        // 方解石家族：柱、基础方块、楼梯、半砖与墙，追加到原版建筑方块分区
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            for (DeferredItem<net.minecraft.world.item.BlockItem> item : CALCITE_BUILDING_ITEMS) {
+                event.accept(item.get().getDefaultInstance());
+            }
+        }
+
+        // 矿物台阶与半砖：追加到原版建筑方块分区（竖半砖与展示台仍在模组建筑分区）
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            for (DeferredItem<net.minecraft.world.item.BlockItem> item : MINERAL_BUILDING_ITEMS) {
+                event.accept(item.get().getDefaultInstance());
+            }
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

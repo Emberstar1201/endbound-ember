@@ -1,0 +1,13 @@
+{
+  "name": "Deep Sea Ripple",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 60,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Deep Sea Ripple",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Boots$(br2)§lEffect: §r Grants 1.6× movement speed while sneaking in water; the boost ends immediately upon leaving water or releasing sneak. Conflicts with Depth Strider, Frost Walker, Soul Speed, Wind Ripple and Elegant Catwalk.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Fishing"
+    }
+  ]
+}

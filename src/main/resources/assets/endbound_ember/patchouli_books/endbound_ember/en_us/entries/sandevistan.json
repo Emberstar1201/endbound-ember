@@ -1,0 +1,13 @@
+{
+  "name": "Sandevistan",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 61,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Sandevistan",
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Chestplates (Elytra excluded)$(br2)§lEffect: §r Sneak while wearing the enchanted chestplate to trigger Bullet Time: creatures and projectiles within range are frozen, while the Ender Dragon and Wither only suffer Slowness. Your movement and attack speed increase. Level I lasts 5s with a 10s cooldown; II 15s / 30s; III 30s / 65s. When it ends, the cooldown starts and a little hunger is consumed.$(br2)§lAcquisition: §r Enchanting Table (level I only), Loot Chests, Villager Trades"
+    }
+  ]
+}

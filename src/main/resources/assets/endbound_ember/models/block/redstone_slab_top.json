@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "minecraft:block/redstone_block",
+    "top": "minecraft:block/redstone_block",
+    "side": "minecraft:block/redstone_block",
+    "particle": "minecraft:block/redstone_block"
+  }
+}

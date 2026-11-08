@@ -90,6 +90,9 @@ neoForge {
             client()
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            // 临时调试用：启动后直接进入存档
+            programArgument '--quickPlaySingleplayer'
+            programArgument '新的世界'
         }
 
         server {

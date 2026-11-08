@@ -167,8 +167,12 @@ public class LuoHongyuItem extends Item {
             DamageSource source = attacker != null
                     ? level.damageSources().source(DamageTypes.MAGIC, null, attacker)
                     : level.damageSources().magic();
+            int savedInvulnerableTime = target.invulnerableTime;
             target.invulnerableTime = 0;
             target.hurt(source, DAMAGE_PER_STACK * stacks);
+            // 还原无敌帧：流血跳伤只借用一瞬来保证命中，不能顺手抹掉目标受击后的无敌时间，
+            // 否则对 Boss 这类自带长无敌帧的目标等于变相提高玩家后续攻击的命中频率
+            target.invulnerableTime = savedInvulnerableTime;
             level.sendParticles(ParticleTypes.CRIMSON_SPORE,
                     target.getX(), target.getY() + target.getBbHeight() * 0.6D, target.getZ(),
                     8, 0.3D, 0.4D, 0.3D, 0.0D);

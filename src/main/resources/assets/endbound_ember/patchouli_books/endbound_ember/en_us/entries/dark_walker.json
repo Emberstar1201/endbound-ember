@@ -1,0 +1,13 @@
+{
+  "name": "Dark Walker",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 55,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Dark Walker",
+      "text": "§lMax Level:§r I$(br2)§lApplicable to:§r Boots$(br2)§lEffect:§r Wardens quickly forget you and cannot lock onto you, and their attacks cannot hurt you. However, sculk sensors and shriekers can still be triggered by vibrations.$(br2)§lConflicts:§r Swift Sneak$(br2)§lObtained via:§r Enchanting table, ancient city chests"
+    }
+  ]
+}

@@ -75,7 +75,7 @@ public enum HerobrineTitle {
         switch (this) {
             case THUNDER_LORD -> {
                 stats.thunderIntervalScale = 0.7F;
-                stats.thunderDamage = 7.0F;
+                stats.thunderDamage = 5.0F;
                 stats.slowOnThunder = true;
                 stats.telegraphThunder = true;
             }
@@ -184,7 +184,7 @@ public enum HerobrineTitle {
         public int summonCap = 8;
         /** 判罚之雷的间隔倍率与单次伤害 */
         public float thunderIntervalScale = 1.0F;
-        public float thunderDamage = 5.0F;
+        public float thunderDamage = 4.0F;
         /** 完全取消落雷 */
         public boolean thunderDisabled;
         /** 改为定期凋零 */

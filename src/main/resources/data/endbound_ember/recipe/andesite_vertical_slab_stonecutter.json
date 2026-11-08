@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:andesite"
+  },
+  "result": {
+    "id": "endbound_ember:andesite_vertical_slab",
+    "count": 2
+  }
+}

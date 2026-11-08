@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:mossy_stone_brick_slab"
+    },
+    "B": {
+      "item": "minecraft:mossy_stone_bricks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:mossy_stone_brick_display_pedestal",
+    "count": 1
+  }
+}

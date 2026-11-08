@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "endbound_ember:polished_calcite_bricks"
+  },
+  "result": {
+    "id": "endbound_ember:polished_calcite_bricks_vertical_slab",
+    "count": 2
+  }
+}

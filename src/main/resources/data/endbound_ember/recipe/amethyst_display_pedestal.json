@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "endbound_ember:amethyst_slab"
+    },
+    "B": {
+      "item": "minecraft:amethyst_block"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:amethyst_display_pedestal",
+    "count": 1
+  }
+}

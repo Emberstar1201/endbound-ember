@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:warped_slab"
+    },
+    "B": {
+      "item": "minecraft:warped_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:warped_display_pedestal",
+    "count": 1
+  }
+}

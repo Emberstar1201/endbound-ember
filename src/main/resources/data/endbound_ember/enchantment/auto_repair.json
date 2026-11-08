@@ -1,0 +1,11 @@
+{
+  "description": { "translate": "enchantment.endbound_ember.auto_repair" },
+  "supported_items": "#minecraft:enchantable/durability",
+  "primary_items": "#minecraft:enchantable/durability",
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": { "base": 30, "per_level_above_first": 12 },
+  "max_cost": { "base": 55, "per_level_above_first": 12 },
+  "anvil_cost": 8,
+  "slots": [ "any" ]
+}

@@ -102,20 +102,28 @@ public class DawnAmuletItem extends Item {
             }
         }
 
-        /** 攻击亡灵 / BOSS 时提升伤害。 */
+        /** 攻击亡灵 / BOSS 时提升伤害；与上位护符同时佩戴时取最高倍率，不叠加。 */
         @SubscribeEvent
         public static void onIncomingDamage(LivingIncomingDamageEvent event) {
             if (event.getEntity().level().isClientSide) return;
             if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
             if (event.getSource().getDirectEntity() != player) return;
-            if (!isEquipped(player)) return;
+
+            boolean dawn = isEquipped(player);
+            boolean anahita = AnahitaFirstlightLiddellItem.isEquipped(player);
+            if (!dawn && !anahita) return;
 
             LivingEntity target = event.getEntity();
+            double multiplier = 1.0D;
             if (isBoss(target)) {
-                event.setAmount((float) (event.getAmount() * BOSS_BONUS));
+                multiplier = Math.max(dawn ? BOSS_BONUS : 1.0D,
+                        anahita ? AnahitaFirstlightLiddellItem.BOSS_MULTIPLIER : 1.0D);
             } else if (isUndead(target)) {
-                event.setAmount((float) (event.getAmount() * UNDEAD_BONUS));
+                multiplier = Math.max(dawn ? UNDEAD_BONUS : 1.0D,
+                        anahita ? AnahitaFirstlightLiddellItem.UNDEAD_MULTIPLIER : 1.0D);
             }
+            if (multiplier <= 1.0D) return;
+            event.setAmount((float) (event.getAmount() * multiplier));
         }
     }
 }

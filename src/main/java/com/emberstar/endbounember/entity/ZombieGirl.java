@@ -43,6 +43,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -366,18 +367,25 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     @Override
     protected net.minecraft.sounds.SoundEvent getDeathSound() { return EndboundEmber.HUSK_GIRL_FAREWELL_1.get(); }
     @Override public boolean isSunSensitive() { return false; }
+
+    /**
+     * 少女即使继承自僵尸也不应阻止玩家睡眠；子类继承此覆写后同样生效。
+     */
+    @Override
+    public boolean isPreventingPlayerRest(Player player) {
+        return false;
+    }
+
     @Override protected boolean convertsInWater() { return false; }
     @Override public boolean isInvertedHealAndHarm() { return false; }
     @Override public void checkDespawn() { }
 
     @Override
     public void tick() {
-        // 睡眠时强制锁在床位：先清导航与速度，再执行原版 tick，避免任何 Goal 把它从床上推走。
-        if (isSleeping()) {
-            getNavigation().stop();
-            setDeltaMovement(Vec3.ZERO);
-        }
+        // 睡眠时每 tick 清除寻路和速度，并回到原版记录的床头坐标，避免 AI 或残余惯性带走实体。
+        if (isSleeping()) lockSleepingPosition();
         super.tick();
+        if (isSleeping()) lockSleepingPosition();
         if (this.level().isClientSide) return;
         ensureDiaryBook();
         if (isTamed() && this.tickCount % 10 == 0) {
@@ -422,6 +430,19 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         return navigation;
     }
 
+    /** 睡眠期间保持原版睡姿和床头位置；起床条件仍完全交给 handleBedRest 的原有判断。 */
+    private void lockSleepingPosition() {
+        getNavigation().stop();
+        setDeltaMovement(Vec3.ZERO);
+        getSleepingPos().ifPresent(bedHead -> {
+            BlockState state = level().getBlockState(bedHead);
+            if (state.is(BlockTags.BEDS) && state.getValue(BedBlock.PART) == BedPart.HEAD) {
+                setPos(bedHead.getX() + 0.5D, bedHead.getY() + 0.6875D, bedHead.getZ() + 0.5D);
+                setPose(Pose.SLEEPING);
+            }
+        });
+    }
+
     private void handleBedRest() {
         if (isSleeping()) {
             if (!level().isNight() || getTarget() != null || isInWater()) stopSleeping();
@@ -433,8 +454,15 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             BlockState state = level().getBlockState(pos);
             if (!state.is(BlockTags.BEDS) || state.getValue(BedBlock.OCCUPIED)) continue;
             if (distanceToSqr(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D) > 64.0D) continue;
+
+            // 搜索范围可能先命中床尾；startSleeping 必须收到实际床头坐标，否则姿态和位置会错位。
+            BlockPos bedHead = state.getValue(BedBlock.PART) == BedPart.HEAD
+                    ? pos.immutable()
+                    : pos.relative(state.getValue(BedBlock.FACING)).immutable();
+            BlockState headState = level().getBlockState(bedHead);
+            if (!headState.is(BlockTags.BEDS) || headState.getValue(BedBlock.PART) != BedPart.HEAD) continue;
             getNavigation().stop();
-            startSleeping(pos.immutable());
+            startSleeping(bedHead);
             return;
         }
     }

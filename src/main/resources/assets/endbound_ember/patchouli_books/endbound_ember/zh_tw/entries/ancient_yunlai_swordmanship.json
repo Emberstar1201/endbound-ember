@@ -1,0 +1,13 @@
+{
+  "name": "古·雲來劍法",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 42,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "古·雲來劍法",
+      "text": "§l最高等級：§r I$(br2)§l適用物品：§r 劍$(br2)§l效果：§r 手持時攻擊速度 +5.0、攻擊距離 +5.0 格、近戰傷害 ×1.50；命中時 75% 概率斬出射程 10 格的劍氣，造成本次攻擊 75% 的傷害。$(br2)§l衝突：§r 雲來劍法，以及其他近戰傷害/成長型附魔，同一把武器僅可附加一個。$(br2)§l獲取方式：§r 僅寶箱中的附魔書（寶藏附魔，附魔枱與村民交易無法獲得）"
+    }
+  ]
+}

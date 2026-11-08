@@ -8,12 +8,44 @@
       "type": "patchouli:spotlight",
       "item": "endbound_ember:life_star",
       "title": "生命之星",
-      "text": "§c§l獲取方式：§r 附魔金蘋果置於中央，周圍放置 4 個蒲公英與 4 個閃爍的西瓜片。$(br2)§l生效條件：§r 放入飾品欄，或放在主手/副手。$(br2)豐饒之息：最大生命值提升至 100 點；回血速度提升至 5 倍；飢餓值與飽和值不再消耗。$(br)朝露：依最大生命值額外造成 10% 物理傷害。$(br)迴光返照：受到致命傷害時清除所有負面效果，並恢復 75% 生命值。$(br)椿花復甦：生命值低於 50% 時，恢復最大生命值 33% 的生命值。$(br)滋潤雨露：雨天每 60 tick 恢復 1.5 點生命值，玩家馴服的生物同樣生效。"
+      "text": "§c§l獲取方式：§r 在祭壇完成儀式。$(br2)底座為 7×7 可種植植物的自然方塊（草方塊、泥土、菌岩、耕地等）。$(br2)中心放附魔金蘋果，四角放任意花朵（凋零玫瑰除外），四邊中點放閃爍的西瓜片。$(br2)§l生效條件：§r 放入飾品欄，或放在主手/副手。$(br2)豐饒之息：最大生命值提升至 100 點；回血速度提升至 5 倍；飢餓值與飽和值不再消耗。$(br)朝露：依最大生命值額外造成 10% 物理傷害。$(br)迴光返照：受到致命傷害時清除所有負面效果，並恢復 75% 生命值。$(br)椿花復甦：生命值低於 50% 時，恢復最大生命值 33% 的生命值。$(br)滋潤雨露：雨天每 60 tick 恢復 1.5 點生命值，玩家馴服的生物同樣生效。"
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "endbound_ember:life_star",
-      "text": "配方：中央放置附魔金蘋果，周圍放置 4 個蒲公英與 4 個閃爍的西瓜片。"
+      "type": "patchouli:multiblock",
+      "name": "生命之星祭壇",
+      "multiblock": {
+        "pattern": [
+          [
+            "p  p  p",
+            "       ",
+            "       ",
+            "p  0  p",
+            "       ",
+            "       ",
+            "p  p  p"
+          ],
+          [
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg"
+          ]
+        ],
+        "mapping": {
+          "g": "minecraft:grass_block",
+          "p": "endbound_ember:display_pedestal",
+          "0": "endbound_ember:display_pedestal"
+        },
+        "symmetrical": true
+      },
+      "text": "圖中草方塊僅作示例，可換成其他能種植植物的自然方塊。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "§l擺放：§r$(br2)中心：附魔金蘋果$(br)四角：任意花朵（凋零玫瑰除外）$(br)四邊中點：閃爍的西瓜片$(br2)擺好後右鍵任意一處展示台開始儀式。"
     }
   ]
 }

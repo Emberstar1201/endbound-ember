@@ -1,0 +1,13 @@
+{
+  "name": "琉璃冰魄箭",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 50,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "琉璃冰魄箭",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 弓、弩$(br2)§l效果：§r 蓄力速度减半；母箭以约 3.2 倍速度飞行，射出时散射 12 支子箭；命中造成范围伤害并把周围敌人拉向落点。与云纹弓术、远古云纹弓术冲突。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

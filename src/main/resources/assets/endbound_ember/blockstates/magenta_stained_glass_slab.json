@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/magenta_stained_glass_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/magenta_stained_glass_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/magenta_stained_glass"
+    }
+  }
+}

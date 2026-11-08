@@ -1,0 +1,13 @@
+{
+  "name": "爆破箭矢",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 44,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "爆破箭矢",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 弓、弩$(br2)§l效果：§r 箭矢命中后引发不破坏地形的小型爆炸：I 级半径 2 格/伤害 6，II 级半径 3 格/伤害 9，III 级半径 4 格/伤害 12；被直接命中的目标承受全额伤害，周围生物按距离衰减。与贯穿链条冲突。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

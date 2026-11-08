@@ -839,20 +839,6 @@
               "function": "minecraft:set_enchantments",
               "add": false,
               "enchantments": {
-                "endbound_ember:chain_breaker": 1
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:enchanted_book",
-          "weight": 3,
-          "functions": [
-            {
-              "function": "minecraft:set_enchantments",
-              "add": false,
-              "enchantments": {
                 "endbound_ember:flywheel_effect": 1
               }
             }

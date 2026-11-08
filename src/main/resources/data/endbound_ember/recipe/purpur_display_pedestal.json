@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:purpur_slab"
+    },
+    "B": {
+      "item": "minecraft:purpur_block"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:purpur_display_pedestal",
+    "count": 1
+  }
+}

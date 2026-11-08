@@ -1,0 +1,13 @@
+{
+  "name": "經驗饋贈",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 62,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "經驗饋贈",
+      "text": "§l最高等級：§r I$(br2)§l適用物品：§r 劍、斧、三叉戟、弓、弩$(br2)§l效果：§r 使用該武器擊殺怪物時，額外掉落該怪物原本經驗值 50% 的經驗（向下取整，至少 +1）。$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易"
+    }
+  ]
+}

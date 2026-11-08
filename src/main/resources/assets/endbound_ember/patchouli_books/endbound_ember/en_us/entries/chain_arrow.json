@@ -1,0 +1,13 @@
+{
+  "name": "Chain Arrow",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 45,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Chain Arrow",
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Bow, Crossbow$(br2)§lEffect: §r After hitting an entity, the arrow bounces to the nearest enemy within 10 blocks: 1 bounce at level I, 2 at II, 3 at III, each dealing 80% of the arrow's base damage. Conflicts with Explosive Arrow.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

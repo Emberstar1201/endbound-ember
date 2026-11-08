@@ -1,0 +1,13 @@
+{
+  "name": "坠落缓冲",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 52,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "坠落缓冲",
+      "text": "§l最高等级：§r II$(br2)§l适用物品：§r 靴子$(br2)§l效果：§r 落地伤害减免 50%（II 级 75%）；摔落超过 3 格时产生冲击波，击退周围生物（I 级半径 3 格、强度 1.0；II 级半径 5 格、强度 2.0）。$(br2)§l冲突：§r 优雅猫步$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

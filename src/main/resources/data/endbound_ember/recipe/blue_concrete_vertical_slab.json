@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:blue_concrete"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:blue_concrete_vertical_slab",
+    "count": 6
+  }
+}

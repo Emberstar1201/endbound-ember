@@ -2,6 +2,8 @@ package com.emberstar.endbounember.effect;
 
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.item.DawnAmuletItem;
+import com.emberstar.endbounember.item.AnahitaFirstlightLiddellItem;
+import com.emberstar.endbounember.item.StardustWitchHaloEvents;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -46,8 +48,8 @@ public final class ModEffects {
     }
 
     public static final class JudgementThunder extends MobEffect {
-        /** 落雷伤害：默认固定 5 点，可被 BOSS 词条覆写 */
-        private static final float STRIKE_DAMAGE = 5.0F;
+        /** 落雷伤害：默认固定 4 点，可被 BOSS 词条覆写 */
+        private static final float STRIKE_DAMAGE = 4.0F;
         /** 简单 / 普通 / 困难下的落雷间隔（tick） */
         private static final int EASY_INTERVAL = 200;
         private static final int NORMAL_INTERVAL = 150;
@@ -109,6 +111,10 @@ public final class ModEffects {
         }
 
         private static void strike(ServerLevel level, LivingEntity entity, CompoundTag data) {
+            // 判罚之雷不会降临在这些佩戴者身上：不落雷、不结算伤害、也不附加缓慢
+            if (isJudgementThunderImmune(entity)) {
+                return;
+            }
             LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
             if (bolt != null) {
                 bolt.moveTo(entity.getX(), entity.getY(), entity.getZ());
@@ -125,7 +131,20 @@ public final class ModEffects {
         }
 
         private static boolean isAmuletWearer(LivingEntity entity) {
-            return entity instanceof Player player && DawnAmuletItem.isEquipped(player);
+            return entity instanceof Player player
+                    && (DawnAmuletItem.isEquipped(player)
+                            || AnahitaFirstlightLiddellItem.isEquipped(player));
+        }
+
+        /** 晨曦护符、阿娜希塔·晨曦·莉德尔、时光光环、星尘光环的佩戴者免疫判罚之雷的降临。 */
+        private static boolean isJudgementThunderImmune(LivingEntity entity) {
+            if (!(entity instanceof Player player)) {
+                return false;
+            }
+            return DawnAmuletItem.isEquipped(player)
+                    || AnahitaFirstlightLiddellItem.isEquipped(player)
+                    || StardustWitchHaloEvents.wearingTimeHalo(player)
+                    || StardustWitchHaloEvents.wearingStardustHalo(player);
         }
     }
 }

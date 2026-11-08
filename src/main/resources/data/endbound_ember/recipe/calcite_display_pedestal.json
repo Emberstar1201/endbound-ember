@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "endbound_ember:calcite_slab"
+    },
+    "B": {
+      "item": "minecraft:calcite"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:calcite_display_pedestal",
+    "count": 1
+  }
+}

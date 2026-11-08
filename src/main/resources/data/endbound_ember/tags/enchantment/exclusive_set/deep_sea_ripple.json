@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "endbound_ember:deep_sea_ripple",
+    "endbound_ember:wind_ripple",
+    "endbound_ember:elegant_catwalk",
+    "minecraft:depth_strider",
+    "minecraft:frost_walker",
+    "minecraft:soul_speed"
+  ]
+}

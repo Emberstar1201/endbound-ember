@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:yellow_concrete"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:yellow_concrete_slab",
+    "count": 6
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Plunder",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 38,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Plunder",
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Melee Weapons$(br2)§lEffect: §r Kills guarantee rare loot (heads, music discs — 75% at level I, always at II~III, with more items at higher levels); monster equipment drops with 60%/100%/100% chance and roughly 25%/50~75%/full durability. Boss fixed drops are unaffected.$(br2)§lConflicts: §r Looting.$(br2)§lAcquisition: §r Loot chests only, as enchanted books (treasure; no enchanting table or villager trades)"
+    }
+  ]
+}

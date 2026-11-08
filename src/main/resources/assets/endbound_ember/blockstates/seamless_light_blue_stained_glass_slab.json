@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/seamless_light_blue_stained_glass_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/seamless_light_blue_stained_glass_slab_top"
+    },
+    "type=double": {
+      "model": "endbound_ember:block/seamless_light_blue_stained_glass_base"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/redstone_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/redstone_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/redstone_block"
+    }
+  }
+}

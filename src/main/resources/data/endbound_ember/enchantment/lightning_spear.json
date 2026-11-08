@@ -1,0 +1,23 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.lightning_spear"
+  },
+  "supported_items": "#minecraft:enchantable/trident",
+  "primary_items": "#minecraft:enchantable/trident",
+  "weight": 2,
+  "max_level": 2,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/lightning_spear"
+}

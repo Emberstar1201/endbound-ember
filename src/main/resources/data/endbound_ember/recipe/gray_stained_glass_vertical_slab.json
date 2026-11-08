@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:gray_stained_glass"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:gray_stained_glass_vertical_slab",
+    "count": 6
+  }
+}

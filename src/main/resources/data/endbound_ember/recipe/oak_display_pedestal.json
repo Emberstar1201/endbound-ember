@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:oak_slab"
+    },
+    "B": {
+      "item": "minecraft:oak_planks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:oak_display_pedestal",
+    "count": 1
+  }
+}

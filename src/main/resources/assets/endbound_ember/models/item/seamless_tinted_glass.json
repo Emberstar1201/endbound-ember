@@ -1,0 +1,4 @@
+{
+  "parent": "endbound_ember:block/seamless_tinted_glass",
+  "render_type": "minecraft:translucent"
+}

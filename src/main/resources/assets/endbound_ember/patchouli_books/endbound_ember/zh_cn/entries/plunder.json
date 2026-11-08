@@ -1,0 +1,13 @@
+{
+  "name": "强夺",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 38,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "强夺",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 近战武器$(br2)§l效果：§r 击杀时按等级保底稀有战利品（头颅、唱片，I 级 75%、II~III 级必定触发，数量随等级提升）；怪物装备大概率或必定掉落，I 级耐久约 25%，II 级 50%~75%，III 级满耐久。BOSS 固定掉落不受影响。$(br2)§l冲突：§r 抢夺。$(br2)§l获取方式：§r 仅宝箱中的附魔书（宝藏附魔，附魔台与村民交易无法获得）"
+    }
+  ]
+}

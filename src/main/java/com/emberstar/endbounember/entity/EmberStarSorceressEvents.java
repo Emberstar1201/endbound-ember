@@ -94,14 +94,16 @@ public final class EmberStarSorceressEvents {
         private final TrialType type;
         private final int seconds;
         private final int target;
+        private final long startTick;
         private final long endTick;
         private int progress;
         private Vec3 lastPos;
 
-        private Trial(TrialType type, int seconds, int target, long endTick, Vec3 lastPos) {
+        private Trial(TrialType type, int seconds, int target, long startTick, long endTick, Vec3 lastPos) {
             this.type = type;
             this.seconds = seconds;
             this.target = target;
+            this.startTick = startTick;
             this.endTick = endTick;
             this.lastPos = lastPos;
         }
@@ -361,7 +363,8 @@ public final class EmberStarSorceressEvents {
             case TRAVEL -> 200 + level.random.nextInt(9) * 20;
             case MINE -> 12 + level.random.nextInt(9);
         };
-        Trial trial = new Trial(type, seconds, target, level.getGameTime() + seconds * 20L, player.position());
+        long now = level.getGameTime();
+        Trial trial = new Trial(type, seconds, target, now, now + seconds * 20L, player.position());
         ACTIVE_TRIALS.put(player.getUUID(), trial);
         announceTrial(player, trial);
 
@@ -404,14 +407,23 @@ public final class EmberStarSorceressEvents {
                 failTrial(player, "endbound_ember.sorceress.trial.fail_death");
                 continue;
             }
+
+            // 生存试炼：期间未受伤即可，计时结束就是成功，不能按其他试炼的超时规则判负。
+            if (trial.type == TrialType.SURVIVE) {
+                if (gameTime >= trial.endTick) {
+                    completeTrial((ServerLevel) player.level(), player);
+                } else {
+                    trial.progress = (int) Math.min(trial.target, (gameTime - trial.startTick) / 20L);
+                    showProgress(player, trial);
+                }
+                continue;
+            }
+
             if (gameTime >= trial.endTick) {
                 failTrial(player, "endbound_ember.sorceress.trial.fail_time");
                 continue;
             }
-            boolean passive = trial.type == TrialType.SURVIVE || trial.type == TrialType.TRAVEL;
-            if (trial.type == TrialType.SURVIVE) {
-                trial.progress++;
-            } else if (trial.type == TrialType.TRAVEL) {
+            if (trial.type == TrialType.TRAVEL) {
                 Vec3 now = player.position();
                 double dx = now.x - trial.lastPos.x;
                 double dz = now.z - trial.lastPos.z;
@@ -421,7 +433,7 @@ public final class EmberStarSorceressEvents {
             // 击杀、挖掘的进度在对应事件里累加，这里统一判定是否达成
             if (trial.progress >= trial.target) {
                 completeTrial((ServerLevel) player.level(), player);
-            } else if (passive) {
+            } else if (trial.type == TrialType.TRAVEL) {
                 showProgress(player, trial);
             }
         }

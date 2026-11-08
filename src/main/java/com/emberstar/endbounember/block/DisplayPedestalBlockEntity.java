@@ -34,6 +34,8 @@ public class DisplayPedestalBlockEntity extends BlockEntity {
         HALO(EndboundEmber.HALO_RITUAL_DURATION, EndboundEmber.HALO_RITUAL_SWAP_TICK),
         /** 晨曦护符：任意光源底座 + 拂晓附魔书 / 烈焰粉 / 星尘。 */
         AMULET(EndboundEmber.AMULET_RITUAL_DURATION, EndboundEmber.AMULET_RITUAL_SWAP_TICK),
+        /** 生命之星：可种植底座 + 附魔金苹果 / 任意花朵 / 闪烁的西瓜片。 */
+        LIFE_STAR(EndboundEmber.LIFE_STAR_RITUAL_DURATION, EndboundEmber.LIFE_STAR_RITUAL_SWAP_TICK),
         /** Herobrine 召唤：下界风格底座 + 中心与四角各一颗下界之星。 */
         HEROBRINE(EndboundEmber.HEROBRINE_RITUAL_DURATION, EndboundEmber.HEROBRINE_RITUAL_SUMMON_TICK);
 

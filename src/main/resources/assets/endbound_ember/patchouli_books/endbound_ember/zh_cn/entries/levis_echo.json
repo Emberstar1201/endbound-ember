@@ -1,0 +1,13 @@
+{
+  "name": "兵长的回声",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 40,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "兵长的回声",
+      "text": "§l最高等级：§r V$(br2)§l适用物品：§r 近战武器$(br2)§l效果：§r 攻击同一目标叠加回声标记，满 3 层引爆，造成目标最大生命值 5% + (等级-1)×2% 的魔法伤害，无视护甲。仅对最大生命值 ≥ 50 的目标生效，标记 5 秒未续期则重置。$(br2)§l冲突：§r 熵增、星火不灭，以及其他近战伤害/成长型附魔。$(br2)§l获取方式：§r 附魔台、宝箱、村民交易"
+    }
+  ]
+}

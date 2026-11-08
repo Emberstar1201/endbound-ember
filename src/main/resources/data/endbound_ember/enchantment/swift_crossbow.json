@@ -1,0 +1,23 @@
+{
+  "description": {
+    "translate": "enchantment.endbound_ember.swift_crossbow"
+  },
+  "supported_items": "#endbound_ember:bow_enchantable",
+  "primary_items": "#endbound_ember:bow_enchantable",
+  "weight": 2,
+  "max_level": 4,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 12
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 12
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "exclusive_set": "#endbound_ember:exclusive_set/swift_crossbow"
+}

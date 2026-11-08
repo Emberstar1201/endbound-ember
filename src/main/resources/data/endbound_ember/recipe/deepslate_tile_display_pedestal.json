@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:deepslate_tile_slab"
+    },
+    "B": {
+      "item": "minecraft:deepslate_tiles"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:deepslate_tile_display_pedestal",
+    "count": 1
+  }
+}

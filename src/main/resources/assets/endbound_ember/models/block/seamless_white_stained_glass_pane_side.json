@@ -1,0 +1,7 @@
+{
+  "parent": "endbound_ember:block/template_seamless_pane_side",
+  "textures": {
+    "pane": "minecraft:block/white_stained_glass",
+    "edge": "minecraft:block/white_stained_glass_pane_top"
+  }
+}

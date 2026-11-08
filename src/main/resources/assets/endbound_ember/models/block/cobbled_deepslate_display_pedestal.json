@@ -1,0 +1,7 @@
+{
+  "parent": "endbound_ember:block/display_pedestal_template",
+  "textures": {
+    "0": "minecraft:block/cobbled_deepslate",
+    "particle": "minecraft:block/cobbled_deepslate"
+  }
+}

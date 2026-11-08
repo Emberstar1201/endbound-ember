@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:silk_touch",
-    "endbound_ember:ex_nihilo",
-    "endbound_ember:chain_breaker"
+    "endbound_ember:ex_nihilo"
   ]
 }

@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Ex Nihilo",
-      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Pickaxes, Shears$(br2)§lEffect: §r Mining stone blocks has a chance to yield ores; higher levels give a higher chance.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades$(br2)§lConflicts: §r Mutually exclusive with Chain Breaker"
+      "text": "§lMax Level: §r III$(br2)§lApplicable Items: §r Pickaxes, Shears$(br2)§lEffect: §r Mining stone blocks has a chance to yield ores; higher levels give a higher chance.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades$(br2)§lConflicts: §r Mutually exclusive with Silk Touch"
     }
   ]
 }

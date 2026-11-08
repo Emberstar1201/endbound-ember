@@ -204,13 +204,14 @@ public final class StardustWitchHaloEvents {
         }
         boolean stardust = wearingStardustHalo(player);
         boolean time = wearingTimeHalo(player);
+        boolean amulet = AnahitaFirstlightLiddellItem.isEquipped(player);
         boolean any = stardust || time;
 
         updateFlight(player, any);
-        updatePenaltyClearing(player, any);
-
-        // 星尘光环专属：移动光源 + 攻击恢复速度
-        updateHaloLight(player, stardust);
+        // 惩罚免疫：光环或上位护符任一佩戴即可
+        updatePenaltyClearing(player, any || amulet);
+        // 上位护符同样提供随身照明，与光环共用同一份光源跟踪
+        updateHaloLight(player, stardust || amulet);
         updateAttackSpeed(player, stardust);
     }
 
@@ -290,7 +291,7 @@ public final class StardustWitchHaloEvents {
     @SubscribeEvent
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
-        if (!wearingAnyHalo(player)) {
+        if (!wearingAnyHalo(player) && !AnahitaFirstlightLiddellItem.isEquipped(player)) {
             return;
         }
         float speed = event.getNewSpeed();

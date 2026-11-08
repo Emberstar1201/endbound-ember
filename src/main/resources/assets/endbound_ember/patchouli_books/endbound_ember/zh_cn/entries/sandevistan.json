@@ -1,0 +1,13 @@
+{
+  "name": "斯安维斯坦",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 61,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "斯安维斯坦",
+      "text": "§l最高等级：§r III$(br2)§l适用物品：§r 胸甲（鞘翅不可附魔）$(br2)§l效果：§r 穿戴附魔胸甲时潜行即激活「子弹时间」：范围内生物与投射物停滞，末影龙与凋灵只会陷入缓慢；自身移速与攻速提升。I 级持续 5 秒、冷却 10 秒；II 级 15 秒、冷却 30 秒；III 级 30 秒、冷却 65 秒。效果结束进入冷却并消耗少量饥饿值。$(br2)§l获取方式：§r 附魔台（仅 I 级）、宝箱、村民交易"
+    }
+  ]
+}

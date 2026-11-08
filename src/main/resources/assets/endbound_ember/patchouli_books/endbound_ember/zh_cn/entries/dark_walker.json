@@ -1,0 +1,13 @@
+{
+  "name": "幽匿行者",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 55,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "幽匿行者",
+      "text": "§l最高等级：§r I$(br2)§l适用物品：§r 靴子$(br2)§l效果：§r 监守者会迅速忘记你且无法锁定你，其攻击也无法对你造成伤害；但幽匿感测体与尖啸体仍会被振动触发。$(br2)§l冲突：§r 迅捷潜行$(br2)§l获取方式：§r 附魔台、远古城市宝箱"
+    }
+  ]
+}

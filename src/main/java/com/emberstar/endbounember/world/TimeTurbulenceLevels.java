@@ -82,17 +82,14 @@ public final class TimeTurbulenceLevels {
     private static final double SPAWN_X = 0.5D;
     private static final double SPAWN_Z = 0.5D;
 
-    /** 时之锚结构模板（11×11×50，顶部展示台放着时间光环） */
+    /** 时之锚结构模板；占用尺寸从结构文件动态读取 */
     private static final ResourceLocation CHRONO_ANCHOR = EndboundEmber.id("chrono_anchor");
     private static final ResourceLocation CHRONO_ANCHOR_RESOURCE = EndboundEmber.id("structures/chrono_anchor.nbt");
-    /**
-     * 结构原点的 Y 偏移：结构文件里结构方块记录的相对位置就是 Y = -2，
-     * 即结构原点比地面站立高度低 2 格——最底下一层埋进地基，内部地面正好与石英地板上表面齐平。
-     */
+    /** 结构原点相对出生平台的垂直偏移；先沿用旧标高，待新版底座与石英地板关系实测确认 */
     private static final int CHRONO_ANCHOR_Y_OFFSET = -2;
-    /** 时之锚的候选落点（相对出生点的水平偏移），依次取第一个没有被占用、也不会压住玩家建筑的位置 */
+    /** 时之锚候选原点（相对出生点的 X/Z 偏移）；四个 25×25 象限避开出生点落脚区 */
     private static final int[][] CHRONO_ANCHOR_OFFSETS = {
-            {7, -5}, {-17, -5}, {7, 12}, {7, -22}
+            {3, -27}, {-27, -27}, {3, 3}, {-27, 3}
     };
 
     private static final String RETURN_DIMENSION = "endbound_ember:time_turbulence_return_dimension";

@@ -1,0 +1,13 @@
+{
+  "name": "Yunlai Swordmanship",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 43,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Yunlai Swordmanship",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Swords$(br2)§lEffect: §r While held: +2.5 attack speed, +2.5 blocks attack range, melee damage ×1.10. On hit: 60% chance to unleash a 6-block sword qi along your line of sight, dealing 50% of the hit's damage.$(br2)§lConflicts: §r Ancient Yunlai Swordmanship and other melee damage/growth enchantments; only one may be applied to a weapon.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

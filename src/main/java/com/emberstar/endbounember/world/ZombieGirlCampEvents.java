@@ -23,14 +23,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.Nullable;
@@ -46,9 +49,6 @@ public final class ZombieGirlCampEvents {
             EndboundEmber.MODID, "zombie_girl_camp");
     private static final ResourceLocation CAMP_RESOURCE = ResourceLocation.fromNamespaceAndPath(
             EndboundEmber.MODID, "structures/zombie_girl_camp.nbt");
-    private static final ResourceKey<net.minecraft.world.level.storage.loot.LootTable> LOOT =
-            ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                    ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "chests/zombie_girl_camp"));
     /** 普通营地候选间距：每 16×16 个区块确定一个候选，约每 256 格一个。 */
     private static final int SPACING = 16;
     /** 普通营地与世界出生点的最小水平距离。 */
@@ -60,19 +60,32 @@ public final class ZombieGirlCampEvents {
     /** 两座营地包围盒之间额外保留的水平间隙。 */
     private static final int CAMP_GAP = 16;
     /**
-     * 生成少女时的地面层搜索高度：只在营地底部向上这几格内找落脚点，避免刷到屋顶。
-     * 结构底部 0~3 层是地基与地砖，第 4 层才是可站的室内地面，再向上留两格容错。
-     * 搜索窗口从结构底部起算，因此必须保证营地内部高度不超过这个值，否则会落到屋顶上。
+     * 结构原点（最小角）相对地表高度图的下移格数。
+     * 结构第 0 层是填充泥土，第 1 层是草地/木板地面；下移 1 格后草地层正好替换原地表方块，
+     * 室内地面因此落在原地表上方一格，营地内部不会被地形穿插。
      */
-    private static final int FLOOR_SCAN_HEIGHT = 6;
-    /** 营地内部净高上限：少女只能在结构底部以上这么多格内落脚，超过即视为屋顶。 */
+    private static final int ORIGIN_Y_OFFSET = -1;
+    /** 结构第 2 层是室内可站立地面（第 1 层为草地与木板道路）。 */
+    private static final int CAMP_FLOOR_LAYER = 2;
+    /** 少女可站立的最高相对层；再向上是床铺与屋顶，属于家具或结构顶盖。 */
     private static final int CAMP_INTERIOR_HEIGHT = 4;
+    /** 营地常驻少女数量（新营地共 8 张床）。 */
+    private static final int CAMP_GIRL_COUNT = 6;
     private static final Set<Long> ATTEMPTED = new HashSet<>();
     private static final Set<PendingCamp> PENDING = new HashSet<>();
 
     private record PendingCamp(ServerLevel level, ChunkPos chunk) {}
 
     private ZombieGirlCampEvents() {}
+
+    @SubscribeEvent
+    public static void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level)
+                || !ZombieGirlCampSavedData.get(level).isProtectedCropFarmland(event.getPos())) {
+            return;
+        }
+        event.setCanceled(true);
+    }
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
@@ -149,34 +162,82 @@ public final class ZombieGirlCampEvents {
         }
 
         Vec3i size = template.getSize();
+        // 结构以区块中心为中心，原点是最小角；垂直方向按 ORIGIN_Y_OFFSET 让草地层替换原地表。
+        BlockPos origin = surface.offset(-size.getX() / 2, ORIGIN_Y_OFFSET, -size.getZ() / 2);
+        BlockPos center = campCenter(origin, size);
         ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
         // 作物保护：营地一旦盖在农田上就会把作物顶掉，命中即放弃这块候选。
-        if (hasCropsAround(level, surface, size)) {
-            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：结构范围内存在农田或作物，位置 {}", chunk, surface);
+        if (hasCropsAround(level, origin, size)) {
+            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：结构范围内存在农田或作物，位置 {}", chunk, origin);
             return;
         }
-        // 营地互斥：按结构水平对角线 + 间隙判定，保证两座营地的包围盒不会重叠或相接。
+        // 营地互斥：以营地中心为基准，按结构水平对角线 + 间隙判定，保证两座营地不会重叠或相接。
         if (!spawnCamp) {
             int minDistance = minCampDistance(size);
-            BlockPos spawnCampCorner = getSpawnCampCorner(level.getSharedSpawnPos());
-            if (data.isNearCamp(surface, minDistance)
-                    || isTooCloseHorizontally(surface, spawnCampCorner, minDistance)) {
+            BlockPos spawnCampCenter = getSpawnCampCenter(level.getSharedSpawnPos());
+            if (data.isNearCamp(center, minDistance)
+                    || isTooCloseHorizontally(center, spawnCampCenter, minDistance)) {
                 EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：与已有营地（或出生点营地保留位置）距离小于 {} 格",
                         chunk, minDistance);
                 return;
             }
         }
 
-        BlockPos origin = surface;
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false)
-                .setKnownShape(true);
+                .setKnownShape(true)
+                // 导出结构时嵌进去的 structure_block 不能带进世界，放置时直接忽略。
+                .addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
         if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2)) {
             EndboundEmber.LOGGER.error("[营地生成] placeInWorld 返回 false，位置 {}（出生点营地={}）", origin, spawnCamp);
             return;
         }
+        protectCampCrops(level, origin, size);
+        patchStructureBlocks(level, template, settings, origin);
         EndboundEmber.LOGGER.info("[营地生成] 营地已放置于 {}，区块 {}（出生点营地={}）", origin, chunk, spawnCamp);
         finish(level, chunk, origin, size, level.getRandom());
+    }
+
+    /** 保护结构中的作物和耕地，防止营地生物踩踏农田。 */
+    private static void protectCampCrops(ServerLevel level, BlockPos origin, Vec3i size) {
+        BlockPos end = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
+        BlockPos min = new BlockPos(Math.min(origin.getX(), end.getX()), Math.min(origin.getY(), end.getY()),
+                Math.min(origin.getZ(), end.getZ()));
+        BlockPos max = new BlockPos(Math.max(origin.getX(), end.getX()), Math.max(origin.getY(), end.getY()),
+                Math.max(origin.getZ(), end.getZ()));
+        ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
+        int protectedCrops = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
+            if (!level.getBlockState(pos).is(BlockTags.CROPS)) continue;
+            BlockPos farmlandPos = pos.below();
+            BlockState farmland = level.getBlockState(farmlandPos);
+            if (farmland.is(Blocks.FARMLAND)) {
+                data.addProtectedCropFarmland(farmlandPos);
+                level.setBlock(farmlandPos, farmland.setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 3);
+                protectedCrops++;
+            }
+        }
+        EndboundEmber.LOGGER.info("[营地生成] 已保护结构内 {} 格作物农田，营地原点 {}", protectedCrops, origin);
+    }
+
+    /** 营地中心（室内地面高度），存档记录与互斥判定都以它为基准。 */
+    private static BlockPos campCenter(BlockPos origin, Vec3i size) {
+        return origin.offset(size.getX() / 2, CAMP_FLOOR_LAYER, size.getZ() / 2);
+    }
+
+    /**
+     * 被忽略的 structure_block 会在放置后留下 1 格空洞，这里用草地补回。
+     * 新营地第 1 层是整片草地，被占用的格子原本也应是草地。
+     */
+    private static void patchStructureBlocks(ServerLevel level, StructureTemplate template,
+                                             StructurePlaceSettings settings, BlockPos origin) {
+        for (StructureTemplate.StructureBlockInfo info
+                : template.filterBlocks(BlockPos.ZERO, settings, Blocks.STRUCTURE_BLOCK)) {
+            BlockPos pos = origin.offset(info.pos());
+            if (level.getBlockState(pos).isAir()) {
+                level.setBlock(pos, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
+            }
+        }
     }
 
     /** 从 StructureManager 或资源包中加载营地模板，失败时返回 null。 */
@@ -216,15 +277,18 @@ public final class ZombieGirlCampEvents {
             return false;
         }
         Vec3i size = template.getSize();
-        // 结构原点是最小角：水平居中到玩家，垂直下移 4 格让玩家落在营地室内地面上。
-        BlockPos origin = center.offset(-size.getX() / 2, -4, -size.getZ() / 2);
+        // 结构原点是最小角：水平居中到指令位置，垂直按 ORIGIN_Y_OFFSET 让草地层落在脚下方块。
+        BlockPos origin = center.offset(-size.getX() / 2, ORIGIN_Y_OFFSET, -size.getZ() / 2);
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false)
-                .setKnownShape(true);
+                .setKnownShape(true)
+                .addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
         if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2)) {
             EndboundEmber.LOGGER.error("[营地生成] 测试指令放置失败，位置 {}", origin);
             return false;
         }
+        protectCampCrops(level, origin, size);
+        patchStructureBlocks(level, template, settings, origin);
         EndboundEmber.LOGGER.info("[营地生成] 测试指令已在 {} 放置营地", origin);
         finish(level, new ChunkPos(origin), origin, size, level.getRandom());
         return true;
@@ -233,7 +297,7 @@ public final class ZombieGirlCampEvents {
     private static void finish(ServerLevel level, ChunkPos chunk, BlockPos origin,
                                Vec3i size, RandomSource random) {
         ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
-        data.addCamp(origin.above(7), chunk);
+        data.addCamp(campCenter(origin, size), chunk);
         BlockPos end = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
         BlockPos min = new BlockPos(Math.min(origin.getX(), end.getX()), Math.min(origin.getY(), end.getY()),
                 Math.min(origin.getZ(), end.getZ()));
@@ -336,7 +400,7 @@ public final class ZombieGirlCampEvents {
 
     private static void spawnCampGirls(ServerLevel level, BlockPos min, BlockPos max, RandomSource random) {
         int spawned = 0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < CAMP_GIRL_COUNT; i++) {
             for (int attempt = 0; attempt < 12; attempt++) {
                 int x = min.getX() + random.nextInt(Math.max(1, max.getX() - min.getX() + 1));
                 int z = min.getZ() + random.nextInt(Math.max(1, max.getZ() - min.getZ() + 1));
@@ -356,14 +420,12 @@ public final class ZombieGirlCampEvents {
     }
 
     /**
-     * 在营地最底层寻找落脚点：从结构底部向上最多 {@link #FLOOR_SCAN_HEIGHT} 格，
-     * 避免刷到屋顶，也避免悬空后坠落把营地里的耕地与作物踩掉。
-     * 超过 {@link #CAMP_INTERIOR_HEIGHT} 的位置一律视为屋顶，直接放弃。
+     * 在营地里寻找落脚点：只扫结构第 {@link #CAMP_FLOOR_LAYER} 层到第
+     * {@link #CAMP_INTERIOR_HEIGHT} 层，避免刷到床铺、家具与屋顶上。
      */
     private static BlockPos findFloorSpawn(ServerLevel level, Mob girl, int x, int z, int baseY, boolean drowned) {
-        for (int dy = 0; dy < FLOOR_SCAN_HEIGHT; dy++) {
-            if (dy > CAMP_INTERIOR_HEIGHT) return null;
-            BlockPos pos = new BlockPos(x, baseY + dy, z);
+        for (int layer = CAMP_FLOOR_LAYER; layer <= CAMP_INTERIOR_HEIGHT; layer++) {
+            BlockPos pos = new BlockPos(x, baseY + layer, z);
             if (!level.noCollision(girl.getBoundingBox().move(x + 0.5D, pos.getY(), z + 0.5D))) continue;
 
             if (drowned) {
@@ -372,7 +434,8 @@ public final class ZombieGirlCampEvents {
             }
 
             BlockState ground = level.getBlockState(pos.below());
-            if (!ground.blocksMotion()) continue;
+            // 只认草地、泥土、木板、石砖与平滑石，避免少女站到木桶、工作台、铁砧等家具顶上。
+            if (!isCampFloor(ground)) continue;
             if (!level.getFluidState(pos).isEmpty() || !level.getFluidState(pos.above()).isEmpty()) continue;
             // 跳过耕地与作物所在的格，避免占据或踩坏营地里的农田
             if (ground.is(Blocks.FARMLAND) || level.getBlockState(pos).is(BlockTags.CROPS)) continue;
@@ -381,21 +444,27 @@ public final class ZombieGirlCampEvents {
         return null;
     }
 
+    /** 营地可站立的底面材质：草地/泥土、木板、石砖、平滑石。 */
+    private static boolean isCampFloor(BlockState state) {
+        return state.is(BlockTags.DIRT) || state.is(BlockTags.PLANKS)
+                || state.is(Blocks.STONE_BRICKS) || state.is(Blocks.SMOOTH_STONE);
+    }
+
     private static ChunkPos getSpawnCampChunk(BlockPos spawnPos) {
         // 向东偏移 5 区块，中心距离出生点约 80 格。
         return new ChunkPos((spawnPos.getX() >> 4) + SPAWN_CAMP_CHUNK_OFFSET,
                 spawnPos.getZ() >> 4);
     }
 
-    /** 出生点营地的确定性保留位置（结构最小角），用于普通营地避让。 */
-    private static BlockPos getSpawnCampCorner(BlockPos spawnPos) {
+    /** 出生点营地的确定性保留中心，用于普通营地避让。 */
+    private static BlockPos getSpawnCampCenter(BlockPos spawnPos) {
         ChunkPos chunk = getSpawnCampChunk(spawnPos);
         return new BlockPos(chunk.getMinBlockX() + 8, 0, chunk.getMinBlockZ() + 8);
     }
 
     /**
-     * 两座营地之间的最小角对角水平距离：结构水平对角线向上取整，再加上 {@link #CAMP_GAP} 的间隙。
-     * 以结构最小角为基准比较，可保证两个包围盒既不相交也不贴边。
+     * 两座营地中心之间的最小水平距离：结构水平对角线向上取整，再加上 {@link #CAMP_GAP} 的间隙。
+     * 以营地中心为基准比较，可保证两个包围盒既不相交也不贴边。
      */
     private static int minCampDistance(Vec3i size) {
         return (int) Math.ceil(Math.sqrt((double) size.getX() * size.getX()
@@ -410,11 +479,11 @@ public final class ZombieGirlCampEvents {
     }
 
     /**
-     * 结构将要覆盖的体积内是否存在农田或作物。高度图返回的是最高方块上方一格，
-     * 作物实际位于原点下方，因此向下多扫两格；命中即放弃这块候选，避免把作物顶掉。
+     * 结构将要覆盖的体积内是否存在农田或作物。结构草地层已经替换原地表方块，
+     * 作物只可能出现在原点下方一格以内，因此从原点下一格起扫。
      */
     private static boolean hasCropsAround(ServerLevel level, BlockPos origin, Vec3i size) {
-        BlockPos min = origin.offset(0, -2, 0);
+        BlockPos min = origin.offset(0, -1, 0);
         BlockPos max = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
         for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
             BlockState state = level.getBlockState(pos);

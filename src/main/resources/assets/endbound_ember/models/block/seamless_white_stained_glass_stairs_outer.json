@@ -1,0 +1,9 @@
+{
+  "parent": "endbound_ember:block/template_seamless_stairs_outer",
+  "textures": {
+    "particle": "minecraft:block/white_stained_glass",
+    "side": "minecraft:block/white_stained_glass",
+    "top": "minecraft:block/white_stained_glass",
+    "bottom": "minecraft:block/white_stained_glass"
+  }
+}

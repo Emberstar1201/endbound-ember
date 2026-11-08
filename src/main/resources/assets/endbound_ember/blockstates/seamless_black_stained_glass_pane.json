@@ -1,0 +1,79 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "minecraft:block/black_stained_glass_pane_post"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_black_stained_glass_pane_side"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_black_stained_glass_pane_side",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_black_stained_glass_pane_side",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "endbound_ember:block/seamless_black_stained_glass_pane_side",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "false"
+      },
+      "apply": {
+        "model": "minecraft:block/black_stained_glass_pane_noside"
+      }
+    },
+    {
+      "when": {
+        "east": "false"
+      },
+      "apply": {
+        "model": "minecraft:block/black_stained_glass_pane_noside",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "false"
+      },
+      "apply": {
+        "model": "minecraft:block/black_stained_glass_pane_noside",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "false"
+      },
+      "apply": {
+        "model": "minecraft:block/black_stained_glass_pane_noside",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:white_stained_glass"
+  },
+  "result": {
+    "id": "endbound_ember:white_stained_glass_vertical_slab",
+    "count": 2
+  }
+}

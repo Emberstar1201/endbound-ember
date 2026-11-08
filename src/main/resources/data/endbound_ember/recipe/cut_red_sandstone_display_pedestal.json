@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:cut_red_sandstone_slab"
+    },
+    "B": {
+      "item": "minecraft:cut_red_sandstone"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:cut_red_sandstone_display_pedestal",
+    "count": 1
+  }
+}

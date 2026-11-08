@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:dark_prismarine_slab"
+    },
+    "B": {
+      "item": "minecraft:dark_prismarine"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:dark_prismarine_display_pedestal",
+    "count": 1
+  }
+}

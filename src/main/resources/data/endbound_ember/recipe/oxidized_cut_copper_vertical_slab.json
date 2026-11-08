@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "Q",
+    "Q",
+    "Q"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:oxidized_cut_copper"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:oxidized_cut_copper_vertical_slab",
+    "count": 6
+  }
+}

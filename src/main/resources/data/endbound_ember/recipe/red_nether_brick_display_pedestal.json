@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:red_nether_brick_slab"
+    },
+    "B": {
+      "item": "minecraft:red_nether_bricks"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:red_nether_brick_display_pedestal",
+    "count": 1
+  }
+}

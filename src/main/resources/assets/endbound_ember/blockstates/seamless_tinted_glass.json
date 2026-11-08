@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "endbound_ember:block/seamless_tinted_glass"
+      }
+    }
+  ]
+}

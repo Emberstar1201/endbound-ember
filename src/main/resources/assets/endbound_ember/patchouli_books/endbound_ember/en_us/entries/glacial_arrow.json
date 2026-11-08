@@ -1,0 +1,13 @@
+{
+  "name": "Glacial Arrow",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 50,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Glacial Arrow",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bows, Crossbows$(br2)§lEffect: §r Draw speed is halved. The main arrow flies at roughly 3.2x speed and scatters 12 sub-arrows; impacts deal area damage and pull nearby enemies toward the hit point. Conflicts with Cloud Bow Arts and Ancient Cloud Bow Arts.$(br2)§lAcquisition: §r Enchanting Table, Loot Chests, Villager Trades"
+    }
+  ]
+}

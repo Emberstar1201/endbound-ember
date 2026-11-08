@@ -82,7 +82,11 @@ public class DoomPillarBlockEntity extends BlockEntity {
             return;
         }
         this.hitCooldown = HIT_COOLDOWN;
-        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * MELEE_SCALE;
+        // 按蓄力值缩放：连点时每一下都只有很低的倍率，避免几下发就把柱子秒掉
+        float strength = player.getAttackStrengthScale(0.5F);
+        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * MELEE_SCALE * strength;
+        // 攻击柱子同样消耗蓄力，让破柱和近战保持一致的节奏
+        player.resetAttackStrengthTicker();
         this.applyDamage(damage);
     }
 
@@ -119,7 +123,7 @@ public class DoomPillarBlockEntity extends BlockEntity {
         if (this.bossEvent != null) {
             this.bossEvent.removeAllPlayers();
         }
-        level.destroyBlock(this.worldPosition, false);
+        DoomPillarBlock.removePillar(level, this.worldPosition);
     }
 
     private ServerBossEvent bossBar() {

@@ -1,0 +1,13 @@
+{
+  "name": "疾跑節能",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 54,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "疾跑節能",
+      "text": "§l最高等級：§r II$(br2)§l適用物品：§r 護腿$(br2)§l效果：§r 疾跑時抵消疾跑產生的額外疲勞值：I 級減半、II 級完全抵消；同時獲得 10%（II 級 20%）抗擊退。$(br2)§l衝突：§r 無$(br2)§l獲取方式：§r 附魔枱、寶箱、村民交易"
+    }
+  ]
+}

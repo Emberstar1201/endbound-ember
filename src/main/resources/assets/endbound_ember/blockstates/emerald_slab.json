@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "endbound_ember:block/emerald_slab"
+    },
+    "type=top": {
+      "model": "endbound_ember:block/emerald_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/emerald_block"
+    }
+  }
+}

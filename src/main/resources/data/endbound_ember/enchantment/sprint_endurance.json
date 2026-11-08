@@ -1,0 +1,11 @@
+{
+  "description": { "translate": "enchantment.endbound_ember.sprint_endurance" },
+  "supported_items": "#minecraft:enchantable/leg_armor",
+  "primary_items": "#minecraft:enchantable/leg_armor",
+  "weight": 5,
+  "max_level": 2,
+  "min_cost": { "base": 20, "per_level_above_first": 5 },
+  "max_cost": { "base": 27, "per_level_above_first": 7 },
+  "anvil_cost": 2,
+  "slots": [ "legs" ]
+}

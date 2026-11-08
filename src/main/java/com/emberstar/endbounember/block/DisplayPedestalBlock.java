@@ -3,14 +3,12 @@ package com.emberstar.endbounember.block;
 import com.mojang.serialization.MapCodec;
 
 import com.emberstar.endbounember.EndboundEmber;
-import com.emberstar.endbounember.enchantment.DawnEnchantment;
 import com.emberstar.endbounember.entity.Herobrine;
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.util.ExperienceUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -27,12 +25,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
@@ -49,7 +45,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,9 +59,6 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
 
     /** 碰撞箱：底座与台面均为整格宽，高度到台面顶部 16 像素 */
     private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-
-    /** 祭坛环绕半径：中心展示台四周 3 格范围内的展示台 */
-    private static final int ALTAR_RADIUS = 3;
 
     /** Herobrine 召唤法阵的外圈半径（格） */
     private static final double NECRO_RING_OUTER = 2.75D;
@@ -83,6 +75,8 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     private static final Vector3f HALO_DUST_COLOR = new Vector3f(0.78F, 0.72F, 1.0F);
     /** 汇聚粒子的晨曦颜色（#fff5d7）：晨曦护符仪式 */
     private static final Vector3f AMULET_DUST_COLOR = new Vector3f(1.0F, 0.96F, 0.84F);
+    /** 汇聚粒子的嫩绿颜色：生命之星仪式 */
+    private static final Vector3f LIFE_STAR_DUST_COLOR = new Vector3f(0.58F, 0.95F, 0.52F);
     /** 一个粒子从环绕展示台飞到中心所需的 tick 数 */
     private static final int PARTICLE_TRAVEL_TICKS = 40;
     /** 每个环绕展示台同时存在的粒子数，越多轨迹越连贯但开销越大 */
@@ -201,6 +195,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     private static Item product(DisplayPedestalBlockEntity.RitualType type) {
         return switch (type) {
             case AMULET -> EndboundEmber.DAWN_AMULET.get();
+            case LIFE_STAR -> EndboundEmber.LIFE_STAR.get();
             default -> EndboundEmber.STARDUST_WITCH_HALO.get();
         };
     }
@@ -209,6 +204,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     private static Vector3f dustColor(DisplayPedestalBlockEntity.RitualType type) {
         return switch (type) {
             case AMULET -> AMULET_DUST_COLOR;
+            case LIFE_STAR -> LIFE_STAR_DUST_COLOR;
             default -> HALO_DUST_COLOR;
         };
     }
@@ -422,14 +418,15 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.0F);
             return ItemInteractionResult.SUCCESS;
         }
-        // 环绕展示台上的仪式材料（含 Herobrine 祭坛四角的下界之星）不允许取回
-        if (findAltarCenter(level, pos) != null) {
+        // 祭坛已完整：右键任意一处展示台都按中心启动仪式，环绕位上的材料也不允许取回
+        if (RitualAltar.find(level, pos).ok()) {
+            tryStartRitual(level, pos, player);
             return ItemInteractionResult.SUCCESS;
         }
         // 台面放着仪式核心（星尘手绳 / 拂晓附魔书 / 下界之星）：无论手持什么都只尝试启动仪式
-        if (isRitualCore(stored)) {
+        if (RitualAltar.isCore(stored)) {
             // 下界之星在祭坛不完整时允许直接取回，避免被卡在台面上拿不下来
-            if (!tryStartRitual(level, pos, player, pedestal) && stored.is(Items.NETHER_STAR)) {
+            if (!tryStartRitual(level, pos, player) && stored.is(Items.NETHER_STAR)) {
                 takeBack(level, pos, player, pedestal);
             }
             return ItemInteractionResult.SUCCESS;
@@ -455,13 +452,14 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         ItemStack stored = pedestal.getStoredItem();
-        // 环绕展示台上的仪式材料（含 Herobrine 祭坛四角的下界之星）取回同样拦截
-        if (findAltarCenter(level, pos) != null) {
+        // 祭坛已完整：右键任意一处展示台都按中心启动仪式，环绕位上的材料也不允许取回
+        if (RitualAltar.find(level, pos).ok()) {
+            tryStartRitual(level, pos, player);
             return InteractionResult.SUCCESS;
         }
         // 台面放着仪式核心：尝试启动仪式
-        if (isRitualCore(stored)) {
-            if (!tryStartRitual(level, pos, player, pedestal) && stored.is(Items.NETHER_STAR)) {
+        if (RitualAltar.isCore(stored)) {
+            if (!tryStartRitual(level, pos, player) && stored.is(Items.NETHER_STAR)) {
                 takeBack(level, pos, player, pedestal);
             }
             return InteractionResult.SUCCESS;
@@ -470,257 +468,20 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
-    /** 是否为仪式核心物品：星尘手绳、下界之星或带拂晓附魔的附魔书 */
-    private static boolean isRitualCore(ItemStack stack) {
-        if (stack.is(EndboundEmber.STARDUST_CORD_BRACELET.get())) return true;
-        if (stack.is(Items.NETHER_STAR)) return true;
-        return stack.is(Items.ENCHANTED_BOOK) && hasDawnEnchantment(stack);
-    }
-
-    /** 附魔书是否带有拂晓附魔 */
-    private static boolean hasDawnEnchantment(ItemStack stack) {
-        ItemEnchantments enchantments = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS,
-                ItemEnchantments.EMPTY);
-        for (var entry : enchantments.entrySet()) {
-            if (entry.getKey().is(DawnEnchantment.KEY)) return true;
-        }
-        return false;
-    }
-
-    /** 若该展示台属于某个完整祭坛的环绕位，返回祭坛中心；否则返回 null */
-    @Nullable
-    private static BlockPos findAltarCenter(Level level, BlockPos pos) {
-        for (BlockPos center : BlockPos.betweenClosed(
-                pos.offset(-ALTAR_RADIUS, 0, -ALTAR_RADIUS), pos.offset(ALTAR_RADIUS, 0, ALTAR_RADIUS))) {
-            if (center.equals(pos)) {
-                continue;
-            }
-            if (scanAltar(level, center) != null) {
-                return center.immutable();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 校验祭坛结构并返回环绕展示台位置。
-     *
-     * <p>光环仪式：末地石 7×7 底座，8 个展示台各放虚无星尘。<br>
-     * 晨曦护符仪式：任意光源方块 7×7 底座，上下左右放烈焰粉、四个斜角放星尘。<br>
-     * Herobrine 召唤仪式：下界风格底座，中心与四个斜角各放一颗下界之星。</p>
-     */
-    @Nullable
-    private static List<BlockPos> scanAltar(Level level, BlockPos center) {
-        BlockEntity blockEntity = level.getBlockEntity(center);
-        if (!(blockEntity instanceof DisplayPedestalBlockEntity centerPedestal)) {
-            return null;
-        }
-        ItemStack core = centerPedestal.getStoredItem();
-        if (core.is(EndboundEmber.STARDUST_CORD_BRACELET.get())) {
-            return scanHaloAltar(level, center);
-        }
-        if (core.is(Items.NETHER_STAR)) {
-            return scanHerobrineAltar(level, center);
-        }
-        if (isRitualCore(core)) {
-            return scanAmuletAltar(level, center);
-        }
-        return null;
-    }
-
-    /**
-     * Herobrine 召唤祭坛：中心展示台放一颗下界之星，四个斜角各一个展示台也放一颗下界之星，
-     * 且这五个展示台正下方必须是下界风格的底座方块。
-     * <p>四角距离同时支持 5×5（半径 2）与 7×7（半径 3）两种摆法。
-     */
-    @Nullable
-    private static List<BlockPos> scanHerobrineAltar(Level level, BlockPos center) {
-        List<BlockPos> corners = new ArrayList<>();
-        int cornerOffset = -1;
-        for (BlockPos candidate : BlockPos.betweenClosed(
-                center.offset(-EndboundEmber.HEROBRINE_ALTAR_RADIUS, 0, -EndboundEmber.HEROBRINE_ALTAR_RADIUS),
-                center.offset(EndboundEmber.HEROBRINE_ALTAR_RADIUS, 0, EndboundEmber.HEROBRINE_ALTAR_RADIUS))) {
-            if (candidate.equals(center)) {
-                continue;
-            }
-            if (!(level.getBlockEntity(candidate) instanceof DisplayPedestalBlockEntity pedestal)) {
-                continue;
-            }
-            int dx = candidate.getX() - center.getX();
-            int dz = candidate.getZ() - center.getZ();
-            // 只接受正方形四角上的展示台，其它位置出现展示台一律视为摆错
-            if (dx == 0 || Math.abs(dx) != Math.abs(dz)) {
-                return null;
-            }
-            int offset = Math.abs(dx);
-            if (cornerOffset == -1) {
-                cornerOffset = offset;
-            } else if (cornerOffset != offset) {
-                return null;
-            }
-            if (!pedestal.getStoredItem().is(Items.NETHER_STAR)) {
-                return null;
-            }
-            corners.add(candidate.immutable());
-        }
-        if (cornerOffset == -1 || corners.size() != EndboundEmber.HEROBRINE_RITUAL_PEDESTAL_COUNT) {
-            return null;
-        }
-        return isNecroBase(level, center, cornerOffset) ? corners : null;
-    }
-
-    /** 五座展示台正下方的底座必须全部是下界风格的方块 */
-    private static boolean isNecroBase(Level level, BlockPos center, int offset) {
-        BlockPos baseCenter = center.below();
-        for (BlockPos base : BlockPos.betweenClosed(
-                baseCenter.offset(-offset, 0, -offset), baseCenter.offset(offset, 0, offset))) {
-            if (!isNecroBaseBlock(level.getBlockState(base))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** 下界 / 亡灵风格的底座方块白名单（含金块：金在下界象征猪灵供奉） */
-    private static boolean isNecroBaseBlock(BlockState state) {
-        return state.is(Blocks.GLOWSTONE) || state.is(Blocks.SHROOMLIGHT)
-                || state.is(Blocks.NETHER_WART_BLOCK) || state.is(Blocks.WARPED_WART_BLOCK)
-                || state.is(Blocks.NETHERRACK) || state.is(Blocks.MAGMA_BLOCK)
-                || state.is(Blocks.SOUL_SOIL) || state.is(Blocks.SOUL_SAND)
-                || state.is(Blocks.BLACKSTONE) || state.is(Blocks.POLISHED_BLACKSTONE)
-                || state.is(Blocks.BASALT) || state.is(Blocks.CRIMSON_NYLIUM)
-                || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.NETHER_BRICKS)
-                || state.is(Blocks.RED_NETHER_BRICKS) || state.is(Blocks.GOLD_BLOCK);
-    }
-
-    /** 星尘光环祭坛：末地石底座 + 8 个虚无星尘 */
-    @Nullable
-    private static List<BlockPos> scanHaloAltar(Level level, BlockPos center) {
-        int radius = EndboundEmber.ALTAR_BASE_SIZE / 2;
-        if (!isBaseOf(level, center, state -> state.is(Blocks.END_STONE))) {
-            return null;
-        }
-        List<BlockPos> found = new ArrayList<>();
-        for (BlockPos candidate : BlockPos.betweenClosed(
-                center.offset(-radius, 0, -radius), center.offset(radius, 0, radius))) {
-            if (candidate.equals(center)) {
-                continue;
-            }
-            if (!level.getBlockState(candidate).is(EndboundEmber.DISPLAY_PEDESTAL.get())) {
-                continue;
-            }
-            BlockEntity blockEntity = level.getBlockEntity(candidate);
-            if (!(blockEntity instanceof DisplayPedestalBlockEntity pedestal)
-                    || !pedestal.getStoredItem().is(EndboundEmber.VOID_EMBERSTAR.get())) {
-                return null;
-            }
-            found.add(candidate.immutable());
-        }
-        return found.size() == EndboundEmber.HALO_RITUAL_PEDESTAL_COUNT ? found : null;
-    }
-
-    /** 晨曦护符祭坛：任意完整发光方块底座（红石灯除外），四边烈焰粉、四角星尘；展示台可紧贴中心（3×3），也可摆在 7×7 底座外缘。 */
-    @Nullable
-    private static List<BlockPos> scanAmuletAltar(Level level, BlockPos center) {
-        int radius = EndboundEmber.ALTAR_BASE_SIZE / 2;
-        BlockPos baseCenter = center.below();
-        for (BlockPos base : BlockPos.betweenClosed(
-                baseCenter.offset(-radius, 0, -radius), baseCenter.offset(radius, 0, radius))) {
-            if (!isValidAmuletBase(level, base)) {
-                return null;
-            }
-        }
-        List<BlockPos> found = new ArrayList<>();
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                if (dx == 0 && dz == 0) {
-                    continue;
-                }
-                BlockPos candidate = center.offset(dx, 0, dz);
-                if (!level.getBlockState(candidate).is(EndboundEmber.DISPLAY_PEDESTAL.get())) {
-                    // 只收集实际存在的展示台，空位不影响判定；但总数必须正好 8 个。
-                    continue;
-                }
-                BlockEntity blockEntity = level.getBlockEntity(candidate);
-                if (!(blockEntity instanceof DisplayPedestalBlockEntity pedestal)) {
-                    EndboundEmber.LOGGER.warn("[晨曦祭坛] {} 处缺少展示台方块实体", candidate);
-                    return null;
-                }
-                ItemStack stored = pedestal.getStoredItem();
-                boolean corner = dx != 0 && dz != 0;
-                boolean valid = corner
-                        ? stored.is(EndboundEmber.EMBERSTARS)
-                        : stored.is(Items.BLAZE_POWDER);
-                if (!valid) {
-                    EndboundEmber.LOGGER.warn("[晨曦祭坛] {} 处物品不符（{}），需要{}", candidate, stored,
-                            corner ? "星尘" : "烈焰粉");
-                    return null;
-                }
-                found.add(candidate.immutable());
-            }
-        }
-        return found.size() == EndboundEmber.AMULET_RITUAL_PEDESTAL_COUNT ? found : null;
-    }
-
-    /** 底座方块必须自身发光、碰撞形状为完整方块，且不能是需要红石信号才能点亮的红石灯。 */
-    private static boolean isValidAmuletBase(Level level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        if (state.getLightEmission(level, pos) <= 0) {
-            EndboundEmber.LOGGER.warn("[晨曦祭坛] 底座 {} 处不是光源方块", pos);
+    /** 尝试启动仪式：祭坛结构完整时开始并返回 true，否则在动作栏提示第一处不合格的坐标 */
+    private static boolean tryStartRitual(Level level, BlockPos pos, Player player) {
+        RitualAltar.Result result = RitualAltar.find(level, pos);
+        if (!result.ok()) {
+            RitualAltar.report(player, level, result);
             return false;
         }
-        if (!state.isCollisionShapeFullBlock(level, pos)) {
-            EndboundEmber.LOGGER.warn("[晨曦祭坛] 底座 {} 处不是完整方块", pos);
+        RitualAltar.Match match = result.match();
+        if (!(level.getBlockEntity(match.center()) instanceof DisplayPedestalBlockEntity centerPedestal)) {
             return false;
         }
-        if (state.is(Blocks.REDSTONE_LAMP)) {
-            EndboundEmber.LOGGER.warn("[晨曦祭坛] 底座 {} 处是红石灯，需要常亮光源", pos);
-            return false;
-        }
+        startRitual(level, match.center(), player, centerPedestal, match.pedestals(),
+                match.definition().type());
         return true;
-    }
-
-    /** 校验展示台正下方一层的 7×7 底座是否全部满足条件 */
-    private static boolean isBaseOf(Level level, BlockPos center, java.util.function.Predicate<BlockState> valid) {
-        int radius = EndboundEmber.ALTAR_BASE_SIZE / 2;
-        BlockPos baseCenter = center.below();
-        for (BlockPos base : BlockPos.betweenClosed(
-                baseCenter.offset(-radius, 0, -radius), baseCenter.offset(radius, 0, radius))) {
-            if (!valid.test(level.getBlockState(base))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** 尝试启动仪式：祭坛结构完整时开始并返回 true，否则在动作栏提示结构不完整 */
-    private static boolean tryStartRitual(Level level, BlockPos pos, Player player,
-            DisplayPedestalBlockEntity pedestal) {
-        List<BlockPos> altar = scanAltar(level, pos);
-        if (altar == null) {
-            ItemStack core = pedestal.getStoredItem();
-            boolean amulet = isRitualCore(core)
-                    && !core.is(EndboundEmber.STARDUST_CORD_BRACELET.get())
-                    && !core.is(Items.NETHER_STAR);
-            String key = amulet
-                    ? "block.endbound_ember.display_pedestal.amulet_altar_incomplete"
-                    : "block.endbound_ember.display_pedestal.altar_incomplete";
-            player.displayClientMessage(Component.translatable(key), true);
-            return false;
-        }
-        startRitual(level, pos, player, pedestal, altar, ritualType(pedestal.getStoredItem()));
-        return true;
-    }
-
-    /** 根据中心展示台上的核心物品判断仪式种类 */
-    private static DisplayPedestalBlockEntity.RitualType ritualType(ItemStack core) {
-        if (core.is(EndboundEmber.STARDUST_CORD_BRACELET.get())) {
-            return DisplayPedestalBlockEntity.RitualType.HALO;
-        }
-        if (core.is(Items.NETHER_STAR)) {
-            return DisplayPedestalBlockEntity.RitualType.HEROBRINE;
-        }
-        return DisplayPedestalBlockEntity.RitualType.AMULET;
     }
 
     /** 启动仪式；光环仪式需要扣除经验，晨曦护符仪式不消耗经验 */

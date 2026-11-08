@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:cobbled_deepslate_slab"
+    },
+    "B": {
+      "item": "minecraft:cobbled_deepslate"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:cobbled_deepslate_display_pedestal",
+    "count": 1
+  }
+}

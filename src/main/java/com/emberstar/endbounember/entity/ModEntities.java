@@ -63,6 +63,15 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("mother_wither_skull"));
 
+    /** 下界流星：Herobrine 预警技能的坠落岩块，纯视觉实体，不参与战斗。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<NetherMeteor>> NETHER_METEOR =
+            ENTITY_TYPES.register("nether_meteor",
+                    () -> EntityType.Builder.<NetherMeteor>of(NetherMeteor::new, MobCategory.MISC)
+                            .sized(1.4F, 1.4F)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("nether_meteor"));
+
     /** Herobrine：仪式召唤的自定义 Boss，人形模型，每个玩家一份战斗目标。 */
     public static final DeferredHolder<EntityType<?>, EntityType<Herobrine>> HEROBRINE =
             ENTITY_TYPES.register("herobrine",

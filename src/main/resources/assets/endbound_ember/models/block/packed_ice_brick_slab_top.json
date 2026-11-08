@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "endbound_ember:block/packed_ice_bricks",
+    "top": "endbound_ember:block/packed_ice_bricks",
+    "side": "endbound_ember:block/packed_ice_bricks",
+    "particle": "endbound_ember:block/packed_ice_bricks"
+  }
+}

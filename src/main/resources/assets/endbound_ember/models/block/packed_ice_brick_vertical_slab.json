@@ -1,0 +1,8 @@
+{
+  "parent": "endbound_ember:block/vertical_slab",
+  "textures": {
+    "side": "endbound_ember:block/packed_ice_bricks",
+    "top": "endbound_ember:block/packed_ice_bricks",
+    "bottom": "endbound_ember:block/packed_ice_bricks"
+  }
+}

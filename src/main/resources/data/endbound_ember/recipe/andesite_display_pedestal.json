@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "B",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:andesite_slab"
+    },
+    "B": {
+      "item": "minecraft:andesite"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:andesite_display_pedestal",
+    "count": 1
+  }
+}

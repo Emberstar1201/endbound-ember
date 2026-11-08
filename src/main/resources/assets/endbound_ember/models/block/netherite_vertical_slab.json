@@ -1,0 +1,8 @@
+{
+  "parent": "endbound_ember:block/vertical_slab",
+  "textures": {
+    "side": "minecraft:block/netherite_block",
+    "top": "minecraft:block/netherite_block",
+    "bottom": "minecraft:block/netherite_block"
+  }
+}

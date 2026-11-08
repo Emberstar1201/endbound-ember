@@ -4,20 +4,31 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 /**
  * 竖半砖：高度为一格、宽度为半格的非完整方块，可朝东南西北四个方向放置。
@@ -27,11 +38,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * 点击上/下表面时，根据点击位置选择占据的半边。
  * 对同一方块位置再次放置互补的半片时，合并为完整方块（double 状态），行为参考原版横半砖。</p>
  */
-public class VerticalSlabBlock extends Block {
+public class VerticalSlabBlock extends Block implements SimpleWaterloggedBlock {
     public static final MapCodec<VerticalSlabBlock> CODEC = simpleCodec(VerticalSlabBlock::new);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     /** 是否为两片合并的完整方块状态 */
     public static final BooleanProperty DOUBLE = BooleanProperty.create("double");
+    /** 是否含水，与原版半砖一致 */
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     /** 北半侧：z 从 0 到 8 */
     private static final VoxelShape NORTH_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 8.0D);
@@ -44,7 +57,10 @@ public class VerticalSlabBlock extends Block {
 
     public VerticalSlabBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(DOUBLE, false));
+        registerDefaultState(stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(DOUBLE, false)
+                .setValue(WATERLOGGED, false));
     }
 
     @Override
@@ -54,7 +70,7 @@ public class VerticalSlabBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, DOUBLE);
+        builder.add(FACING, DOUBLE, WATERLOGGED);
     }
 
     /**
@@ -87,7 +103,10 @@ public class VerticalSlabBlock extends Block {
                 facing = offsetZ < 0.5D ? Direction.NORTH : Direction.SOUTH;
             }
         }
-        return defaultBlockState().setValue(FACING, facing).setValue(DOUBLE, false);
+        return defaultBlockState()
+                .setValue(FACING, facing)
+                .setValue(DOUBLE, false)
+                .setValue(WATERLOGGED, context.getLevel().getFluidState(pos).getType() == Fluids.WATER);
     }
 
     /**
@@ -133,6 +152,17 @@ public class VerticalSlabBlock extends Block {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
+    /**
+     * 寻路类型：竖半砖只有半格宽的碰撞箱，原版默认把「碰撞箱不是满方块」的方块判定为可穿行
+     * （{@code isPathfindable(LAND)} 返回 true，进而得到 {@code PathType.OPEN}），
+     * 生物会把它当成可以直线穿过的空气规划路线，实际撞上后走不过去，只在原地反复起跳。
+     * 这里显式标记为不可通行，让寻路把它当作实心障碍物绕行。
+     */
+    @Override
+    public @Nullable PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
+        return PathType.BLOCKED;
+    }
+
     /** 根据朝向返回对应的半格碰撞箱；两片合并时占满整格 */
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -146,5 +176,38 @@ public class VerticalSlabBlock extends Block {
             case EAST -> EAST_SHAPE;
             default -> NORTH_SHAPE;
         };
+    }
+
+    // ===== 含水逻辑：与原版半砖一致 =====
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+            LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (state.getValue(WATERLOGGED)) {
+            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos,
+            BlockState state, Fluid fluid) {
+        return !state.getValue(WATERLOGGED) && fluid == Fluids.WATER;
+    }
+
+    @Override
+    public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState state, FluidState fluidState) {
+        if (!state.getValue(WATERLOGGED) && fluidState.getType() == Fluids.WATER) {
+            BlockState filled = state.setValue(WATERLOGGED, true);
+            level.setBlock(pos, filled, 3);
+            level.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(level));
+            return true;
+        }
+        return false;
     }
 }

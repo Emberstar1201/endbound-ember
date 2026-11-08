@@ -1,0 +1,13 @@
+{
+  "name": "Sniper",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 47,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Sniper",
+      "text": "§lMax Level: §r I$(br2)§lApplicable Items: §r Bow, Crossbow$(br2)§lEffect: §r The farther the arrow flies, the more damage it deals: +4% per block, up to +100% (maxed at 25 blocks). The shooter sees the distance and bonus on hit.$(br2)§lAcquisition: §r Enchanting Table, Villager Trades, Fishing"
+    }
+  ]
+}

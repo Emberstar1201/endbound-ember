@@ -23,6 +23,12 @@ import net.minecraft.world.phys.AABB;
  */
 public class ZombieGirlTargetingGoal extends TargetGoal {
     private static final TargetingConditions HATE_TARGETING = TargetingConditions.forCombat().ignoreLineOfSight();
+    /*
+     * 协助主人战斗时使用：不能走 forCombat，因为它的 test 内部还会再校验一次
+     * canAttackType，而友好生物标签（牛、羊、猪等）会在那里被否决，
+     * 结果就是主人打了动物、少女却只跟随不动手。
+     */
+    private static final TargetingConditions ASSIST_TARGETING = TargetingConditions.forNonCombat().ignoreLineOfSight();
 
     private LivingEntity potentialTarget;
     private int cooldown;
@@ -50,12 +56,12 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
             if (owner != null) {
                 // 优先级 1：主人当前攻击的目标（辅助主人战斗，覆盖任意非友好生物）
                 LivingEntity ownerTarget = owner.getLastHurtMob();
-                if (isValidTarget(ownerTarget, false) && HATE_TARGETING.test(this.mob, ownerTarget)) {
+                if (isValidTarget(ownerTarget, false) && ASSIST_TARGETING.test(this.mob, ownerTarget)) {
                     return ownerTarget;
                 }
                 // 优先级 2：攻击主人的生物
                 LivingEntity attacker = owner.getLastHurtByMob();
-                if (isValidTarget(attacker, false) && HATE_TARGETING.test(this.mob, attacker)) {
+                if (isValidTarget(attacker, false) && ASSIST_TARGETING.test(this.mob, attacker)) {
                     return attacker;
                 }
 
@@ -99,11 +105,15 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
         // 白名单：同类（丧尸娘、溺尸娘）与车万女仆（野生/驯服）永远不攻击
         if (isWhitelisted(entity)) return false;
         EntityType<?> type = entity.getType();
-        // 主人正在攻击的生物：驯服状态下除白名单外一律协助攻击（含牛羊猪等友好生物）
-        if (isOwnerAttacking(entity)) return this.mob.canAttack(entity);
+        /*
+         * 协助主人战斗：除玩家与白名单外一律可打（含牛羊猪等友好生物）。
+         * 这里刻意不调用 canAttackType，否则会被友好生物标签拦下，导致少女只跟随不出手。
+         */
+        if (!requireInnateHate) {
+            return !(entity instanceof Player) && this.mob.canAttack(entity);
+        }
         // 主动索敌只打天生仇视的原版亡灵
-        if (requireInnateHate && !ZombieGirl.isHated(type)) return false;
-        return this.mob.canAttack(entity) && this.mob.canAttackType(type);
+        return ZombieGirl.isHated(type) && this.mob.canAttack(entity) && this.mob.canAttackType(type);
     }
 
     /** 白名单：同类与车万女仆即便被主人攻击也不协助攻击（敌对女仆妖精不在此列）。 */
@@ -112,12 +122,6 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
         return ZombieGirl.isProtectedMaid(entity.getType());
     }
 
-    /** 主人是否正在攻击该生物（驯服状态下才协助）。 */
-    private boolean isOwnerAttacking(LivingEntity entity) {
-        if (!(this.mob instanceof ZombieGirl girl) || !girl.isTamed()) return false;
-        Player owner = girl.getOwnerPlayer();
-        return owner != null && owner.getLastHurtMob() == entity;
-    }
 
     @Override
     public void start() {

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "endbound_ember:block/polished_calcite",
+    "top": "endbound_ember:block/polished_calcite",
+    "side": "endbound_ember:block/polished_calcite",
+    "particle": "endbound_ember:block/polished_calcite"
+  }
+}

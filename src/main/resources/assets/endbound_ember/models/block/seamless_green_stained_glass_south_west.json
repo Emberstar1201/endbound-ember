@@ -1,0 +1,58 @@
+﻿{
+  "credit": "Endbound Ember - seamless glass",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "minecraft:block/green_stained_glass",
+    "glass": "minecraft:block/green_stained_glass"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        16
+      ],
+      "to": [
+        1,
+        16,
+        16
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ],
+          "texture": "#glass",
+          "cullface": "south"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        15
+      ],
+      "to": [
+        0,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ],
+          "texture": "#glass",
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

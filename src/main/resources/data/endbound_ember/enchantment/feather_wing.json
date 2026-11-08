@@ -1,0 +1,11 @@
+{
+  "description": { "translate": "enchantment.endbound_ember.feather_wing" },
+  "supported_items": "minecraft:elytra",
+  "primary_items": "minecraft:elytra",
+  "weight": 2,
+  "max_level": 1,
+  "min_cost": { "base": 25, "per_level_above_first": 0 },
+  "max_cost": { "base": 50, "per_level_above_first": 0 },
+  "anvil_cost": 4,
+  "slots": [ "chest" ]
+}

@@ -37,7 +37,8 @@ public class VerticalSlabItem extends BlockItem {
             BlockState secondary = getBlock().defaultBlockState()
                     .setValue(VerticalSlabBlock.FACING,
                             existing.getValue(VerticalSlabBlock.FACING).getOpposite())
-                    .setValue(VerticalSlabBlock.DOUBLE, false);
+                    .setValue(VerticalSlabBlock.DOUBLE, false)
+                    .setValue(VerticalSlabBlock.WATERLOGGED, existing.getValue(VerticalSlabBlock.WATERLOGGED));
             BlockState mixed = EndboundEmber.MIXED_VERTICAL_SLAB.get().defaultBlockState();
             level.setBlock(pos, mixed, 11);
             if (level.getBlockEntity(pos) instanceof MixedVerticalSlabBlockEntity entity) {

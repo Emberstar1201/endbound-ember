@@ -1,0 +1,13 @@
+{
+  "name": "Illusory Feast",
+  "category": "endbound_ember:expansion_enchantments",
+  "icon": "minecraft:enchanted_book",
+  "sortnum": 57,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Illusory Feast",
+      "text": "§lMax Level:§r III$(br2)§lApplicable to:§r Swords, axes, tridents, bows, crossbows$(br2)§lEffect:§r Hitting a creature restores hunger and saturation (level I: 1/0.5, level II: 2/1.0, level III: 3/1.5), with a 0.5 second cooldown.$(br2)§lConflicts:§r None$(br2)§lObtained via:§r Enchanting table, loot chests, villager trades"
+    }
+  ]
+}
