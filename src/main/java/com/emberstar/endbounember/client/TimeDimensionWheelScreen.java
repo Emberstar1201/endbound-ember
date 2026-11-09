@@ -23,11 +23,13 @@ public final class TimeDimensionWheelScreen extends Screen {
     };
     /** 四个扇区的起始角度（度，0=正右，顺时针递增），每个扇区 90° */
     private static final double[] SECTOR_STARTS = {225.0D, 135.0D, 45.0D, 315.0D};
+    /** 命中范围向圆环外延伸的像素：方向文字画在圆环外侧，点到文字也算选中（含最宽文字的一半宽度） */
+    private static final int LABEL_HIT_MARGIN = 48;
+    /** 圆心附近的死区半径，避免鼠标在中心抖动时乱选 */
+    private static final int CENTER_DEAD_ZONE = 6;
 
     /** 鼠标是否按下中（决定是绘制高亮还是直接关闭） */
     private boolean mouseHeld;
-    /** 上一帧鼠标角度（用于高亮显示） */
-    private double currentAngle;
     /** 当前鼠标坐标（render 里缓存，currentSector 里使用） */
     private int mouseX, mouseY;
     /** 屏幕中心点 */
@@ -55,14 +57,6 @@ public final class TimeDimensionWheelScreen extends Screen {
         this.mouseY = mouseY;
         // 半透明深色遮罩（不暂停游戏）
         graphics.fillGradient(0, 0, width, height, 0xB0101010, 0xD0101010);
-
-        // 计算鼠标相对于中心的角度
-        double dx = mouseX - centerX;
-        double dy = mouseY - centerY;
-        currentAngle = Math.toDegrees(Math.atan2(dy, dx));
-        if (currentAngle < 0.0D) {
-            currentAngle += 360.0D;
-        }
 
         // 绘制四个扇区
         for (int i = 0; i < 4; i++) {
@@ -111,17 +105,28 @@ public final class TimeDimensionWheelScreen extends Screen {
         }
     }
 
-    /** 当前角度命中的扇区索引（0-3），-1 表示在扇区外 */
+    /** 当前鼠标命中的扇区索引（0-3），-1 表示在扇区外 */
     private int currentSector() {
-        double len = Math.hypot(
-                mouseX - centerX, mouseY - centerY);
-        if (len > radius || len < 6) {
+        return sectorAt(mouseX, mouseY);
+    }
+
+    /** 指定屏幕坐标命中的扇区索引（0-3），-1 表示在扇区外 */
+    private int sectorAt(double x, double y) {
+        double dx = x - centerX;
+        double dy = y - centerY;
+        double len = Math.hypot(dx, dy);
+        // 命中范围略微外扩，点到圆环外侧的方向文字同样算选中
+        if (len > radius + LABEL_HIT_MARGIN || len < CENTER_DEAD_ZONE) {
             return -1;
         }
+        double angle = Math.toDegrees(Math.atan2(dy, dx));
+        if (angle < 0.0D) {
+            angle += 360.0D;
+        }
         for (int i = 0; i < 4; i++) {
-            double start = SECTOR_STARTS[i];
-            double end = start + 90.0D;
-            if (currentAngle >= start && currentAngle < end) {
+            // 「时间乱流」扇区从 315° 跨到 45°，必须按环形取模判断，不能直接比较区间
+            double relative = (angle - SECTOR_STARTS[i] + 360.0D) % 360.0D;
+            if (relative < 90.0D) {
                 return i;
             }
         }
@@ -136,7 +141,8 @@ public final class TimeDimensionWheelScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        int sector = currentSector();
+        // 用松手时的真实坐标判定，避免与上一帧缓存的位置不一致
+        int sector = sectorAt(mouseX, mouseY);
         if (sector >= 0) {
             PacketDistributor.sendToServer(new TimeTurbulenceTogglePayload(DIRECTION_VALUES[sector]));
         }

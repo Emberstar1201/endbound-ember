@@ -33,9 +33,10 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -71,6 +72,14 @@ public final class TimeTurbulenceLevels {
     /** 维度类型的注册键，与 data/endbound_ember/dimension_type/time_turbulence.json 对应 */
     public static final ResourceKey<DimensionType> DIMENSION_TYPE = ResourceKey.create(
             Registries.DIMENSION_TYPE, EndboundEmber.id("time_turbulence"));
+
+    /**
+     * 维度专属生物群系，与 data/endbound_ember/worldgen/biome/time_turbulence.json 对应。
+     * <p>地图模组（如 Xaero）会把所在生物群系的名字画在地图顶部，因此这里用与维度同名的
+     * 群系，让玩家看到的是「时间乱流」而不是原版的「平原」。
+     */
+    public static final ResourceKey<Biome> BIOME = ResourceKey.create(
+            Registries.BIOME, EndboundEmber.id("time_turbulence"));
 
     /** 地板下方的基岩层数 */
     public static final int BEDROCK_LAYERS = 4;
@@ -154,6 +163,32 @@ public final class TimeTurbulenceLevels {
             return Optional.of(UUID.fromString(id.getPath().substring(PATH_PREFIX.length())));
         } catch (IllegalArgumentException ignored) {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * 把旧存档里已经生成的平原区块改写为维度专属生物群系。
+     * <p>只影响生物群系数据（地图模组据此显示名字），方块与实体不变；
+     * 已经是目标群系的区块段会跳过，因此每个区块最多重写一次。
+     */
+    public static void transplantBiome(ServerLevel level, LevelChunk chunk) {
+        Holder<Biome> biome = level.registryAccess()
+                .registryOrThrow(Registries.BIOME).getHolderOrThrow(BIOME);
+        LevelChunkSection[] sections = chunk.getSections();
+        int minX = chunk.getPos().getMinBlockX() >> 2;
+        int minZ = chunk.getPos().getMinBlockZ() >> 2;
+        boolean changed = false;
+        for (int i = 0; i < sections.length; i++) {
+            LevelChunkSection section = sections[i];
+            if (section == null || section.getBiomes().get(0, 0, 0).is(BIOME)) {
+                continue;
+            }
+            section.fillBiomesFromNoise((x, y, z, sampler) -> biome, null,
+                    minX, level.getSectionYFromSectionIndex(i) << 2, minZ);
+            changed = true;
+        }
+        if (changed) {
+            chunk.setUnsaved(true);
         }
     }
 
@@ -528,7 +563,7 @@ public final class TimeTurbulenceLevels {
         Holder<DimensionType> type = server.registryAccess()
                 .registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(DIMENSION_TYPE);
         Holder<Biome> biome = server.registryAccess()
-                .registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS);
+                .registryOrThrow(Registries.BIOME).getHolderOrThrow(BIOME);
 
         // 结构集显式给空：Optional.empty() 会让 FlatLevelSource 退回注册表里的全部结构集，
         // 从而在这个维度里刷出村庄等结构

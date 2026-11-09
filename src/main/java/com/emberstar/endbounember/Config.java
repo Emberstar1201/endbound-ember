@@ -85,6 +85,56 @@ public class Config {
                     "This value is only used when the file is missing or cannot be parsed.")
             .defineInRange("herobrineBossMusicLoopSeconds", 180, 10, 3600);
 
+    /** C 键放大：按住放大键时缩小视野，键位可在按键绑定里修改。 */
+    public static final ModConfigSpec.BooleanValue ZOOM_ENABLED = BUILDER
+            .comment("放大：按住放大键（默认 C，可在按键绑定里修改）时拉近视野。")
+            .define("zoomEnabled", true);
+
+    /** 玩家移动机制总开关：关闭后下面三项全部不生效。 */
+    public static final ModConfigSpec.BooleanValue MOVEMENT_TWEAKS_ENABLED = BUILDER
+            .comment("玩家移动机制总开关，关闭后惯性滑行、落地连跳与空中控制增强全部失效。")
+            .define("movementTweaksEnabled", true);
+
+    /** 惯性滑行：松开方向键或落地后保留水平速度，缓慢减速。 */
+    public static final ModConfigSpec.BooleanValue MOVEMENT_MOMENTUM_GLIDE = BUILDER
+            .comment("惯性滑行：疾跑中松开方向键或跳跃落地后，保留水平速度继续滑行并缓慢减速。")
+            .define("movementMomentumGlide", true);
+
+    /** 落地连跳：即将落地时按下跳跃键立刻再次起跳，保留水平速度。 */
+    public static final ModConfigSpec.BooleanValue MOVEMENT_BUNNY_HOP = BUILDER
+            .comment("落地连跳：滞空下落且即将接触地面时按下跳跃键，可立刻再次起跳并保留大部分水平速度。")
+            .define("movementBunnyHop", true);
+
+    /** 空中控制增强：空中方向输入转向更顺滑。 */
+    public static final ModConfigSpec.BooleanValue MOVEMENT_AIR_CONTROL = BUILDER
+            .comment("空中控制增强：滞空时按方向键可以更顺滑地改变移动方向。")
+            .define("movementAirControl", true);
+
+    /** 移动光源：手持会发光的方块时脚下自动亮起一圈光。 */
+    public static final ModConfigSpec.BooleanValue MOVING_LIGHT_ENABLED = BUILDER
+            .comment("移动光源：手持火把、荧石等会发光的方块时，脚下会自动亮起一圈光，走开后熄灭。")
+            .define("movingLightEnabled", true);
+
+    /** 剑右键格挡：手持剑按住右键进入格挡，正面伤害减半。 */
+    public static final ModConfigSpec.BooleanValue SWORD_BLOCKING_ENABLED = BUILDER
+            .comment("剑右键格挡：手持剑按住右键进入格挡姿态，正面受到的伤害减半。")
+            .define("swordBlockingEnabled", true);
+
+    /** 更好的村民交易总开关。 */
+    public static final ModConfigSpec.BooleanValue BETTER_VILLAGER_TRADING = BUILDER
+            .comment("启用劫掠与僵尸围城胜利后的永久村庄折扣、稀有愚者村民（每 1~2 游戏日自动补货）、加快补货与职业方块丢失回退机制。")
+            .define("betterVillagerTrading", true);
+
+    /** 更好的铁砧机制总开关。 */
+    public static final ModConfigSpec.BooleanValue ANVIL_MECHANICS_ENABLED = BUILDER
+            .comment("启用免费改名、移除铁砧过于昂贵限制并大幅降低铁砧损耗概率。")
+            .define("anvilMechanicsEnabled", true);
+
+    /** 砂轮去魔附魔书总开关。 */
+    public static final ModConfigSpec.BooleanValue GRINDSTONE_ENCHANTED_BOOK_ENABLED = BUILDER
+            .comment("单件附魔物品使用砂轮去魔时，额外生成一本包含原有完整附魔的附魔书。")
+            .define("grindstoneEnchantedBookEnabled", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

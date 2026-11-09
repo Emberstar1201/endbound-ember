@@ -10,6 +10,7 @@ import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.client.DawnEnergyClient;
 import com.emberstar.endbounember.compat.FriendlyMobs;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
+import com.emberstar.endbounember.entity.Herobrine;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.network.DawnEnergyPayload;
 
@@ -31,11 +32,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -307,7 +311,17 @@ public final class DawnEnchantment {
     /** 敌对生物判定：丧尸娘、溺尸娘等带敌对标签但属于友好分类的生物不算。 */
     private static boolean isHostile(LivingEntity dead) {
         if (FriendlyMobs.isProtected(dead)) return false;
-        return dead instanceof Enemy || dead instanceof EnderDragon;
+        if (dead instanceof Enemy || dead instanceof EnderDragon) return true;
+        // 部分模组敌对生物没有实现 Enemy 接口，用怪物分类兜底
+        return dead.getType().getCategory() == MobCategory.MONSTER;
+    }
+
+    /** 击杀目标对应的成长层数：普通敌对生物 +1，Boss 分级成长。 */
+    private static int growthOf(LivingEntity dead) {
+        if (dead instanceof Herobrine) return 15;
+        if (dead instanceof EnderDragon || dead instanceof WitherBoss) return 10;
+        if (dead instanceof Warden) return 5;
+        return 1;
     }
 
     /** 释放瞬间的起手特效。 */
@@ -348,7 +362,7 @@ public final class DawnEnchantment {
                 }
                 migrateLegacyLevel(player, player.getInventory().offhand.get(0));
             }
-            // 人权剑只保留「拂晓 I」这一行附魔数值，不参与拂晓的成长、范围与技能系统
+            // 人权剑同样会随击杀成长，但不参与拂晓的攻击距离与技能系统
             if (player.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem) {
                 updateRange(player, 0);
                 return;
@@ -415,23 +429,22 @@ public final class DawnEnchantment {
             }
         }
 
-        /** 击杀成长：附魔等级 +1，并额外积攒能量。 */
+        /** 击杀成长：按目标强度提升拂晓成长层数，并额外积攒能量。 */
         @SubscribeEvent
         public static void onDeath(LivingDeathEvent event) {
-            if (event.getEntity().level().isClientSide) return;
+            LivingEntity dead = event.getEntity();
+            if (dead.level().isClientSide) return;
             if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
 
             ItemStack weapon = player.getMainHandItem();
-            // 人权剑不参与拂晓的击杀成长
-            if (weapon.getItem() instanceof SwordOfTheFreeWillItem) return;
             int level = levelOf(weapon);
             if (level <= 0) return;
 
             // 只有击杀敌对生物才会成长：丧尸娘、溺尸娘虽带敌对标签，但属于友好生物分类
-            if (!isHostile(event.getEntity())) return;
+            if (!isHostile(dead)) return;
 
             if (level < MAX_LEVEL) {
-                setGrowthLevel(player, weapon, level + 1);
+                setGrowthLevel(player, weapon, level + growthOf(dead));
                 if (player.level() instanceof ServerLevel levelObj) {
                     levelObj.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD,
                             player.getX(), player.getY() + 1.2D, player.getZ(), 16, 0.4D, 0.6D, 0.4D, 0.05D);
@@ -500,8 +513,6 @@ public final class DawnEnchantment {
                     String.format(java.util.Locale.ROOT, "%.0f", critChance(level) * 100.0D)));
             tooltip.add(insertAt + 3, stat("endbound_ember.dawn.crit_damage",
                     String.format(java.util.Locale.ROOT, "%.0f", (critMultiplier(level) - 1.0D) * 100.0D)));
-            tooltip.add(insertAt + 4, stat("endbound_ember.dawn.range",
-                    String.format(java.util.Locale.ROOT, "%.1f", rangeBonus(level))));
         }
 
         private static Component stat(String key, String... args) {

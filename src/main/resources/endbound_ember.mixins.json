@@ -18,13 +18,24 @@
     "RangedAttributeAccessor",
     "ServerLevelTimeStopMixin",
     "ServerPlayerTeleportMixin",
-    "TeleportCommandFeedbackMixin"
+    "SwordBlockingMixin",
+    "TeleportCommandFeedbackMixin",
+    "VillagerRestockMixin",
+    "VillagerProfessionResetMixin",
+    "VillagerPermanentDiscountMixin",
+    "RaidVictoryMixin",
+    "FoolVillagerTradesMixin",
+    "VillageSiegeZombieMixin",
+    "AnvilMechanicsMixin",
+    "GrindstoneBookMixin"
   ],
   "client": [
     "AdvancementToastMixin",
     "AdvancementWidgetGarbledTitleMixin",
     "ClientLevelTimeStopMixin",
-    "ParticleEngineTimeStopMixin"
+    "ParticleEngineTimeStopMixin",
+    "SwordBlockingMovementMixin",
+    "SwordBlockingRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -10,11 +10,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -53,6 +55,16 @@ public final class TimeTurbulenceEvents {
         }
         event.getAffectedBlocks().removeIf(pos -> isGeneratedFloor(
                 pos, event.getLevel().getBlockState(pos)));
+    }
+
+    /** 区块载入时把旧存档里的平原群系改写为维度群系，让地图顶部显示维度名 */
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level
+                && event.getChunk() instanceof LevelChunk chunk
+                && TimeTurbulenceLevels.isTimeTurbulence(level)) {
+            TimeTurbulenceLevels.transplantBiome(level, chunk);
+        }
     }
 
     /** 是否属于维度生成的地板：只有地板及其下层受保护，玩家另摆的石英不受影响 */

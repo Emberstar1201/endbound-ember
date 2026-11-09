@@ -2,6 +2,24 @@
 
 Endbound Ember 是一个面向 Minecraft 1.21.1 NeoForge官方重置 Enchant-expansion 的原版拓展模组。
 
+## ⚠️ 特殊声明 / Special Notice
+
+<span style="color:orange">**🎮 本模组对原版的部分机制做了修改**（玩家移动手感、附魔成长、战斗数值等），实际体验并不等同于纯原版。</span>
+
+<span style="color:orange">**🏃 挑战类 / 速通类玩家请注意：** 开档之前请先去配置文件里逐项检查一遍，把你不想要的那些机制关掉再开始跑。</span>
+
+<span style="color:orange">**🤷 如果因为没看配置就被别人说“作弊”……那就真的不关我事啦～**</span>
+
+<span style="color:orange">**😴 至于为什么要搞成这样：** 因为我太懒了，懒得再往整合包里装一堆别的模组，索性把自己想要的机制全都塞进这里了。</span>
+
+<span style="color:orange">**🎮 This mod modifies some vanilla mechanics** (player movement feel, enchantment growth, combat values, etc.), so the experience is not exactly vanilla.</span>
+
+<span style="color:orange">**🏃 Challenge / speedrun players:** please go through the config files item by item before starting a run, and turn off whatever you don't want.</span>
+
+<span style="color:orange">**🤷 If someone calls you a cheater because you skipped the config… well, that's really not my problem~**</span>
+
+<span style="color:orange">**😴 Why is it like this?** Because I'm too lazy to install a pile of extra mods, so I bundled every mechanic I wanted into this one. 🧩</span>
+
 ## 1.1.0（测试阶段）
 
 > **⚠️ 重要提醒：1.1.0 目前仍处于测试阶段。** 本版本新增的武器、维度与 BOSS 尚未完成完整的数值验证，**存在较明显的数值不平衡**（可能过强，也可能过弱），机制、掉落与获取方式也可能在正式版前继续调整。请以「测试版」的预期体验内容，遇到问题欢迎反馈。
