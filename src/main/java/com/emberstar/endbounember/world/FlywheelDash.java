@@ -1,33 +1,22 @@
-package com.emberstar.endbounember.enchantment;
+package com.emberstar.endbounember.world;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
+import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,27 +24,23 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 飞轮效应：靴子专属，最高 III 级，宝藏附魔。
- * 按下冲刺键后朝准心方向高速突进，期间免疫伤害并可穿过生物；撞墙会提前停下并退还耐久。
+ * 飞轮冲刺：内置能力，默认按键 R（可在按键绑定中修改）。
+ * 朝准心方向高速突进，期间免疫伤害并可穿过生物；撞墙会提前停下。冷却 5 秒。
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
-public final class FlywheelEffectEnchantment {
-    public static final ResourceKey<Enchantment> KEY = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "flywheel_effect"));
-
+public final class FlywheelDash {
     private static final String TAG_ROOT = "FlywheelData";
     private static final String TAG_LAST_USE = "lastUseTime";
 
-    /** 索引即等级，0 位占位。 */
-    private static final double[] DASH_DISTANCE = {0.0D, 6.5D, 8.0D, 9.5D};
-    private static final int[] COOLDOWN_TICKS = {0, 1200, 600, 300};
+    /** 冲刺距离（格）。 */
+    private static final double DASH_DISTANCE = 8.0D;
+    /** 冷却时间：5 秒。 */
+    private static final int COOLDOWN_TICKS = 100;
 
     /** 每 tick 移动距离。 */
     private static final double DASH_SPEED = 1.5D;
     /** 最短冲刺时长，保证手感。 */
     private static final int MIN_DASH_TICKS = 4;
-    /** 冲刺激活的耐久消耗。 */
-    private static final int DURABILITY_COST = 3;
     /** 视线垂直分量上限，避免一路飞上天空。 */
     private static final double MAX_VERTICAL = 0.5D;
     /** 抵达终点后额外保留的无敌帧。 */
@@ -64,7 +49,7 @@ public final class FlywheelEffectEnchantment {
     private static final Map<UUID, DashState> DASHING = new HashMap<>();
     private static final Map<UUID, Boolean> WAS_ON_COOLDOWN = new HashMap<>();
 
-    private FlywheelEffectEnchantment() {
+    private FlywheelDash() {
     }
 
     /** 单次冲刺的运行时状态。 */
@@ -74,7 +59,6 @@ public final class FlywheelEffectEnchantment {
         private final boolean wasInvulnerable;
         private int ticksElapsed;
         private int lingerTicks;
-        private boolean refunded;
 
         private DashState(Vec3 direction, int totalTicks, boolean wasInvulnerable) {
             this.direction = direction;
@@ -83,34 +67,10 @@ public final class FlywheelEffectEnchantment {
         }
     }
 
-    /** 读取物品上的飞轮效应附魔等级，附魔书存放在 STORED_ENCHANTMENTS 中。 */
-    public static int levelOf(ItemStack stack) {
-        if (stack.isEmpty()) return 0;
-        int level = levelOf(stack, DataComponents.ENCHANTMENTS);
-        if (level > 0) return level;
-        return levelOf(stack, DataComponents.STORED_ENCHANTMENTS);
-    }
-
-    private static int levelOf(ItemStack stack, DataComponentType<ItemEnchantments> type) {
-        ItemEnchantments enchantments = stack.getOrDefault(type, ItemEnchantments.EMPTY);
-        for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
-            Optional<ResourceKey<Enchantment>> key = entry.getKey().unwrapKey();
-            if (key.isPresent() && key.get().equals(KEY)) return entry.getIntValue();
-        }
-        return 0;
-    }
-
-    private static int bootsLevel(Player player) {
-        int level = levelOf(player.getItemBySlot(EquipmentSlot.FEET));
-        return Math.min(level, 3);
-    }
-
     /** 客户端按键请求入口：校验通过后开始冲刺。 */
     public static void tryDash(ServerPlayer player) {
+        if (!Config.FLYWHEEL_DASH_ENABLED.get()) return;
         if (player.isPassenger()) return;
-
-        int level = bootsLevel(player);
-        if (level <= 0) return;
 
         if (isOnCooldown(player)) {
             player.displayClientMessage(
@@ -120,16 +80,12 @@ public final class FlywheelEffectEnchantment {
             return;
         }
 
-        ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
-        if (boots.getDamageValue() + DURABILITY_COST > boots.getMaxDamage()) return;
-
-        boots.hurtAndBreak(DURABILITY_COST, player, EquipmentSlot.FEET);
         setLastUseTime(player, player.level().getGameTime());
 
         Vec3 look = player.getLookAngle();
         Vec3 direction = new Vec3(look.x, Math.max(-MAX_VERTICAL, Math.min(MAX_VERTICAL, look.y)), look.z);
         int totalTicks = Math.max(MIN_DASH_TICKS,
-                (int) Math.ceil(DASH_DISTANCE[level] / DASH_SPEED));
+                (int) Math.ceil(DASH_DISTANCE / DASH_SPEED));
 
         DashState state = new DashState(direction, totalTicks, player.isInvulnerable());
         DASHING.put(player.getUUID(), state);
@@ -151,14 +107,14 @@ public final class FlywheelEffectEnchantment {
         state.ticksElapsed++;
 
         if (isInsideWall(player)) {
-            stopDash(player, state, true);
+            stopDash(player, state);
             return;
         }
         if (state.ticksElapsed > state.totalTicks) {
             // 抵达终点后保留一段无敌帧，期间不再位移
             state.lingerTicks++;
             if (state.lingerTicks > LINGER_TICKS) {
-                stopDash(player, state, false);
+                stopDash(player, state);
                 return;
             }
             player.setInvulnerable(true);
@@ -176,15 +132,9 @@ public final class FlywheelEffectEnchantment {
         }
     }
 
-    private static void stopDash(ServerPlayer player, DashState state, boolean refundDurability) {
+    private static void stopDash(ServerPlayer player, DashState state) {
         DASHING.remove(player.getUUID());
         if (!state.wasInvulnerable) player.setInvulnerable(false);
-
-        if (refundDurability && !state.refunded) {
-            state.refunded = true;
-            ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
-            boots.setDamageValue(Math.max(0, boots.getDamageValue() - DURABILITY_COST));
-        }
 
         ServerLevel level = player.serverLevel();
         level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
@@ -238,14 +188,14 @@ public final class FlywheelEffectEnchantment {
 
     /** 冷却状态保存在玩家持久化数据中，跨维度与重生都能保留。 */
     private static boolean isOnCooldown(Player player) {
-        int level = bootsLevel(player);
-        if (level <= 0) return false;
         long elapsed = player.level().getGameTime() - lastUseTime(player);
-        return elapsed < COOLDOWN_TICKS[level];
+        return elapsed < COOLDOWN_TICKS;
     }
 
     private static long lastUseTime(Player player) {
-        return player.getPersistentData().getCompound(TAG_ROOT).getLong(TAG_LAST_USE);
+        CompoundTag data = player.getPersistentData().getCompound(TAG_ROOT);
+        // 从未使用过时视为早已冷却完毕
+        return data.contains(TAG_LAST_USE) ? data.getLong(TAG_LAST_USE) : Long.MIN_VALUE / 2;
     }
 
     private static void setLastUseTime(Player player, long time) {
@@ -256,12 +206,9 @@ public final class FlywheelEffectEnchantment {
 
     /** 冷却由「进行中」转为「已完成」时提示玩家。 */
     private static void checkCooldownReady(ServerPlayer player) {
-        UUID uuid = player.getUUID();
-        if (bootsLevel(player) <= 0) {
-            WAS_ON_COOLDOWN.remove(uuid);
-            return;
-        }
+        if (!Config.FLYWHEEL_DASH_ENABLED.get()) return;
 
+        UUID uuid = player.getUUID();
         boolean onCooldown = isOnCooldown(player);
         Boolean previous = WAS_ON_COOLDOWN.put(uuid, onCooldown);
         if (previous == null || !previous || onCooldown) return;

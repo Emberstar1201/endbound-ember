@@ -17,6 +17,20 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 
 <span style="color:orange">**😴 Why is it like this?** Because I'm too lazy to install a pile of extra mods, so I bundled every mechanic I wanted into this one. 🧩</span>
 
+> **Multiplayer server warning:** This mod changes and adds vanilla mechanics, including movement, block placement, combat, enchantments and trading. Server anti-cheat systems may flag these changes and issue warnings, kicks or bans. Members and assistant admins should check the server rules and test cautiously only in an environment where the mod is permitted. The server staff's rules take precedence.
+
+### Current Additional Mechanics
+
+- **Enchanting table improvements**: improved enchantment candidates with previews, plus a configurable maximum number of enchantments per item.
+- **Enchantment compatibility**: adjusted compatibility between selected weapons and enchantments.
+- **Villager trading**: permanent discounts, rare Fool villagers, automatic and faster restocking, and profession reset changes.
+- **Anvil and grindstone improvements**: free renaming, no too-expensive limit, reduced anvil damage, and an extra book with the original enchantments when disenchanting a single item.
+- **Sword blocking**: right-click blocking, damage reduction, perfect parry bar reset, and deflection of incoming arrows.
+- **Movement mechanics**: momentum glide, bunny hop, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
+- **Zoom and moving light**: hold C to zoom (rebindable); light-emitting blocks provide moving light when held.
+- **Built-in Flywheel Dash**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing.
+- **Mob and world additions**: girls assist in defense, and the Time Turbulence biome is added.
+
 ## 1.2.0
 
 > This release focuses on quality-of-life and mechanic polish: enchantment compatibility, villager trading, anvil and grindstone overhauls, plus sword blocking, movement feel, zoom and moving light. All of the following mechanics are **enabled by default** and can each be disabled in the config file.
@@ -49,7 +63,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 
 ### Sword Right-Click Blocking (`swordBlockingEnabled`, on by default)
 
-- Hold right-click with a sword to enter a blocking stance, halving damage taken from the front.
+- Hold right-click with a sword to enter a blocking stance, reducing frontal damage by 60% (you take 40% of the original damage).
 - A blocking bar HUD shows the current blocking state.
 
 ### Player Movement Mechanics (`movementTweaksEnabled` master switch, on by default)

@@ -110,6 +110,16 @@ public class Config {
             .comment("空中控制增强：滞空时按方向键可以更顺滑地改变移动方向。")
             .define("movementAirControl", true);
 
+    /** 空中桥接：在空中按原版使用键辅助放置邻接方块。 */
+    public static final ModConfigSpec.BooleanValue BEDROCK_BRIDGING_ENABLED = BUILDER
+            .comment("空中桥接：在空中按住使用键时，辅助向脚下桥接放置手持方块。")
+            .define("bedrockBridgingEnabled", true);
+
+    /** 墙跳：空中按住可重绑按键并贴近墙面时向上弹开。 */
+    public static final ModConfigSpec.BooleanValue WALL_JUMP_ENABLED = BUILDER
+            .comment("墙跳：在空中按住墙跳键（默认 Shift，可在按键绑定中修改）并贴近墙面时向上弹开。")
+            .define("wallJumpEnabled", true);
+
     /** 移动光源：手持会发光的方块时脚下自动亮起一圈光。 */
     public static final ModConfigSpec.BooleanValue MOVING_LIGHT_ENABLED = BUILDER
             .comment("移动光源：手持火把、荧石等会发光的方块时，脚下会自动亮起一圈光，走开后熄灭。")
@@ -119,6 +129,11 @@ public class Config {
     public static final ModConfigSpec.BooleanValue SWORD_BLOCKING_ENABLED = BUILDER
             .comment("剑右键格挡：手持剑按住右键进入格挡姿态，正面受到的伤害减半。")
             .define("swordBlockingEnabled", true);
+
+    /** 飞轮冲刺：内置能力，默认按 R 朝准心突进，冷却 5 秒。 */
+    public static final ModConfigSpec.BooleanValue FLYWHEEL_DASH_ENABLED = BUILDER
+            .comment("飞轮冲刺：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物。")
+            .define("flywheelDashEnabled", true);
 
     /** 更好的村民交易总开关。 */
     public static final ModConfigSpec.BooleanValue BETTER_VILLAGER_TRADING = BUILDER

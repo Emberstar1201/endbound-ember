@@ -6,6 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -37,6 +41,80 @@ public final class BetterVillagerTrading {
     /** 愚者独立补货周期：1~2 个游戏日（24000~48000 tick），无条件自动补满。 */
     private static final int FOOL_RESTOCK_MIN_TICKS = 24000;
     private static final int FOOL_RESTOCK_RANDOM_TICKS = 24000;
+    private static final String DISCOUNT_DATA_NAME = "endbound_ember_village_discounts";
+
+    private static final class VillageDiscountData extends net.minecraft.world.level.saveddata.SavedData {
+        private final java.util.List<DiscountedVillage> villages = new java.util.ArrayList<>();
+
+        static VillageDiscountData get(ServerLevel level) {
+            return level.getDataStorage().computeIfAbsent(
+                    new net.minecraft.world.level.saveddata.SavedData.Factory<>(
+                            VillageDiscountData::new, VillageDiscountData::load, null),
+                    DISCOUNT_DATA_NAME);
+        }
+
+        private static VillageDiscountData load(CompoundTag tag, HolderLookup.Provider provider) {
+            VillageDiscountData data = new VillageDiscountData();
+            ListTag list = tag.getList("Villages", Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundTag entry = list.getCompound(i);
+                data.villages.add(new DiscountedVillage(entry.getInt("X"), entry.getInt("Y"),
+                        entry.getInt("Z"), entry.getInt("Discount")));
+            }
+            return data;
+        }
+
+        @Override
+        public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+            ListTag list = new ListTag();
+            for (DiscountedVillage village : villages) {
+                CompoundTag entry = new CompoundTag();
+                entry.putInt("X", village.x);
+                entry.putInt("Y", village.y);
+                entry.putInt("Z", village.z);
+                entry.putInt("Discount", village.discount);
+                list.add(entry);
+            }
+            tag.put("Villages", list);
+            return tag;
+        }
+
+        void award(BlockPos center) {
+            DiscountedVillage village = find(center);
+            if (village == null) {
+                villages.add(new DiscountedVillage(center.getX(), center.getY(), center.getZ(), 20));
+            } else {
+                village.discount = Math.min(MAX_DISCOUNT, village.discount + 20);
+            }
+            setDirty();
+        }
+
+        int discountAt(BlockPos pos) {
+            DiscountedVillage village = find(pos);
+            return village == null ? 0 : village.discount;
+        }
+
+        private DiscountedVillage find(BlockPos pos) {
+            return villages.stream().filter(village -> village.distanceToSqr(pos) <= VILLAGE_RADIUS * VILLAGE_RADIUS)
+                    .min(java.util.Comparator.comparingDouble(village -> village.distanceToSqr(pos))).orElse(null);
+        }
+    }
+
+    private static final class DiscountedVillage {
+        final int x, y, z;
+        int discount;
+
+        DiscountedVillage(int x, int y, int z, int discount) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.discount = discount;
+        }
+
+        double distanceToSqr(BlockPos pos) {
+            return net.minecraft.world.phys.Vec3.atCenterOf(new BlockPos(x, y, z)).distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+        }
+    }
 
     /** 已发现的愚者与其下次自动补货时间。弱引用键，区块卸载后不会造成泄漏。 */
     private static final Map<Villager, Long> FOOL_RESTOCK = new WeakHashMap<>();
@@ -82,6 +160,14 @@ public final class BetterVillagerTrading {
     public static void onVillagerJoin(EntityJoinLevelEvent event) {
         if (!Config.BETTER_VILLAGER_TRADING.get() || event.getLevel().isClientSide()) return;
         if (!(event.getEntity() instanceof Villager villager)) return;
+        if (!villager.getPersistentData().getBoolean(FOOL_KEY)
+                && villager.getPersistentData().getInt(DISCOUNT_KEY) == 0) {
+            int inheritedDiscount = VillageDiscountData.get((ServerLevel) event.getLevel())
+                    .discountAt(villager.blockPosition());
+            if (inheritedDiscount > 0) {
+                villager.getPersistentData().putInt(DISCOUNT_KEY, inheritedDiscount);
+            }
+        }
         if (villager.getPersistentData().getBoolean(FOOL_KEY)) {
             // 从存档重新加载的愚者也要纳入自动补货，并保留原来的补货周期
             if (!villager.getPersistentData().contains(FOOL_RESTOCK_KEY)) {
@@ -174,6 +260,7 @@ public final class BetterVillagerTrading {
     }
 
     public static void awardVillageDiscount(ServerLevel level, BlockPos center) {
+        VillageDiscountData.get(level).award(center);
         for (Villager villager : level.getEntitiesOfClass(Villager.class,
                 new net.minecraft.world.phys.AABB(center).inflate(VILLAGE_RADIUS))) {
             if (villager.getPersistentData().getBoolean(FOOL_KEY)) continue;

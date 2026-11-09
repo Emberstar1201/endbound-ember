@@ -14,7 +14,6 @@ import com.emberstar.endbounember.enchantment.EndApproachesEnchantment;
 import com.emberstar.endbounember.enchantment.ExNihiloEnchantment;
 import com.emberstar.endbounember.enchantment.FallingStarGuidanceEnchantment;
 import com.emberstar.endbounember.enchantment.FertileBountyEnchantment;
-import com.emberstar.endbounember.enchantment.FlywheelEffectEnchantment;
 import com.emberstar.endbounember.enchantment.FreeWillEnchantments;
 import com.emberstar.endbounember.enchantment.LightweightEnchantment;
 import com.emberstar.endbounember.enchantment.MadeInChinaEnchantment;
@@ -1375,10 +1374,6 @@ public class EndboundEmber {
                                         WindRippleEnchantment.KEY, 1));
                                 output.accept(createEnchantedBook(parameters.holders(),
                                         ElegantCatwalkEnchantment.KEY, 1));
-                                for (int level = 1; level <= 3; level++) {
-                                    output.accept(createEnchantedBook(parameters.holders(),
-                                            FlywheelEffectEnchantment.KEY, level));
-                                }
                                 for (int level = 1; level <= 2; level++) {
                                     output.accept(createEnchantedBook(parameters.holders(),
                                             SpringHarvestEnchantment.KEY, level));
@@ -1441,6 +1436,8 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.TimeTurbulenceTogglePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeHaloSkillPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.SwordParryPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);

@@ -1,7 +1,7 @@
 package com.emberstar.endbounember.network;
 
 import com.emberstar.endbounember.EndboundEmber;
-import com.emberstar.endbounember.enchantment.FlywheelEffectEnchantment;
+import com.emberstar.endbounember.world.FlywheelDash;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -29,7 +29,7 @@ public record FlywheelDashPayload() implements CustomPacketPayload {
 
     public static void handle(FlywheelDashPayload packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (context.player() instanceof ServerPlayer player) FlywheelEffectEnchantment.tryDash(player);
+            if (context.player() instanceof ServerPlayer player) FlywheelDash.tryDash(player);
         });
     }
 }
