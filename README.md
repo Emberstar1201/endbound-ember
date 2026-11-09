@@ -1,8 +1,13 @@
 # Endbound Ember
 
+<p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/%E4%B8%AD%E6%96%87%E7%89%88-%E5%BD%93%E5%89%8D%E9%A1%B5%E9%9D%A2-2ea44f?style=for-the-badge" alt="中文版"></a>
+  <a href="README_EN.md"><img src="https://img.shields.io/badge/English-%E5%88%87%E6%8D%A2-0969da?style=for-the-badge" alt="English"></a>
+</p>
+
 Endbound Ember 是一个面向 Minecraft 1.21.1 NeoForge官方重置 Enchant-expansion 的原版拓展模组。
 
-## ⚠️ 特殊声明 / Special Notice
+## ⚠️ 特殊声明
 
 <span style="color:orange">**🎮 本模组对原版的部分机制做了修改**（玩家移动手感、附魔成长、战斗数值等），实际体验并不等同于纯原版。</span>
 
@@ -12,13 +17,53 @@ Endbound Ember 是一个面向 Minecraft 1.21.1 NeoForge官方重置 Enchant-exp
 
 <span style="color:orange">**😴 至于为什么要搞成这样：** 因为我太懒了，懒得再往整合包里装一堆别的模组，索性把自己想要的机制全都塞进这里了。</span>
 
-<span style="color:orange">**🎮 This mod modifies some vanilla mechanics** (player movement feel, enchantment growth, combat values, etc.), so the experience is not exactly vanilla.</span>
+## 1.2.0
 
-<span style="color:orange">**🏃 Challenge / speedrun players:** please go through the config files item by item before starting a run, and turn off whatever you don't want.</span>
+> 本版本聚焦「生活质量」与机制打磨：新增附魔兼容、村民交易、铁砧与砂轮等一系列可配置的原版机制增强，以及剑格挡、移动手感、放大、移动光源等玩家体验改进。下列机制**默认全部开启**，均可在配置文件中逐项关闭。
 
-<span style="color:orange">**🤷 If someone calls you a cheater because you skipped the config… well, that's really not my problem~**</span>
+### 附魔兼容优化
 
-<span style="color:orange">**😴 Why is it like this?** Because I'm too lazy to install a pile of extra mods, so I bundled every mechanic I wanted into this one. 🧩</span>
+- 三叉戟可以附上锋利、亡灵杀手、节肢杀手。
+- 剑可以附上穿刺。
+- 弓可以附上多重射击、快速装填。
+
+### 更好的村民交易（`betterVillagerTrading`，默认开启）
+
+- **永久打折**：玩家打赢一场劫掠或僵尸围城后，村庄交易价格永久降低 20%，最多叠加到 80%（即 2 折）。
+- **愚者村民**：极低概率自然刷新的稀有村民（沿用原版傻子建模），交易极度良心，例如 1 个泥土换 7 个绿宝石、1 个铁锭换 1 颗钻石、8 个苹果换 1 个附魔金苹果、附魔保护 IV 钻石胸甲等。
+- **愚者补货**：愚者每 1~2 个游戏日无条件自动补满货物，不需要任何条件。
+- **更快补货**：普通村民的补货速度整体加快。
+- **更好转职**：与村民关系未达大师级时，敲掉其工作方块（且附近没有同类工作方块）会使其变回无业游民，清空等级并重置职业。
+
+### 更好的铁砧机制（`anvilMechanicsEnabled`，默认开启）
+
+- 物品改名不再消耗经验。
+- 移除铁砧「过于昂贵」限制。
+- 铁砧被使用后的损耗概率大幅降低（约为原概率的 5%）。
+
+### 更好的砂轮机制（`grindstoneEnchantedBookEnabled`，默认开启）
+
+- 用砂轮对**单件**附魔物品去魔时，除了得到去魔后的物品，还会额外生成一本包含该物品原有完整附魔的附魔书。
+- 例如：一把带锋利 V、亡灵杀手 V 的剑被去魔后，会额外得到一本同时带有锋利 V 与亡灵杀手 V 的附魔书。
+- 双物品合并去魔维持原版行为，不额外产书。
+
+### 剑右键格挡（`swordBlockingEnabled`，默认开启）
+
+- 手持剑按住右键进入格挡姿态，正面受到的伤害减半。
+- 提供格挡条 HUD，方便判断格挡状态。
+
+### 玩家移动机制（`movementTweaksEnabled` 总开关，默认开启）
+
+- **惯性滑行**（`movementMomentumGlide`）：疾跑中松开方向键或跳跃落地后，保留水平速度继续滑行并缓慢减速。
+- **落地连跳**（`movementBunnyHop`）：下落即将触地时按下跳跃键，立刻再次起跳并保留大部分水平速度。
+- **空中控制增强**（`movementAirControl`）：滞空时按方向键可以更顺滑地改变移动方向。
+
+### 其他体验改进
+
+- **放大**（`zoomEnabled`，默认开启）：按住放大键（默认 C，可在按键绑定中修改）拉近视野。
+- **移动光源**（`movingLightEnabled`，默认开启）：手持火把、荧石等会发光的方块时，脚下自动亮起一圈光，走开后熄灭。
+- **少女协防**：三类少女（丧尸娘、溺尸娘、幸存者少女）会主动攻击灾厄村民，协助玩家抵抗劫掠，驯服与否均生效。
+- **时间乱流群系**：新增时间乱流维度群系，并在区块载入时移植群系，使地图正确显示维度名称。
 
 ## 1.1.0（测试阶段）
 
@@ -221,11 +266,8 @@ Minecraft、NeoForge 及其相关资产属于各自权利人。本项目不声�
 
 <span style="color:red">**⚠️ 特殊提醒（免责声明）：丧尸娘的受伤音频极度社死，请不要在公共场合播放！若真的要玩，请戴好耳机！**</span>
 
-<span style="color:red">**⚠️ WARNING (Disclaimer): The Zombie Girl's hurt sound is EXTREMELY embarrassing. Do NOT play it out loud in public! If you really want to play, please wear headphones!**</span>
-
 <span style="color:orange">**⚠️ 音频警告：模组中铃铛的声音存在余音效果，佩戴耳机时可能对听力造成潜在伤害，请注意适当调节音量。**</span>
 
-<span style="color:orange">**⚠️ Audio Warning: The bell sounds in this mod have a lingering resonance effect. When wearing headphones, it may cause potential hearing damage. Please adjust the volume appropriately.**</span>
 ## 与我互动
 
 - 📺 **哔哩哔哩投稿**：可以投稿到我的个人主页：<https://b23.tv/6agWJVH>
