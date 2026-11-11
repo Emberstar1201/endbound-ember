@@ -12,9 +12,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -54,16 +51,6 @@ public class EndboundEmberClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            ResourceLocation inGui = EndboundEmber.id("in_gui");
-            for (Item spear : new Item[] {
-                    EndboundEmber.WOODEN_SPEAR.get(), EndboundEmber.STONE_SPEAR.get(),
-                    EndboundEmber.COPPER_SPEAR.get(), EndboundEmber.IRON_SPEAR.get(),
-                    EndboundEmber.GOLDEN_SPEAR.get(), EndboundEmber.DIAMOND_SPEAR.get(),
-                    EndboundEmber.NETHERITE_SPEAR.get()
-            }) {
-                ItemProperties.register(spear, inGui, (stack, level, entity, seed) ->
-                        entity == null ? 0.0F : 1.0F);
-            }
             for (var block : EndboundEmber.SEAMLESS_GLASS_BLOCKS) {
                 // 与原版保持一致：普通玻璃 cutout，染色与遮光玻璃 translucent
                 RenderType renderType = block == EndboundEmber.SEAMLESS_GLASS

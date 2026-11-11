@@ -38,7 +38,6 @@ import com.emberstar.endbounember.item.StardustWitchHaloItem;
 import com.emberstar.endbounember.item.TimeHaloItem;
 import com.emberstar.endbounember.item.StarlightStarItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
-import com.emberstar.endbounember.item.SpearItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
 import com.emberstar.endbounember.item.VoidStarItem;
 import com.emberstar.endbounember.block.SeamlessGlassBlock;
@@ -1037,35 +1036,6 @@ public class EndboundEmber {
 
     public static final DeferredItem<SwordItem> COPPER_SWORD = ITEMS.register("copper_sword",
             () -> new SwordItem(COPPER_TIER, new Item.Properties().attributes(SwordItem.createAttributes(COPPER_TIER, 3, -2.4F))));
-    public static final DeferredItem<SpearItem> WOODEN_SPEAR = ITEMS.register("wooden_spear",
-            () -> new SpearItem(new Item.Properties().durability(59)
-                    .attributes(SwordItem.createAttributes(Tiers.WOOD, 2.0F, -2.9F)), true));
-    public static final DeferredItem<SpearItem> STONE_SPEAR = ITEMS.register("stone_spear",
-            () -> new SpearItem(new Item.Properties().durability(131)
-                    .attributes(SwordItem.createAttributes(Tiers.STONE, 3.0F, -2.9F))));
-    public static final DeferredItem<SpearItem> COPPER_SPEAR = ITEMS.register("copper_spear",
-            () -> new SpearItem(new Item.Properties().durability(190)
-                    .attributes(SwordItem.createAttributes(COPPER_TIER, 3.5F, -2.9F))));
-    public static final DeferredItem<SpearItem> IRON_SPEAR = ITEMS.register("iron_spear",
-            () -> new SpearItem(new Item.Properties().durability(250)
-                    .attributes(SwordItem.createAttributes(Tiers.IRON, 4.0F, -2.9F))));
-    public static final DeferredItem<SpearItem> GOLDEN_SPEAR = ITEMS.register("golden_spear",
-            () -> new SpearItem(new Item.Properties().durability(32)
-                    .attributes(SwordItem.createAttributes(Tiers.GOLD, 2.0F, -2.9F))));
-    public static final DeferredItem<SpearItem> DIAMOND_SPEAR = ITEMS.register("diamond_spear",
-            () -> new SpearItem(new Item.Properties().durability(1561)
-                    .attributes(SwordItem.createAttributes(Tiers.DIAMOND, 5.0F, -2.9F))));
-    public static final DeferredItem<SpearItem> NETHERITE_SPEAR = ITEMS.register("netherite_spear",
-            () -> new SpearItem(new Item.Properties().durability(2031)
-                    .fireResistant().attributes(SwordItem.createAttributes(Tiers.NETHERITE, 6.0F, -2.9F))));
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_ATTACK = registerSound("spear_attack");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_HIT = registerSound("spear_hit");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_USE = registerSound("spear_use");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_LUNGE = registerSound("spear_lunge");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_ATTACK = registerSound("spear_wood_attack");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_HIT = registerSound("spear_wood_hit");
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_USE = registerSound("spear_wood_use");
     public static final DeferredItem<PickaxeItem> COPPER_PICKAXE = ITEMS.register("copper_pickaxe",
             () -> new PickaxeItem(COPPER_TIER, new Item.Properties().attributes(PickaxeItem.createAttributes(COPPER_TIER, 1, -2.8F))));
     public static final DeferredItem<AxeItem> COPPER_AXE = ITEMS.register("copper_axe",
@@ -1278,7 +1248,6 @@ public class EndboundEmber {
                     .icon(() -> VOID_EMBERSTAR.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(COPPER_SWORD.get());
-                        output.accept(IRON_SPEAR.get());
                         output.accept(COPPER_PICKAXE.get());
                         output.accept(COPPER_AXE.get());
                         output.accept(COPPER_SHOVEL.get());
@@ -1607,7 +1576,6 @@ public class EndboundEmber {
 
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(COPPER_SWORD.get());
-            event.accept(IRON_SPEAR.get());
             event.accept(COPPER_HELMET.get());
             event.accept(COPPER_CHESTPLATE.get());
             event.accept(COPPER_LEGGINGS.get());

@@ -58,25 +58,11 @@ SOFTWARE.
 - 作者/组织：Cursee Development
 - 参考分支：Minecraft 1.21.1
 - 仓库地址：<https://github.com/Cursee-Development/Dis-Enchanting-Table/tree/1.21.1>
-- 许可证：Unlicense，完整原文见根目录 `LICENSE-UNLICENSE-DIS-ENCHANTING-TABLE`（来源：<https://github.com/Cursee-Development/Dis-Enchanting-Table/blob/1.21.1/LICENSE>）
+- 许可证：Unlicense（<https://github.com/Cursee-Development/Dis-Enchanting-Table/blob/1.21.1/LICENSE>）
 
 ### 本项目中的使用范围
 
 本项目祛魔台的菜单行为与界面布局以该项目的 1.21.1 实现为准，并采用其 1.21.1 分支中的祛魔台 GUI 背景、矮台顶面纹理和侧面纹理。普通附魔物品的全部附魔会进入一本输出附魔书；多附魔书每次移除一个附魔，并消耗一本普通书及默认 25 点经验。项目保留旧版结果的恢复迁移逻辑。上游祛魔台代码与资源采用 Unlicense，与本项目其他代码 GPLv3 及自制美术 CC BY 4.0 的声明分别适用。
-
----
-
-## Backported Spears
-
-- 项目名称：Backported-Spears
-- 作者：N0t_UN_Owen（NotUnaNancyOwen）
-- 参考分支：Minecraft 1.21.1
-- 仓库地址：<https://github.com/Unknowneth/Backported-Spears/tree/1.21.1>
-- 许可证：CC0 1.0 Universal，完整原文见根目录 `LICENSE-CC0-BACKPORTED-SPEARS`
-
-### 本项目中的使用范围
-
-本项目长矛实现参考该项目的 1.21.1 版本，优先移植蓄力与动能冲刺攻击逻辑，并针对 NeoForge 1.21.1/Mojmap 重写。具体直接采用的代码或资源以实际移植内容为准；未直接采用的部分仅作为行为参考。
 
 ---
 

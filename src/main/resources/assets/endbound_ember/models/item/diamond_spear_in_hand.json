@@ -1,6 +1,0 @@
-{
-  "parent": "endbound_ember:item/spear_in_hand",
-  "textures": {
-    "layer0": "endbound_ember:item/diamond_spear_in_hand"
-  }
-}
