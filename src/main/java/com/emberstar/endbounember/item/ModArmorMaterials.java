@@ -28,6 +28,21 @@ public final class ModArmorMaterials {
                     24.0F,
                     10.0F));
 
+    public static final Holder<ArmorMaterial> COPPER = ARMOR_MATERIALS.register(
+            "copper", () -> new ArmorMaterial(
+                    Map.of(
+                            ArmorItem.Type.HELMET, 2,
+                            ArmorItem.Type.CHESTPLATE, 4,
+                            ArmorItem.Type.LEGGINGS, 3,
+                            ArmorItem.Type.BOOTS, 1),
+                    8,
+                    SoundEvents.ARMOR_EQUIP_IRON,
+                    () -> Ingredient.of(net.minecraft.world.item.Items.COPPER_INGOT),
+                    List.of(new ArmorMaterial.Layer(
+                            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "copper"))),
+                    0.0F,
+                    0.0F));
+
     private ModArmorMaterials() {
     }
 }

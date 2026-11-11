@@ -90,6 +90,7 @@ public final class DawnEnchantment {
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "dawn_attack_range");
     private static final String ENERGY_TAG = "EndboundEmberDawnEnergy";
     private static final String RECEIVED_TAG = "EndboundEmberDawnReceived";
+    private static final String GUIDE_RECEIVED_TAG = "EndboundEmberGuideReceived";
 
     private DawnEnchantment() {
     }
@@ -217,6 +218,10 @@ public final class DawnEnchantment {
         ensureLevelOne(player, book);
         book.set(EndboundEmber.DAWN_LEVEL.get(), Math.max(1, Math.min(MAX_LEVEL, level)));
         return book;
+    }
+
+    public static boolean hasFullEnergy(Player player) {
+        return levelOf(player) > 0 && energy(player) >= MAX_ENERGY;
     }
 
     private static int energy(Player player) {
@@ -519,21 +524,42 @@ public final class DawnEnchantment {
             return Component.translatable(key, (Object[]) args).withStyle(style -> style.withColor(STAT_COLOR));
         }
 
-        /** 首次进入世界：发放拂晓附魔书（1 级），并授予「踏上旅途」。 */
+        /** 首次进入存档：在背包有空位时发放两本初始书，不覆盖已有物品。 */
         @SubscribeEvent
         public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
             if (!(event.getEntity() instanceof ServerPlayer player)) return;
+            giveInitialBooks(player);
+        }
+
+        @SubscribeEvent
+        public static void deliverInitialBooksTick(PlayerTickEvent.Post event) {
+            if (!(event.getEntity() instanceof ServerPlayer player)) return;
+            if (player.tickCount % 20 == 0) giveInitialBooks(player);
+        }
+
+        private static void giveInitialBooks(ServerPlayer player) {
             CompoundTag data = player.getPersistentData();
-            if (data.getBoolean(RECEIVED_TAG)) return;
-            data.putBoolean(RECEIVED_TAG, true);
+            boolean guideReceived = data.getBoolean(GUIDE_RECEIVED_TAG);
+            boolean dawnReceived = data.getBoolean(RECEIVED_TAG);
+            if (guideReceived && dawnReceived) return;
 
-            ItemStack book = createEnchantedBook(player, 1);
-            if (!player.getInventory().add(book)) player.drop(book, false);
-
-            var server = player.getServer();
-            if (server == null) return;
-            var advancement = server.getAdvancements().get(JOURNEY_ADVANCEMENT);
-            if (advancement != null) player.getAdvancements().award(advancement, JOURNEY_CRITERION);
+            if (!guideReceived) {
+                ItemStack guideBook = EndboundEmber.createGuideBookForGift();
+                if (!guideBook.isEmpty() && player.getInventory().add(guideBook)) {
+                    data.putBoolean(GUIDE_RECEIVED_TAG, true);
+                }
+            }
+            if (!dawnReceived) {
+                ItemStack dawnBook = createEnchantedBook(player, 1);
+                if (player.getInventory().add(dawnBook)) {
+                    data.putBoolean(RECEIVED_TAG, true);
+                    var server = player.getServer();
+                    if (server != null) {
+                        var advancement = server.getAdvancements().get(JOURNEY_ADVANCEMENT);
+                        if (advancement != null) player.getAdvancements().award(advancement, JOURNEY_CRITERION);
+                    }
+                }
+            }
         }
     }
 }

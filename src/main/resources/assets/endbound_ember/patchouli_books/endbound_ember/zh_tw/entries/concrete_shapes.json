@@ -1,0 +1,302 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "混凝土造型",
+                      "item":  "endbound_ember:black_concrete_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本條目列出模組新增的方塊變體，並展示對應的實際合成與切石機配方。"
+                  },
+                  {
+                      "title":  "黑色混凝土半磚",
+                      "recipe2":  "endbound_ember:black_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色混凝土樓梯",
+                      "recipe2":  "endbound_ember:black_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:black_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色混凝土半磚",
+                      "recipe2":  "endbound_ember:blue_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色混凝土樓梯",
+                      "recipe2":  "endbound_ember:blue_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色混凝土半磚",
+                      "recipe2":  "endbound_ember:brown_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色混凝土樓梯",
+                      "recipe2":  "endbound_ember:brown_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:brown_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色混凝土半磚",
+                      "recipe2":  "endbound_ember:cyan_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色混凝土樓梯",
+                      "recipe2":  "endbound_ember:cyan_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:cyan_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色混凝土半磚",
+                      "recipe2":  "endbound_ember:gray_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色混凝土樓梯",
+                      "recipe2":  "endbound_ember:gray_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色混凝土半磚",
+                      "recipe2":  "endbound_ember:green_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色混凝土樓梯",
+                      "recipe2":  "endbound_ember:green_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:green_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡藍色混凝土半磚",
+                      "recipe2":  "endbound_ember:light_blue_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡藍色混凝土樓梯",
+                      "recipe2":  "endbound_ember:light_blue_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡藍色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:light_blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡灰色混凝土半磚",
+                      "recipe2":  "endbound_ember:light_gray_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡灰色混凝土樓梯",
+                      "recipe2":  "endbound_ember:light_gray_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡灰色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:light_gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺綠色混凝土半磚",
+                      "recipe2":  "endbound_ember:lime_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺綠色混凝土樓梯",
+                      "recipe2":  "endbound_ember:lime_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺綠色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:lime_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色混凝土半磚",
+                      "recipe2":  "endbound_ember:magenta_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色混凝土樓梯",
+                      "recipe2":  "endbound_ember:magenta_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:magenta_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色混凝土半磚",
+                      "recipe2":  "endbound_ember:orange_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色混凝土樓梯",
+                      "recipe2":  "endbound_ember:orange_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:orange_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色混凝土半磚",
+                      "recipe2":  "endbound_ember:pink_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色混凝土樓梯",
+                      "recipe2":  "endbound_ember:pink_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:pink_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色混凝土半磚",
+                      "recipe2":  "endbound_ember:purple_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色混凝土樓梯",
+                      "recipe2":  "endbound_ember:purple_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:purple_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色混凝土半磚",
+                      "recipe2":  "endbound_ember:red_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色混凝土樓梯",
+                      "recipe2":  "endbound_ember:red_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:red_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色混凝土半磚",
+                      "recipe2":  "endbound_ember:white_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色混凝土樓梯",
+                      "recipe2":  "endbound_ember:white_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:white_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色混凝土半磚",
+                      "recipe2":  "endbound_ember:yellow_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色混凝土樓梯",
+                      "recipe2":  "endbound_ember:yellow_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色混凝土豎半磚",
+                      "recipe2":  "endbound_ember:yellow_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:black_concrete_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "混凝土造型",
+    "sortnum":  30
+}

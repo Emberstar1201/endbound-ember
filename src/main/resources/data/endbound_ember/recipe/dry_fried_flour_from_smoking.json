@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {"item": "endbound_ember:flour"},
+  "result": {
+    "id": "endbound_ember:dry_fried_flour",
+    "count": 1
+  },
+  "experience": 0.1,
+  "cookingtime": 100
+}

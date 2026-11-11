@@ -1,0 +1,19 @@
+{
+  "name": "Disenchantment Table",
+  "category": "endbound_ember:building_blocks",
+  "icon": "endbound_ember:disenchantment_table",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:disenchantment_table",
+      "title": "Disenchantment Table",
+      "text": "Removes enchantments from equipment. Crafted with 4 quartz blocks, 2 diamonds, and 1 book."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Crafting Recipe",
+      "recipe": "endbound_ember:disenchantment_table"
+    }
+  ]
+}

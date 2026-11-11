@@ -1,0 +1,302 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Concrete Shapes",
+                      "item":  "endbound_ember:black_concrete_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Black Concrete Slab",
+                      "recipe2":  "endbound_ember:black_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Concrete Stairs",
+                      "recipe2":  "endbound_ember:black_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:black_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Concrete Slab",
+                      "recipe2":  "endbound_ember:blue_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Concrete Stairs",
+                      "recipe2":  "endbound_ember:blue_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Concrete Slab",
+                      "recipe2":  "endbound_ember:brown_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Concrete Stairs",
+                      "recipe2":  "endbound_ember:brown_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:brown_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Concrete Slab",
+                      "recipe2":  "endbound_ember:cyan_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Concrete Stairs",
+                      "recipe2":  "endbound_ember:cyan_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:cyan_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Concrete Slab",
+                      "recipe2":  "endbound_ember:gray_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Concrete Stairs",
+                      "recipe2":  "endbound_ember:gray_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Concrete Slab",
+                      "recipe2":  "endbound_ember:green_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Concrete Stairs",
+                      "recipe2":  "endbound_ember:green_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:green_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Concrete Slab",
+                      "recipe2":  "endbound_ember:light_blue_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Concrete Stairs",
+                      "recipe2":  "endbound_ember:light_blue_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:light_blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Concrete Slab",
+                      "recipe2":  "endbound_ember:light_gray_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Concrete Stairs",
+                      "recipe2":  "endbound_ember:light_gray_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:light_gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Concrete Slab",
+                      "recipe2":  "endbound_ember:lime_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Concrete Stairs",
+                      "recipe2":  "endbound_ember:lime_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:lime_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Concrete Slab",
+                      "recipe2":  "endbound_ember:magenta_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Concrete Stairs",
+                      "recipe2":  "endbound_ember:magenta_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:magenta_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Concrete Slab",
+                      "recipe2":  "endbound_ember:orange_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Concrete Stairs",
+                      "recipe2":  "endbound_ember:orange_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:orange_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Concrete Slab",
+                      "recipe2":  "endbound_ember:pink_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Concrete Stairs",
+                      "recipe2":  "endbound_ember:pink_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:pink_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Concrete Slab",
+                      "recipe2":  "endbound_ember:purple_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Concrete Stairs",
+                      "recipe2":  "endbound_ember:purple_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:purple_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Concrete Slab",
+                      "recipe2":  "endbound_ember:red_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Concrete Stairs",
+                      "recipe2":  "endbound_ember:red_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:red_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Concrete Slab",
+                      "recipe2":  "endbound_ember:white_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Concrete Stairs",
+                      "recipe2":  "endbound_ember:white_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:white_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Concrete Slab",
+                      "recipe2":  "endbound_ember:yellow_concrete_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Concrete Stairs",
+                      "recipe2":  "endbound_ember:yellow_concrete_stairs_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:yellow_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:black_concrete_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Concrete Shapes",
+    "sortnum":  30
+}

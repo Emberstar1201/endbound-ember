@@ -11,6 +11,7 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
 
     /** 时光光环时钟的时间来源，配置界面里以按钮形式循环切换 */
     public enum TimeHaloMode implements TranslatableEnum {
@@ -59,6 +60,23 @@ public class Config {
                     "Items from the sophisticatedbackpacks mod are always protected.")
             .defineListAllowEmpty("herobrinePlunderProtected", List.of(), () -> "", Config::validateItemName);
 
+    /** 祛魔台配置，与 Cursee-Development 1.21.1 默认值保持一致。 */
+    public static final ModConfigSpec.BooleanValue DISENCHANTMENT_AUTOMATIC = BUILDER
+            .comment("Allow automatic disenchanting by machines.")
+            .define("disenchantmentAutomatic", false);
+    public static final ModConfigSpec.BooleanValue DISENCHANTMENT_RESETS_REPAIR_COST = BUILDER
+            .comment("Reset an item's anvil repair cost after disenchanting.")
+            .define("disenchantmentResetsRepairCost", true);
+    public static final ModConfigSpec.BooleanValue DISENCHANTMENT_REQUIRES_EXPERIENCE = BUILDER
+            .comment("Require experience to claim disenchantment results.")
+            .define("disenchantmentRequiresExperience", true);
+    public static final ModConfigSpec.BooleanValue DISENCHANTMENT_USES_POINTS = BUILDER
+            .comment("Charge experience points instead of experience levels.")
+            .define("disenchantmentUsesPoints", true);
+    public static final ModConfigSpec.IntValue DISENCHANTMENT_EXPERIENCE_COST = BUILDER
+            .comment("Experience cost for one disenchantment operation.")
+            .defineInRange("disenchantmentExperienceCost", 25, 0, 1000000);
+
     /** Him Boss 战背景音乐总开关 */
     public static final ModConfigSpec.BooleanValue HEROBRINE_BOSS_MUSIC_ENABLED = BUILDER
             .comment("Play the boss battle music while players stay inside the music radius.")
@@ -90,6 +108,21 @@ public class Config {
             .comment("放大：按住放大键（默认 C，可在按键绑定里修改）时拉近视野。")
             .define("zoomEnabled", true);
 
+    /** 放大后的视野倍率：0.25 约等于 4 倍放大，1.0 表示不放大。 */
+    public static final ModConfigSpec.DoubleValue ZOOM_FOV_MULTIPLIER = BUILDER
+            .comment("放大后的视野倍率，数值越小放得越大（0.05-1.0）。0.25 约等于 4 倍放大，1.0 表示不放大。")
+            .defineInRange("zoomFovMultiplier", 0.25D, 0.05D, 1.0D);
+
+    /** 放大过渡动画：开启后按住与松开时视野平滑变化。 */
+    public static final ModConfigSpec.BooleanValue ZOOM_TRANSITION_ENABLED = BUILDER
+            .comment("放大过渡动画：按住或松开放大键时平滑过渡视野；关闭后立即切换。")
+            .define("zoomTransitionEnabled", true);
+
+    /** 放大过渡速度：每帧靠近目标倍率的比例，越大越干脆。 */
+    public static final ModConfigSpec.DoubleValue ZOOM_TRANSITION_SPEED = BUILDER
+            .comment("放大过渡速度，每帧靠近目标倍率的比例（0.02-1.0）。数值越大响应越快。")
+            .defineInRange("zoomTransitionSpeed", 0.35D, 0.02D, 1.0D);
+
     /** 玩家移动机制总开关：关闭后下面三项全部不生效。 */
     public static final ModConfigSpec.BooleanValue MOVEMENT_TWEAKS_ENABLED = BUILDER
             .comment("玩家移动机制总开关，关闭后惯性滑行、落地连跳与空中控制增强全部失效。")
@@ -109,11 +142,6 @@ public class Config {
     public static final ModConfigSpec.BooleanValue MOVEMENT_AIR_CONTROL = BUILDER
             .comment("空中控制增强：滞空时按方向键可以更顺滑地改变移动方向。")
             .define("movementAirControl", true);
-
-    /** 空中桥接：在空中按原版使用键辅助放置邻接方块。 */
-    public static final ModConfigSpec.BooleanValue BEDROCK_BRIDGING_ENABLED = BUILDER
-            .comment("空中桥接：在空中按住使用键时，辅助向脚下桥接放置手持方块。")
-            .define("bedrockBridgingEnabled", true);
 
     /** 墙跳：空中按住可重绑按键并贴近墙面时向上弹开。 */
     public static final ModConfigSpec.BooleanValue WALL_JUMP_ENABLED = BUILDER
@@ -145,12 +173,28 @@ public class Config {
             .comment("启用免费改名、移除铁砧过于昂贵限制并大幅降低铁砧损耗概率。")
             .define("anvilMechanicsEnabled", true);
 
-    /** 砂轮去魔附魔书总开关。 */
-    public static final ModConfigSpec.BooleanValue GRINDSTONE_ENCHANTED_BOOK_ENABLED = BUILDER
-            .comment("单件附魔物品使用砂轮去魔时，额外生成一本包含原有完整附魔的附魔书。")
-            .define("grindstoneEnchantedBookEnabled", true);
+    /** 双持近战攻击总开关，由服务器规则控制。 */
+    public static final ModConfigSpec.BooleanValue DUAL_WIELD_ENABLED = BUILDER
+            .comment("启用副手近战攻击和主副手独立攻击冷却。")
+            .define("dualWieldEnabled", true);
+
+    /** 耐久 HUD 客户端显示开关。 */
+    public static final ModConfigSpec.BooleanValue DURABILITY_HUD_ENABLED = CLIENT_BUILDER
+            .comment("在屏幕左侧显示装备和双手物品的剩余耐久。")
+            .define("durabilityHudEnabled", true);
+
+    /** 耐久 HUD 距屏幕左侧的偏移。 */
+    public static final ModConfigSpec.IntValue DURABILITY_HUD_X_OFFSET = CLIENT_BUILDER
+            .comment("耐久 HUD 距屏幕左侧的水平偏移，单位为 GUI 像素。")
+            .defineInRange("durabilityHudXOffset", 8, 0, 2000);
+
+    /** 耐久 HUD 相对屏幕垂直中心的偏移。 */
+    public static final ModConfigSpec.IntValue DURABILITY_HUD_Y_OFFSET = CLIENT_BUILDER
+            .comment("耐久 HUD 相对屏幕垂直中心的垂直偏移，正数向下，单位为 GUI 像素。")
+            .defineInRange("durabilityHudYOffset", -30, -2000, 2000);
 
     static final ModConfigSpec SPEC = BUILDER.build();
+    static final ModConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));

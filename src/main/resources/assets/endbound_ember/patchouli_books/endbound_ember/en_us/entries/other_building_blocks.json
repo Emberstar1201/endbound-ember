@@ -1,0 +1,194 @@
+{
+    "name":  "Other Building Blocks",
+    "category":  "endbound_ember:building_blocks",
+    "icon":  "endbound_ember:seamless_glass",
+    "sortnum":  70,
+    "pages":  [
+                  {
+                      "type":  "patchouli:spotlight",
+                      "item":  "endbound_ember:seamless_glass",
+                      "title":  "Other Building Blocks",
+                      "text":  "This entry lists the seamless glass blocks and panes added by the mod, with their crafting recipes."
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Glass",
+                      "recipe":  "endbound_ember:seamless_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Black Stained Glass",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Blue Stained Glass",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Brown Stained Glass",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Cyan Stained Glass",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Gray Stained Glass",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Green Stained Glass",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Light Blue Stained Glass",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Light Gray Stained Glass",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Lime Stained Glass",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Magenta Stained Glass",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Orange Stained Glass",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Pink Stained Glass",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Purple Stained Glass",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Red Stained Glass",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless White Stained Glass",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Yellow Stained Glass",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Tinted Glass",
+                      "recipe":  "endbound_ember:seamless_tinted_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Glass Pane",
+                      "recipe":  "endbound_ember:seamless_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Black Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Blue Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Brown Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Cyan Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Gray Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Green Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Light Blue Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Light Gray Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Lime Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Magenta Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Orange Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Pink Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Purple Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Red Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless White Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Yellow Stained Glass Pane",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "Seamless Tinted Glass Pane",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_pane"
+                  }
+              ]
+}

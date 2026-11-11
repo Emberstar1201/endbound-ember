@@ -8,12 +8,44 @@
       "type": "patchouli:spotlight",
       "item": "endbound_ember:life_star",
       "title": "Life Star",
-      "text": "§c§lAcquisition: §r Place an Enchanted Golden Apple in the center, with 4 dandelions and 4 glistering melon slices around it.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Bountiful Breath: max health increases to 100; healing speed is increased fivefold; hunger and saturation no longer drain.$(br)Morning Dew: deals an extra 10% physical damage based on your max health.$(br)Last Light: when you would take lethal damage, clears all negative effects and restores 75% of your health.$(br)Camellia Revival: when your health drops below 50%, restores 33% of your max health.$(br)Nourishing Rain: recovers 1.5 health every 60 ticks while it rains; applies to creatures tamed by the player as well."
+      "text": "§c§lAcquisition: §r Complete the ritual at the altar.$(br2)The base is a 7×7 area of natural blocks that can support plants (grass blocks, dirt, nylium, farmland, etc.).$(br2)Place an Enchanted Golden Apple in the center, any flower at the four corners (Wither Rose excluded), and Glistering Melon Slices at the midpoints of the four edges.$(br2)§lCondition: §r Works while in a Curios slot, or in the main hand / off hand.$(br2)Bountiful Breath: max health increases to 100; healing speed is increased fivefold; hunger and saturation no longer drain.$(br)Morning Dew: deals an extra 10% physical damage based on your max health.$(br)Last Light: when you would take lethal damage, clears all negative effects and restores 75% of your health.$(br)Camellia Revival: when your health drops below 50%, restores 33% of your max health.$(br)Nourishing Rain: recovers 1.5 health every 60 ticks while it rains; applies to creatures tamed by the player as well."
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "endbound_ember:life_star",
-      "text": "Recipe: place an Enchanted Golden Apple in the center, surrounded by 4 dandelions and 4 glistering melon slices."
+      "type": "patchouli:multiblock",
+      "name": "Life Star Altar",
+      "multiblock": {
+        "pattern": [
+          [
+            "p  p  p",
+            "       ",
+            "       ",
+            "p  0  p",
+            "       ",
+            "       ",
+            "p  p  p"
+          ],
+          [
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg",
+            "ggggggg"
+          ]
+        ],
+        "mapping": {
+          "g": "minecraft:grass_block",
+          "p": "endbound_ember:display_pedestal",
+          "0": "endbound_ember:display_pedestal"
+        },
+        "symmetrical": true
+      },
+      "text": "The grass blocks shown are only an example; any natural block that can support plants may be used."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "§lPlacement:§r$(br2)Center: Enchanted Golden Apple$(br)Four corners: any flower (Wither Rose excluded)$(br)Midpoints of the four edges: Glistering Melon Slice$(br2)Once placed, right-click any display pedestal to begin the ritual."
     }
   ]
 }

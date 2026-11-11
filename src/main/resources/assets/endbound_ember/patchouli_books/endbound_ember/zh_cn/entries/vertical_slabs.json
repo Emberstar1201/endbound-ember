@@ -1,0 +1,761 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "竖半砖",
+                      "item":  "endbound_ember:acacia_vertical_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本条目列出模组添加的方块变体，并展示对应的真实合成与石切机配方。"
+                  },
+                  {
+                      "title":  "金合欢木竖半砖",
+                      "recipe":  "endbound_ember:acacia_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫水晶竖半砖",
+                      "recipe":  "endbound_ember:amethyst_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "安山岩竖半砖",
+                      "recipe2":  "endbound_ember:andesite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:andesite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "竹马赛克竖半砖",
+                      "recipe":  "endbound_ember:bamboo_mosaic_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "竹竖半砖",
+                      "recipe":  "endbound_ember:bamboo_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白桦木竖半砖",
+                      "recipe":  "endbound_ember:birch_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:black_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:black_stained_glass_vertical_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑石竖半砖",
+                      "recipe2":  "endbound_ember:blackstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:blackstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "蓝色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "蓝色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:blue_stained_glass_vertical_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红砖竖半砖",
+                      "recipe2":  "endbound_ember:brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:brown_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:brown_stained_glass_vertical_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石竖半砖",
+                      "recipe2":  "endbound_ember:calcite_vertical_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "樱花木竖半砖",
+                      "recipe":  "endbound_ember:cherry_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩圆石竖半砖",
+                      "recipe2":  "endbound_ember:cobbled_deepslate_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cobbled_deepslate_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "圆石竖半砖",
+                      "recipe2":  "endbound_ember:cobblestone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cobblestone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铜竖半砖",
+                      "recipe":  "endbound_ember:copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "裂纹石砖竖半砖",
+                      "recipe":  "endbound_ember:cracked_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绯红菌木竖半砖",
+                      "recipe":  "endbound_ember:crimson_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制铜竖半砖",
+                      "recipe2":  "endbound_ember:cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制红砂岩竖半砖",
+                      "recipe2":  "endbound_ember:cut_red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制砂岩竖半砖",
+                      "recipe2":  "endbound_ember:cut_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:cyan_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_vertical_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深色橡木竖半砖",
+                      "recipe":  "endbound_ember:dark_oak_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "暗海晶石竖半砖",
+                      "recipe2":  "endbound_ember:dark_prismarine_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:dark_prismarine_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩砖竖半砖",
+                      "recipe":  "endbound_ember:deepslate_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩瓦竖半砖",
+                      "recipe2":  "endbound_ember:deepslate_tile_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:deepslate_tile_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "钻石竖半砖",
+                      "recipe":  "endbound_ember:diamond_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "闪长岩竖半砖",
+                      "recipe2":  "endbound_ember:diorite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:diorite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿宝石竖半砖",
+                      "recipe":  "endbound_ember:emerald_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "末地石砖竖半砖",
+                      "recipe2":  "endbound_ember:end_stone_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:end_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "斑驳的切制铜竖半砖",
+                      "recipe2":  "endbound_ember:exposed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:exposed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "玻璃竖半砖",
+                      "recipe2":  "endbound_ember:glass_vertical_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "金竖半砖",
+                      "recipe":  "endbound_ember:gold_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "花岗岩竖半砖",
+                      "recipe2":  "endbound_ember:granite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:granite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:gray_stained_glass_vertical_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:green_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:green_stained_glass_vertical_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铁竖半砖",
+                      "recipe":  "endbound_ember:iron_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "丛林木竖半砖",
+                      "recipe":  "endbound_ember:jungle_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青金石竖半砖",
+                      "recipe":  "endbound_ember:lapis_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡蓝色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:light_blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡蓝色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_vertical_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡灰色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:light_gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淡灰色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_vertical_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黄绿色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:lime_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黄绿色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:lime_stained_glass_vertical_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "品红色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:magenta_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "品红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_vertical_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红木竖半砖",
+                      "recipe":  "endbound_ember:mangrove_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "苔石竖半砖",
+                      "recipe2":  "endbound_ember:mossy_cobblestone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:mossy_cobblestone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "苔石砖竖半砖",
+                      "recipe":  "endbound_ember:mossy_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "泥砖竖半砖",
+                      "recipe2":  "endbound_ember:mud_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:mud_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界砖竖半砖",
+                      "recipe2":  "endbound_ember:nether_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:nether_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界合金竖半砖",
+                      "recipe":  "endbound_ember:netherite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橡木竖半砖",
+                      "recipe":  "endbound_ember:oak_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:orange_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:orange_stained_glass_vertical_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "氧化的切制铜竖半砖",
+                      "recipe2":  "endbound_ember:oxidized_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:oxidized_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰砖竖半砖",
+                      "recipe2":  "endbound_ember:packed_ice_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:packed_ice_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉红色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:pink_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:pink_stained_glass_vertical_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制安山岩竖半砖",
+                      "recipe2":  "endbound_ember:polished_andesite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_andesite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制黑石砖竖半砖",
+                      "recipe2":  "endbound_ember:polished_blackstone_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_blackstone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制黑石竖半砖",
+                      "recipe2":  "endbound_ember:polished_blackstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_blackstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制方解石砖竖半砖",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_vertical_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制方解石竖半砖",
+                      "recipe2":  "endbound_ember:polished_calcite_vertical_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制深板岩竖半砖",
+                      "recipe":  "endbound_ember:polished_deepslate_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制闪长岩竖半砖",
+                      "recipe2":  "endbound_ember:polished_diorite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_diorite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制花岗岩竖半砖",
+                      "recipe2":  "endbound_ember:polished_granite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_granite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制凝灰岩竖半砖",
+                      "recipe2":  "endbound_ember:polished_tuff_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_tuff_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "海晶石砖竖半砖",
+                      "recipe2":  "endbound_ember:prismarine_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:prismarine_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "海晶石竖半砖",
+                      "recipe2":  "endbound_ember:prismarine_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:prismarine_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:purple_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:purple_stained_glass_vertical_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫珀竖半砖",
+                      "recipe2":  "endbound_ember:purpur_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:purpur_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石英块竖半砖",
+                      "recipe":  "endbound_ember:quartz_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:red_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红色下界砖竖半砖",
+                      "recipe2":  "endbound_ember:red_nether_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:red_nether_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红砂岩竖半砖",
+                      "recipe2":  "endbound_ember:red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:red_stained_glass_vertical_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红石竖半砖",
+                      "recipe":  "endbound_ember:redstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "砂岩竖半砖",
+                      "recipe2":  "endbound_ember:sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝黑色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_vertical_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝蓝色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_vertical_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝棕色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_vertical_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝青色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_glass_vertical_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝灰色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_vertical_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝绿色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_vertical_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝淡蓝色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝淡灰色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝黄绿色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_vertical_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝品红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝橙色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_vertical_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝粉红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_vertical_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝紫色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_vertical_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝红色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_vertical_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝遮光玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_vertical_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝白色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_vertical_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "无缝黄色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑石英竖半砖",
+                      "recipe":  "endbound_ember:smooth_quartz_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑红砂岩竖半砖",
+                      "recipe2":  "endbound_ember:smooth_red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:smooth_red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑砂岩竖半砖",
+                      "recipe2":  "endbound_ember:smooth_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:smooth_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑石头竖半砖",
+                      "recipe":  "endbound_ember:smooth_stone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪砖竖半砖",
+                      "recipe2":  "endbound_ember:snow_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:snow_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "云杉木竖半砖",
+                      "recipe":  "endbound_ember:spruce_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石砖竖半砖",
+                      "recipe":  "endbound_ember:stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石头竖半砖",
+                      "recipe2":  "endbound_ember:stone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:stone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "遮光玻璃竖半砖",
+                      "recipe2":  "endbound_ember:tinted_glass_vertical_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "凝灰岩砖竖半砖",
+                      "recipe2":  "endbound_ember:tuff_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:tuff_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "凝灰岩竖半砖",
+                      "recipe2":  "endbound_ember:tuff_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:tuff_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "诡异菌木竖半砖",
+                      "recipe":  "endbound_ember:warped_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的切制铜竖半砖",
+                      "recipe2":  "endbound_ember:waxed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的切制铜竖半砖",
+                      "recipe":  "endbound_ember:waxed_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的斑驳切制铜竖半砖",
+                      "recipe2":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的斑驳切制铜竖半砖",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的氧化切制铜竖半砖",
+                      "recipe2":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的氧化切制铜竖半砖",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的锈蚀切制铜竖半砖",
+                      "recipe2":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的锈蚀切制铜竖半砖",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "锈蚀的切制铜竖半砖",
+                      "recipe2":  "endbound_ember:weathered_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:weathered_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:white_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:white_stained_glass_vertical_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黄色混凝土竖半砖",
+                      "recipe2":  "endbound_ember:yellow_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黄色染色玻璃竖半砖",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_vertical_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:acacia_vertical_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "竖半砖",
+    "sortnum":  20
+}

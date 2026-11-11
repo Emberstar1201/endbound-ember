@@ -1,0 +1,149 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "矿物造型",
+                      "item":  "endbound_ember:amethyst_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本条目列出模组添加的方块变体，并展示对应的真实合成与石切机配方。"
+                  },
+                  {
+                      "title":  "紫水晶台阶",
+                      "recipe":  "endbound_ember:amethyst_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫水晶楼梯",
+                      "recipe":  "endbound_ember:amethyst_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫水晶竖半砖",
+                      "recipe":  "endbound_ember:amethyst_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铜台阶",
+                      "recipe":  "endbound_ember:copper_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铜楼梯",
+                      "recipe":  "endbound_ember:copper_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铜竖半砖",
+                      "recipe":  "endbound_ember:copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "钻石台阶",
+                      "recipe":  "endbound_ember:diamond_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "钻石楼梯",
+                      "recipe":  "endbound_ember:diamond_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "钻石竖半砖",
+                      "recipe":  "endbound_ember:diamond_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿宝石台阶",
+                      "recipe":  "endbound_ember:emerald_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿宝石楼梯",
+                      "recipe":  "endbound_ember:emerald_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿宝石竖半砖",
+                      "recipe":  "endbound_ember:emerald_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "金台阶",
+                      "recipe":  "endbound_ember:gold_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "金楼梯",
+                      "recipe":  "endbound_ember:gold_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "金竖半砖",
+                      "recipe":  "endbound_ember:gold_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铁台阶",
+                      "recipe":  "endbound_ember:iron_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铁楼梯",
+                      "recipe":  "endbound_ember:iron_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铁竖半砖",
+                      "recipe":  "endbound_ember:iron_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青金石台阶",
+                      "recipe":  "endbound_ember:lapis_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青金石楼梯",
+                      "recipe":  "endbound_ember:lapis_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青金石竖半砖",
+                      "recipe":  "endbound_ember:lapis_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界合金台阶",
+                      "recipe":  "endbound_ember:netherite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界合金楼梯",
+                      "recipe":  "endbound_ember:netherite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界合金竖半砖",
+                      "recipe":  "endbound_ember:netherite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红石台阶",
+                      "recipe":  "endbound_ember:redstone_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红石楼梯",
+                      "recipe":  "endbound_ember:redstone_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红石竖半砖",
+                      "recipe":  "endbound_ember:redstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:amethyst_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "矿物造型",
+    "sortnum":  40
+}

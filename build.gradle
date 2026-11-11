@@ -63,7 +63,8 @@ repositories {
     mavenCentral()
 }
 base {
-    archivesName = mod_id
+    // 产物文件名前加官方中文名，形如 [终界余烬]endbound_ember-1.2.1.jar
+    archivesName = "[终界余烬]${mod_id}"
 }
 
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.

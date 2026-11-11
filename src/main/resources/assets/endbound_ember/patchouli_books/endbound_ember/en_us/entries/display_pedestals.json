@@ -1,0 +1,389 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Display Pedestals",
+                      "item":  "endbound_ember:acacia_display_pedestal",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Acacia Display Pedestal",
+                      "recipe":  "endbound_ember:acacia_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Amethyst Display Pedestal",
+                      "recipe":  "endbound_ember:amethyst_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Andesite Display Pedestal",
+                      "recipe":  "endbound_ember:andesite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Bamboo Display Pedestal",
+                      "recipe":  "endbound_ember:bamboo_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Bamboo Mosaic Display Pedestal",
+                      "recipe":  "endbound_ember:bamboo_mosaic_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Birch Display Pedestal",
+                      "recipe":  "endbound_ember:birch_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blackstone Display Pedestal",
+                      "recipe":  "endbound_ember:blackstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brick Display Pedestal",
+                      "recipe":  "endbound_ember:brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Display Pedestal",
+                      "recipe":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cherry Display Pedestal",
+                      "recipe":  "endbound_ember:cherry_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cobbled Deepslate Display Pedestal",
+                      "recipe":  "endbound_ember:cobbled_deepslate_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cobblestone Display Pedestal",
+                      "recipe":  "endbound_ember:cobblestone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Copper Display Pedestal",
+                      "recipe":  "endbound_ember:copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cracked Stone Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:cracked_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Crimson Display Pedestal",
+                      "recipe":  "endbound_ember:crimson_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Red Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:cut_red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:cut_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Dark Oak Display Pedestal",
+                      "recipe":  "endbound_ember:dark_oak_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Dark Prismarine Display Pedestal",
+                      "recipe":  "endbound_ember:dark_prismarine_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Deepslate Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:deepslate_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Deepslate Tiles Display Pedestal",
+                      "recipe":  "endbound_ember:deepslate_tile_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diamond Display Pedestal",
+                      "recipe":  "endbound_ember:diamond_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diorite Display Pedestal",
+                      "recipe":  "endbound_ember:diorite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Display Pedestal",
+                      "recipe":  "endbound_ember:display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Emerald Display Pedestal",
+                      "recipe":  "endbound_ember:emerald_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "End Stone Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:end_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Exposed Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:exposed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gold Display Pedestal",
+                      "recipe":  "endbound_ember:gold_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Granite Display Pedestal",
+                      "recipe":  "endbound_ember:granite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Iron Display Pedestal",
+                      "recipe":  "endbound_ember:iron_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Jungle Display Pedestal",
+                      "recipe":  "endbound_ember:jungle_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lapis Display Pedestal",
+                      "recipe":  "endbound_ember:lapis_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mangrove Display Pedestal",
+                      "recipe":  "endbound_ember:mangrove_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mossy Cobblestone Display Pedestal",
+                      "recipe":  "endbound_ember:mossy_cobblestone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mossy Stone Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:mossy_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mud Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:mud_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Nether Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:nether_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Netherite Display Pedestal",
+                      "recipe":  "endbound_ember:netherite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Oak Display Pedestal",
+                      "recipe":  "endbound_ember:oak_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Oxidized Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:oxidized_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:packed_ice_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Andesite Display Pedestal",
+                      "recipe":  "endbound_ember:polished_andesite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Blackstone Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:polished_blackstone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Blackstone Display Pedestal",
+                      "recipe":  "endbound_ember:polished_blackstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Display Pedestal",
+                      "recipe":  "endbound_ember:polished_calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Deepslate Display Pedestal",
+                      "recipe":  "endbound_ember:polished_deepslate_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Diorite Display Pedestal",
+                      "recipe":  "endbound_ember:polished_diorite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Granite Display Pedestal",
+                      "recipe":  "endbound_ember:polished_granite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Tuff Display Pedestal",
+                      "recipe":  "endbound_ember:polished_tuff_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Prismarine Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:prismarine_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Prismarine Display Pedestal",
+                      "recipe":  "endbound_ember:prismarine_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purpur Display Pedestal",
+                      "recipe":  "endbound_ember:purpur_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Quartz Display Pedestal",
+                      "recipe":  "endbound_ember:quartz_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Nether Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:red_nether_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Redstone Display Pedestal",
+                      "recipe":  "endbound_ember:redstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Quartz Display Pedestal",
+                      "recipe":  "endbound_ember:smooth_quartz_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Red Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:smooth_red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Sandstone Display Pedestal",
+                      "recipe":  "endbound_ember:smooth_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Stone Display Pedestal",
+                      "recipe":  "endbound_ember:smooth_stone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:snow_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Spruce Display Pedestal",
+                      "recipe":  "endbound_ember:spruce_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Stone Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Stone Display Pedestal",
+                      "recipe":  "endbound_ember:stone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tuff Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:tuff_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tuff Display Pedestal",
+                      "recipe":  "endbound_ember:tuff_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Warped Display Pedestal",
+                      "recipe":  "endbound_ember:warped_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:waxed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Exposed Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Oxidized Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Weathered Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Weathered Cut Copper Display Pedestal",
+                      "recipe":  "endbound_ember:weathered_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:acacia_display_pedestal",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Display Pedestals",
+    "sortnum":  60
+}

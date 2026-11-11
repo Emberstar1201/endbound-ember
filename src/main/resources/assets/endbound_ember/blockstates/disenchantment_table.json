@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "endbound_ember:block/disenchantment_table"
+    }
+  }
+}

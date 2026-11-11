@@ -79,11 +79,48 @@ public class ModClientEvents {
                 MixedVerticalSlabRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DOOM_PILLAR_BLOCK_ENTITY.get(),
                 DoomPillarRenderer::new);
+        event.registerBlockEntityRenderer(EndboundEmber.DISENCHANTMENT_TABLE_BLOCK_ENTITY.get(),
+                DisenchantmentTableRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
         event.register(EndboundEmber.COMPANION_MENU.get(), CompanionScreen::new);
+        event.register(EndboundEmber.DISENCHANTMENT_TABLE_MENU.get(), DisenchantmentTableScreen::new);
+    }
+
+    private static class DisenchantmentTableScreen extends AbstractContainerScreen<com.emberstar.endbounember.menu.DisenchantmentTableMenu> {
+        private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(
+                EndboundEmber.MODID, "textures/disenchantment_table_gui.png");
+
+        private DisenchantmentTableScreen(com.emberstar.endbounember.menu.DisenchantmentTableMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+            this.imageWidth = 176;
+            this.imageHeight = 166;
+            this.inventoryLabelY = 72;
+            this.titleLabelX = 8;
+            this.titleLabelY = 6;
+        }
+
+        @Override
+        protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+            int left = (width - imageWidth) / 2;
+            int top = (height - imageHeight) / 2;
+            graphics.blit(GUI_TEXTURE, left, top, 0, 0, imageWidth, imageHeight, 256, 256);
+        }
+
+        @Override
+        protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+            graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
+            graphics.drawString(font, playerInventoryTitle, 8, inventoryLabelY, 0xFFFFFF, false);
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            renderBackground(graphics, mouseX, mouseY, partialTick);
+            super.render(graphics, mouseX, mouseY, partialTick);
+            renderTooltip(graphics, mouseX, mouseY);
+        }
     }
 
     /**

@@ -46,6 +46,11 @@
     {
       "type": "patchouli:text",
       "text": "§lSetup:§r$(br2)Center: Dawn enchanted book$(br)Edge midpoints: blaze powder$(br)Corners: stardust$(br2)Right-click the center pedestal to begin."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Anahita Firstlight Liddell Amulet",
+      "text": "§lAdvanced ritual:§r Use the Dawn Amulet as the center core and the same 7×7 base of full light-emitting blocks (redstone lamps excluded).$(br2)Edge midpoints: void stardust$(br)Corners: stardust$(br2)Use eight pedestals around the edge, then right-click the center pedestal. The Dawn Amulet becomes the Anahita Firstlight Liddell Amulet when the ritual completes."
     }
   ]
 }

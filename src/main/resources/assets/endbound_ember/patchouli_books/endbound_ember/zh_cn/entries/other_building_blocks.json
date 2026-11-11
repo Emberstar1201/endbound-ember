@@ -1,0 +1,194 @@
+{
+    "name":  "其他建筑方块",
+    "category":  "endbound_ember:building_blocks",
+    "icon":  "endbound_ember:seamless_glass",
+    "sortnum":  70,
+    "pages":  [
+                  {
+                      "type":  "patchouli:spotlight",
+                      "item":  "endbound_ember:seamless_glass",
+                      "title":  "其他建筑方块",
+                      "text":  "本条目列出模组添加的无缝玻璃与玻璃板，并展示对应的合成配方。"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝玻璃",
+                      "recipe":  "endbound_ember:seamless_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黑色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝蓝色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝棕色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝青色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝灰色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝绿色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝淡蓝色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝淡灰色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黄绿色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝品红色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝橙色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝粉红色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝紫色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝红色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝白色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黄色染色玻璃",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝遮光玻璃",
+                      "recipe":  "endbound_ember:seamless_tinted_glass"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝玻璃板",
+                      "recipe":  "endbound_ember:seamless_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黑色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝蓝色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝棕色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝青色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝灰色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝绿色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝淡蓝色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝淡灰色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黄绿色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝品红色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝橙色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝粉红色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝紫色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝红色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝白色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝黄色染色玻璃板",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_pane"
+                  },
+                  {
+                      "type":  "patchouli:crafting",
+                      "title":  "无缝遮光玻璃板",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_pane"
+                  }
+              ]
+}

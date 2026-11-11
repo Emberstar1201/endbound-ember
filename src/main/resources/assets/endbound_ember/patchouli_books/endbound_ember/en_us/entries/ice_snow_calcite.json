@@ -1,0 +1,183 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Ice, Snow and Calcite Builds",
+                      "item":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Calcite Display Pedestal",
+                      "recipe":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Pillar",
+                      "recipe2":  "endbound_ember:calcite_pillar_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_pillar",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Slab",
+                      "recipe2":  "endbound_ember:calcite_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Stairs",
+                      "recipe2":  "endbound_ember:calcite_stairs_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Vertical Slab",
+                      "recipe2":  "endbound_ember:calcite_vertical_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Wall",
+                      "recipe2":  "endbound_ember:calcite_wall_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Chiseled Packed Ice",
+                      "recipe2":  "endbound_ember:chiseled_packed_ice_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:chiseled_packed_ice",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:packed_ice_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Slab",
+                      "recipe2":  "endbound_ember:packed_ice_brick_slab_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Stairs",
+                      "recipe2":  "endbound_ember:packed_ice_brick_stairs_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:packed_ice_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:packed_ice_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Wall",
+                      "recipe2":  "endbound_ember:packed_ice_brick_wall_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks",
+                      "recipe2":  "endbound_ember:packed_ice_bricks_from_packed_ice_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_bricks",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite",
+                      "recipe2":  "endbound_ember:polished_calcite_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Stairs",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_stairs_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_vertical_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Wall",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_wall_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Display Pedestal",
+                      "recipe":  "endbound_ember:polished_calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Stairs",
+                      "recipe2":  "endbound_ember:polished_calcite_stairs_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_vertical_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Wall",
+                      "recipe2":  "endbound_ember:polished_calcite_wall_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks Display Pedestal",
+                      "recipe":  "endbound_ember:snow_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks Stairs",
+                      "recipe2":  "endbound_ember:snow_brick_stairs_from_snow_bricks_stonecutting",
+                      "recipe":  "endbound_ember:snow_brick_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:snow_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:snow_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks",
+                      "recipe2":  "endbound_ember:snow_bricks_from_snow_block_stonecutting",
+                      "recipe":  "endbound_ember:snow_bricks",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:calcite_display_pedestal",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Ice, Snow and Calcite Builds",
+    "sortnum":  50
+}

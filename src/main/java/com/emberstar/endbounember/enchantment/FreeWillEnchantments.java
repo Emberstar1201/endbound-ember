@@ -62,8 +62,8 @@ public final class FreeWillEnchantments {
 
     /** 晨映之花生效后的剑气倍率（100% + 250%）。 */
     public static final double DAWN_BLOOM_MULTIPLIER = 3.5D;
-    /** 蓝火剑气倍率。 */
-    public static final double BLUE_FLAME_MULTIPLIER = 10.0D;
+    /** 蓝火剑气倍率（500%）。 */
+    public static final double BLUE_FLAME_MULTIPLIER = 5.0D;
     /** 蓝火剑气必定暴击，按 1.5 倍结算。 */
     public static final double BLUE_CRIT_MULTIPLIER = 1.5D;
 
@@ -77,7 +77,7 @@ public final class FreeWillEnchantments {
     public static final int INSTANT_KILL_COOLDOWN_TICKS = 18000;
 
     /** 星火不灭 1~3 级对应的最大生命值比例，索引 0 不使用。 */
-    public static final double[] ETERNAL_SPARK_RATIOS = {0.0D, 0.05D, 0.10D, 0.15D};
+    public static final double[] ETERNAL_SPARK_RATIOS = {0.0D, 0.02D, 0.05D, 0.10D};
     /** 星火不灭扩散特效的半径（格）。 */
     private static final double SPARK_SPREAD_RADIUS = 5.0D;
 

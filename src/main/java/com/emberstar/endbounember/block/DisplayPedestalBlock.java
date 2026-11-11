@@ -195,6 +195,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     private static Item product(DisplayPedestalBlockEntity.RitualType type) {
         return switch (type) {
             case AMULET -> EndboundEmber.DAWN_AMULET.get();
+            case ANAHITA -> EndboundEmber.ANAHITA_FIRSTLIGHT_LIDDELL.get();
             case LIFE_STAR -> EndboundEmber.LIFE_STAR.get();
             default -> EndboundEmber.STARDUST_WITCH_HALO.get();
         };
@@ -203,7 +204,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
     /** 仪式粒子配色 */
     private static Vector3f dustColor(DisplayPedestalBlockEntity.RitualType type) {
         return switch (type) {
-            case AMULET -> AMULET_DUST_COLOR;
+            case AMULET, ANAHITA -> AMULET_DUST_COLOR;
             case LIFE_STAR -> LIFE_STAR_DUST_COLOR;
             default -> HALO_DUST_COLOR;
         };
@@ -423,10 +424,10 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
             tryStartRitual(level, pos, player);
             return ItemInteractionResult.SUCCESS;
         }
-        // 台面放着仪式核心（星尘手绳 / 拂晓附魔书 / 下界之星）：无论手持什么都只尝试启动仪式
+        // 台面放着仪式核心（星尘手绳 / 拂晓附魔书 / 晨曦护符 / 下界之星）：无论手持什么都只尝试启动仪式
         if (RitualAltar.isCore(stored)) {
-            // 下界之星在祭坛不完整时允许直接取回，避免被卡在台面上拿不下来
-            if (!tryStartRitual(level, pos, player) && stored.is(Items.NETHER_STAR)) {
+            // 下界之星与晨曦护符在祭坛不完整时允许直接取回，避免被卡在台面上拿不下来
+            if (!tryStartRitual(level, pos, player) && canTakeBackWhenIncomplete(stored)) {
                 takeBack(level, pos, player, pedestal);
             }
             return ItemInteractionResult.SUCCESS;
@@ -459,7 +460,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         }
         // 台面放着仪式核心：尝试启动仪式
         if (RitualAltar.isCore(stored)) {
-            if (!tryStartRitual(level, pos, player) && stored.is(Items.NETHER_STAR)) {
+            if (!tryStartRitual(level, pos, player) && canTakeBackWhenIncomplete(stored)) {
                 takeBack(level, pos, player, pedestal);
             }
             return InteractionResult.SUCCESS;
@@ -534,6 +535,12 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         player.experienceProgress = 0.0F;
         player.totalExperience = 0;
         player.giveExperiencePoints(remaining);
+    }
+
+    /** 祭坛不完整时仍允许取回的仪式核心物品。 */
+    private static boolean canTakeBackWhenIncomplete(ItemStack stored) {
+        return stored.is(Items.NETHER_STAR) || stored.is(EndboundEmber.DAWN_AMULET.get())
+                || stored.is(EndboundEmber.ANAHITA_FIRSTLIGHT_LIDDELL.get());
     }
 
     private static void takeBack(Level level, BlockPos pos, Player player, DisplayPedestalBlockEntity pedestal) {

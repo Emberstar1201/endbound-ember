@@ -24,7 +24,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 - **Enchanting table improvements**: improved enchantment candidates with previews, plus a configurable maximum number of enchantments per item.
 - **Enchantment compatibility**: adjusted compatibility between selected weapons and enchantments.
 - **Villager trading**: permanent discounts, rare Fool villagers, automatic and faster restocking, and profession reset changes.
-- **Anvil and grindstone improvements**: free renaming, no too-expensive limit, reduced anvil damage, and an extra book with the original enchantments when disenchanting a single item.
+- **Anvil improvements**: free renaming, no too-expensive limit, and reduced anvil damage.
 - **Sword blocking**: right-click blocking, damage reduction, perfect parry bar reset, and deflection of incoming arrows.
 - **Movement mechanics**: momentum glide, bunny hop, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
 - **Zoom and moving light**: hold C to zoom (rebindable); light-emitting blocks provide moving light when held.
@@ -33,7 +33,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 
 ## 1.2.0
 
-> This release focuses on quality-of-life and mechanic polish: enchantment compatibility, villager trading, anvil and grindstone overhauls, plus sword blocking, movement feel, zoom and moving light. All of the following mechanics are **enabled by default** and can each be disabled in the config file.
+> This release focuses on quality-of-life and mechanic polish: enchantment compatibility, villager trading, anvil improvements, plus sword blocking, movement feel, zoom and moving light. All of the following mechanics are **enabled by default** and can each be disabled in the config file.
 
 ### Enchantment Compatibility
 
@@ -55,11 +55,12 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 - The "Too Expensive!" limit is removed.
 - Anvil damage chance after use is greatly reduced (about 5% of the original chance).
 
-### Better Grindstone Mechanics (`grindstoneEnchantedBookEnabled`, on by default)
+### Disenchantment Table
 
-- When you disenchant a **single** enchanted item on a grindstone, you get the disenchanted item plus an extra enchanted book containing the item's complete original enchantment set.
-- For example: disenchanting a sword with Sharpness V and Smite V yields a book carrying both Sharpness V and Smite V.
-- Combining two items on a grindstone keeps vanilla behavior and produces no extra book.
+- A regular enchanted item produces one enchanted book containing all of its enchantments; claiming it clears the input item's enchantments and consumes one plain book.
+- A multi-enchanted book is processed one enchantment at a time: the output contains the remaining enchantments, while the input becomes a book containing only the removed enchantment. Enchanted books need at least two enchantments to be accepted.
+- Each operation costs 25 experience points (free in Creative mode) and uses no lapis lazuli. The experience rules and repair-cost reset can be adjusted in the mod config.
+- Legacy results from the former 27 output slots are migrated to a separate recovery queue and can be claimed one by one; new disenchanting is blocked until the queue is empty.
 
 ### Sword Right-Click Blocking (`swordBlockingEnabled`, on by default)
 
@@ -257,7 +258,7 @@ This project is licensed under the GNU General Public License v3.0 (GPLv3). The 
 
 ### Art Assets
 
-All art assets created for this project — including block textures, block models, item textures and icons, and GUI textures — are released under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. You may copy, modify and redistribute them freely (including commercially), provided you give appropriate credit and indicate whether changes were made. The full license text is in [LICENSE-ASSETS](LICENSE-ASSETS).
+All art assets created for this project — including project-authored block textures, block models, item textures and icons, and GUI assets — are released under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. You may copy, modify and redistribute them freely (including commercially), provided you give appropriate credit and indicate whether changes were made. Upstream Dis-Enchanting-Table GUI and block textures are excluded and remain under the Unlicense described in [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md). The full license text for project-authored assets is in [LICENSE-ASSETS](LICENSE-ASSETS).
 
 Suggested attribution format:
 
@@ -275,6 +276,8 @@ Notes:
 Minecraft, NeoForge and their related assets belong to their respective rights holders. This project does not claim ownership of Mojang's or NeoForged's trademarks or official assets.
 
 ### Third-Party Open-Source Components
+
+The disenchantment table's behavior and interface layout follow **Dis-Enchanting-Table** (Cursee Development, Minecraft 1.21.1 branch, Unlicense), and use its GUI background, short-table top texture and side texture. See [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md) for details.
 
 The rendering approach and physical behavior of the Stardust Halo are based on **Halo Mod** (by Azusa_Ke, MIT License, <https://github.com/AzusaKe/Halo>). As required by the MIT License, the original copyright notice and full license text are in [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md).
 
@@ -296,6 +299,8 @@ The rendering approach and physical behavior of the Stardust Halo are based on *
 **Production involvement**: Shasnow
 
 **Open-source thanks**: Azusa_Ke, author of [Halo Mod](https://github.com/AzusaKe/Halo). The rendering approach and physical behavior of the Stardust Halo are based on that project (MIT License); we thank them and retain the original copyright notice.
+
+**Disenchantment table thanks**: Cursee Development, for the implementation reference and GUI/block textures from [Dis-Enchanting-Table](https://github.com/Cursee-Development/Dis-Enchanting-Table/tree/1.21.1). Although the Unlicense does not require attribution, we are glad to acknowledge their work here.
 
 **Additional thanks**: Wildcanyon, for providing the Zombie Girl skin. [Bilibili page](https://space.bilibili.com/622498204?spm_id_from=333.788.upinfo.head.click)
 

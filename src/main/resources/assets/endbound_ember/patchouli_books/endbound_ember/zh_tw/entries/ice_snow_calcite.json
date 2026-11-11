@@ -1,0 +1,183 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "冰雪與方解石建築",
+                      "item":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本條目列出模組新增的方塊變體，並展示對應的實際合成與切石機配方。"
+                  },
+                  {
+                      "title":  "方解石展示台",
+                      "recipe":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石柱",
+                      "recipe2":  "endbound_ember:calcite_pillar_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_pillar",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石半磚",
+                      "recipe2":  "endbound_ember:calcite_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石樓梯",
+                      "recipe2":  "endbound_ember:calcite_stairs_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石豎半磚",
+                      "recipe2":  "endbound_ember:calcite_vertical_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石牆",
+                      "recipe2":  "endbound_ember:calcite_wall_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮雕浮冰",
+                      "recipe2":  "endbound_ember:chiseled_packed_ice_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:chiseled_packed_ice",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚展示台",
+                      "recipe":  "endbound_ember:packed_ice_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚半磚",
+                      "recipe2":  "endbound_ember:packed_ice_brick_slab_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚樓梯",
+                      "recipe2":  "endbound_ember:packed_ice_brick_stairs_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚豎半磚",
+                      "recipe2":  "endbound_ember:packed_ice_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:packed_ice_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚牆",
+                      "recipe2":  "endbound_ember:packed_ice_brick_wall_from_packed_ice_bricks_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_brick_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰磚",
+                      "recipe2":  "endbound_ember:packed_ice_bricks_from_packed_ice_stonecutting",
+                      "recipe":  "endbound_ember:packed_ice_bricks",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石",
+                      "recipe2":  "endbound_ember:polished_calcite_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚展示台",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚半磚",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚樓梯",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_stairs_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚豎半磚",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_vertical_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石磚牆",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_wall_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石展示台",
+                      "recipe":  "endbound_ember:polished_calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石半磚",
+                      "recipe2":  "endbound_ember:polished_calcite_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石樓梯",
+                      "recipe2":  "endbound_ember:polished_calcite_stairs_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石豎半磚",
+                      "recipe2":  "endbound_ember:polished_calcite_vertical_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨製方解石牆",
+                      "recipe2":  "endbound_ember:polished_calcite_wall_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_wall",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪磚展示台",
+                      "recipe":  "endbound_ember:snow_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪磚樓梯",
+                      "recipe2":  "endbound_ember:snow_brick_stairs_from_snow_bricks_stonecutting",
+                      "recipe":  "endbound_ember:snow_brick_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪磚豎半磚",
+                      "recipe2":  "endbound_ember:snow_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:snow_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪磚",
+                      "recipe2":  "endbound_ember:snow_bricks_from_snow_block_stonecutting",
+                      "recipe":  "endbound_ember:snow_bricks",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:calcite_display_pedestal",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "冰雪與方解石建築",
+    "sortnum":  50
+}

@@ -1,0 +1,662 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Glass Shapes",
+                      "item":  "endbound_ember:black_stained_glass_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Black Stained Glass Slab",
+                      "recipe2":  "endbound_ember:black_stained_glass_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:black_stained_glass_stairs_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:black_stained_glass_vertical_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Stained Glass Slab",
+                      "recipe2":  "endbound_ember:blue_stained_glass_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:blue_stained_glass_stairs_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:blue_stained_glass_vertical_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Stained Glass Slab",
+                      "recipe2":  "endbound_ember:brown_stained_glass_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:brown_stained_glass_stairs_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:brown_stained_glass_vertical_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Stained Glass Slab",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_stairs_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_vertical_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Glass Slab",
+                      "recipe2":  "endbound_ember:glass_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Glass Stairs",
+                      "recipe2":  "endbound_ember:glass_stairs_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:glass_vertical_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Stained Glass Slab",
+                      "recipe2":  "endbound_ember:gray_stained_glass_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:gray_stained_glass_stairs_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:gray_stained_glass_vertical_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Stained Glass Slab",
+                      "recipe2":  "endbound_ember:green_stained_glass_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:green_stained_glass_stairs_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:green_stained_glass_vertical_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Stained Glass Slab",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_stairs_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_vertical_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Stained Glass Slab",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_stairs_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_vertical_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Stained Glass Slab",
+                      "recipe2":  "endbound_ember:lime_stained_glass_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:lime_stained_glass_stairs_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:lime_stained_glass_vertical_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Stained Glass Slab",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_stairs_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_vertical_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Stained Glass Slab",
+                      "recipe2":  "endbound_ember:orange_stained_glass_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:orange_stained_glass_stairs_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:orange_stained_glass_vertical_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Stained Glass Slab",
+                      "recipe2":  "endbound_ember:pink_stained_glass_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:pink_stained_glass_stairs_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:pink_stained_glass_vertical_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Stained Glass Slab",
+                      "recipe2":  "endbound_ember:purple_stained_glass_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:purple_stained_glass_stairs_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:purple_stained_glass_vertical_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Stained Glass Slab",
+                      "recipe2":  "endbound_ember:red_stained_glass_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:red_stained_glass_stairs_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:red_stained_glass_vertical_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Black Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Black Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_stairs_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Black Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_vertical_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Blue Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Blue Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_stairs_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_vertical_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Brown Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Brown Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_stairs_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Brown Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_vertical_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Cyan Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Cyan Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_stairs_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Cyan Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_glass_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_glass_stairs_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_glass_vertical_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Gray Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Gray Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_stairs_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_vertical_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Green Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Green Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_stairs_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Green Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_vertical_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Blue Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Blue Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_stairs_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Gray Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Gray Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_stairs_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Lime Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Lime Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_stairs_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Lime Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_vertical_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Magenta Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Magenta Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_stairs_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Magenta Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Orange Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Orange Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_stairs_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Orange Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_vertical_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Pink Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Pink Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_stairs_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Pink Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_vertical_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Purple Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Purple Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_stairs_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Purple Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_vertical_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Red Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Red Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_stairs_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Red Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_vertical_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Tinted Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Tinted Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_stairs_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Tinted Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_vertical_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless White Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless White Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_stairs_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless White Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_vertical_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Yellow Stained Glass Slab",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Yellow Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_stairs_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Yellow Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tinted Glass Slab",
+                      "recipe2":  "endbound_ember:tinted_glass_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tinted Glass Stairs",
+                      "recipe2":  "endbound_ember:tinted_glass_stairs_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tinted Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:tinted_glass_vertical_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Stained Glass Slab",
+                      "recipe2":  "endbound_ember:white_stained_glass_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:white_stained_glass_stairs_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:white_stained_glass_vertical_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Stained Glass Slab",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Stained Glass Stairs",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_stairs_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_vertical_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:black_stained_glass_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Glass Shapes",
+    "sortnum":  10
+}

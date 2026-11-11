@@ -1,0 +1,389 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "展示台",
+                      "item":  "endbound_ember:acacia_display_pedestal",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本条目列出模组添加的方块变体，并展示对应的真实合成与石切机配方。"
+                  },
+                  {
+                      "title":  "金合欢木展示台",
+                      "recipe":  "endbound_ember:acacia_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫水晶展示台",
+                      "recipe":  "endbound_ember:amethyst_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "安山岩展示台",
+                      "recipe":  "endbound_ember:andesite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "竹展示台",
+                      "recipe":  "endbound_ember:bamboo_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "竹马赛克展示台",
+                      "recipe":  "endbound_ember:bamboo_mosaic_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白桦木展示台",
+                      "recipe":  "endbound_ember:birch_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑石展示台",
+                      "recipe":  "endbound_ember:blackstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红砖展示台",
+                      "recipe":  "endbound_ember:brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "方解石展示台",
+                      "recipe":  "endbound_ember:calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "樱花木展示台",
+                      "recipe":  "endbound_ember:cherry_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩圆石展示台",
+                      "recipe":  "endbound_ember:cobbled_deepslate_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "圆石展示台",
+                      "recipe":  "endbound_ember:cobblestone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铜展示台",
+                      "recipe":  "endbound_ember:copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "裂纹石砖展示台",
+                      "recipe":  "endbound_ember:cracked_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绯红木展示台",
+                      "recipe":  "endbound_ember:crimson_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制铜展示台",
+                      "recipe":  "endbound_ember:cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制红砂岩展示台",
+                      "recipe":  "endbound_ember:cut_red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "切制砂岩展示台",
+                      "recipe":  "endbound_ember:cut_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深色橡木展示台",
+                      "recipe":  "endbound_ember:dark_oak_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "暗海晶石展示台",
+                      "recipe":  "endbound_ember:dark_prismarine_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩砖展示台",
+                      "recipe":  "endbound_ember:deepslate_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "深板岩瓦展示台",
+                      "recipe":  "endbound_ember:deepslate_tile_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "钻石展示台",
+                      "recipe":  "endbound_ember:diamond_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "闪长岩展示台",
+                      "recipe":  "endbound_ember:diorite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "展示台",
+                      "recipe":  "endbound_ember:display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "绿宝石展示台",
+                      "recipe":  "endbound_ember:emerald_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "末地石砖展示台",
+                      "recipe":  "endbound_ember:end_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "斑驳的切制铜展示台",
+                      "recipe":  "endbound_ember:exposed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "金展示台",
+                      "recipe":  "endbound_ember:gold_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "花岗岩展示台",
+                      "recipe":  "endbound_ember:granite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "铁展示台",
+                      "recipe":  "endbound_ember:iron_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "丛林木展示台",
+                      "recipe":  "endbound_ember:jungle_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青金石展示台",
+                      "recipe":  "endbound_ember:lapis_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红树木展示台",
+                      "recipe":  "endbound_ember:mangrove_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "苔石展示台",
+                      "recipe":  "endbound_ember:mossy_cobblestone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "苔石砖展示台",
+                      "recipe":  "endbound_ember:mossy_stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "泥砖展示台",
+                      "recipe":  "endbound_ember:mud_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界砖展示台",
+                      "recipe":  "endbound_ember:nether_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "下界合金展示台",
+                      "recipe":  "endbound_ember:netherite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橡木展示台",
+                      "recipe":  "endbound_ember:oak_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "氧化的切制铜展示台",
+                      "recipe":  "endbound_ember:oxidized_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "浮冰砖展示台",
+                      "recipe":  "endbound_ember:packed_ice_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制安山岩展示台",
+                      "recipe":  "endbound_ember:polished_andesite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制黑石砖展示台",
+                      "recipe":  "endbound_ember:polished_blackstone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制黑石展示台",
+                      "recipe":  "endbound_ember:polished_blackstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制方解石砖展示台",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制方解石展示台",
+                      "recipe":  "endbound_ember:polished_calcite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制深板岩展示台",
+                      "recipe":  "endbound_ember:polished_deepslate_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制闪长岩展示台",
+                      "recipe":  "endbound_ember:polished_diorite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制花岗岩展示台",
+                      "recipe":  "endbound_ember:polished_granite_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "磨制凝灰岩展示台",
+                      "recipe":  "endbound_ember:polished_tuff_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "海晶石砖展示台",
+                      "recipe":  "endbound_ember:prismarine_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "海晶石展示台",
+                      "recipe":  "endbound_ember:prismarine_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫珀展示台",
+                      "recipe":  "endbound_ember:purpur_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石英展示台",
+                      "recipe":  "endbound_ember:quartz_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红色下界砖展示台",
+                      "recipe":  "endbound_ember:red_nether_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红砂岩展示台",
+                      "recipe":  "endbound_ember:red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "红石展示台",
+                      "recipe":  "endbound_ember:redstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "砂岩展示台",
+                      "recipe":  "endbound_ember:sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑石英展示台",
+                      "recipe":  "endbound_ember:smooth_quartz_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑红砂岩展示台",
+                      "recipe":  "endbound_ember:smooth_red_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑砂岩展示台",
+                      "recipe":  "endbound_ember:smooth_sandstone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "平滑石头展示台",
+                      "recipe":  "endbound_ember:smooth_stone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "雪砖展示台",
+                      "recipe":  "endbound_ember:snow_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "云杉木展示台",
+                      "recipe":  "endbound_ember:spruce_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石砖展示台",
+                      "recipe":  "endbound_ember:stone_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "石头展示台",
+                      "recipe":  "endbound_ember:stone_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "凝灰岩砖展示台",
+                      "recipe":  "endbound_ember:tuff_brick_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "凝灰岩展示台",
+                      "recipe":  "endbound_ember:tuff_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "诡异木展示台",
+                      "recipe":  "endbound_ember:warped_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的切制铜展示台",
+                      "recipe":  "endbound_ember:waxed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的斑驳切制铜展示台",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的氧化切制铜展示台",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "涂蜡的锈蚀切制铜展示台",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "锈蚀的切制铜展示台",
+                      "recipe":  "endbound_ember:weathered_cut_copper_display_pedestal",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:acacia_display_pedestal",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "展示台",
+    "sortnum":  60
+}

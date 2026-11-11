@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "QDQ",
+    " B ",
+    "QDQ"
+  ],
+  "key": {
+    "Q": {"item": "minecraft:quartz_block"},
+    "D": {"item": "minecraft:diamond"},
+    "B": {"item": "minecraft:book"}
+  },
+  "result": {
+    "id": "endbound_ember:disenchantment_table",
+    "count": 1
+  }
+}

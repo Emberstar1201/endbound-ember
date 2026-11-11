@@ -34,8 +34,9 @@ import java.util.function.Predicate;
  * {@link Issue} 列表，供动作栏提示与粒子高亮使用。</p>
  */
 public final class RitualAltar {
-    /** 环绕展示台距离中心的最大半径（7×7 外缘）。 */
+    /** 环绕展示台距离中心的最大半径。 */
     public static final int MAX_RADIUS = 3;
+    private static final int AMULET_BASE_RADIUS = 3;
 
     private static final Predicate<ItemStack> CORD =
             stack -> stack.is(EndboundEmber.STARDUST_CORD_BRACELET.get());
@@ -48,6 +49,8 @@ public final class RitualAltar {
     private static final Predicate<ItemStack> NETHER_STAR =
             stack -> stack.is(Items.NETHER_STAR);
     private static final Predicate<ItemStack> DAWN_BOOK = RitualAltar::hasDawnEnchantment;
+    private static final Predicate<ItemStack> DAWN_AMULET =
+            stack -> stack.is(EndboundEmber.DAWN_AMULET.get());
     private static final Predicate<ItemStack> ENCHANTED_APPLE =
             stack -> stack.is(Items.ENCHANTED_GOLDEN_APPLE);
     /** 任意花朵，凋零玫瑰除外 */
@@ -123,9 +126,18 @@ public final class RitualAltar {
             RitualType.AMULET, DAWN_BOOK, 1, 3, SlotMode.RING,
             EMBERSTARS, "item.endbound_ember.emberstar",
             BLAZE_POWDER, "item.minecraft.blaze_powder",
-            (level, pos, state) -> state.getLightEmission(level, pos) > 0
-                    && state.isCollisionShapeFullBlock(level, pos)
-                    && !state.is(Blocks.REDSTONE_LAMP),
+            RitualAltar::isLightFullBase,
+            false, 3, "block.endbound_ember.display_pedestal.base_light");
+
+    /**
+     * 阿娜希塔·晨曦·莉德尔护符：晨曦护符的上位仪式。
+     * 中心放晨曦护符，上下左右放虚无星尘，四个斜角放星尘，底座与晨曦护符仪式相同。
+     */
+    private static final Definition ANAHITA = new Definition(
+            RitualType.ANAHITA, DAWN_AMULET, 1, 3, SlotMode.RING,
+            EMBERSTARS, "item.endbound_ember.emberstar",
+            VOID_EMBERSTAR, "item.endbound_ember.void_emberstar",
+            RitualAltar::isLightFullBase,
             false, 3, "block.endbound_ember.display_pedestal.base_light");
 
     /** 生命之星：与合成配方同构，四角任意花朵、四边闪烁的西瓜片，底座为可种植的自然方块。 */
@@ -144,7 +156,7 @@ public final class RitualAltar {
             (level, pos, state) -> isNecroBaseBlock(state), true, 0,
             "block.endbound_ember.display_pedestal.base_necro");
 
-    private static final List<Definition> DEFINITIONS = List.of(HALO, AMULET, LIFE_STAR, HEROBRINE);
+    private static final List<Definition> DEFINITIONS = List.of(HALO, AMULET, ANAHITA, LIFE_STAR, HEROBRINE);
 
     private RitualAltar() {
     }
@@ -263,6 +275,9 @@ public final class RitualAltar {
     /** 校验底座层：底座半径固定时用定义值，跟随环半径时用当前半径。 */
     private static List<Issue> checkBase(Level level, BlockPos center, Definition definition, int radius) {
         int baseRadius = definition.baseFollowsRadius() ? radius : definition.baseRadius();
+        if (definition == AMULET || definition == ANAHITA) {
+            baseRadius = AMULET_BASE_RADIUS;
+        }
         BlockPos baseCenter = center.below();
         List<Issue> issues = new ArrayList<>();
         for (BlockPos base : BlockPos.betweenClosed(
@@ -272,6 +287,13 @@ public final class RitualAltar {
             }
         }
         return issues;
+    }
+
+    /** 发光完整方块：任意发光且碰撞箱完整的方块，红石灯除外。 */
+    private static boolean isLightFullBase(Level level, BlockPos pos, BlockState state) {
+        return state.getLightEmission(level, pos) > 0
+                && state.isCollisionShapeFullBlock(level, pos)
+                && !state.is(Blocks.REDSTONE_LAMP);
     }
 
     /** 下界 / 亡灵风格的底座方块白名单（含金块：金在下界象征猪灵供奉）。 */

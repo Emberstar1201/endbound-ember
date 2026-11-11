@@ -1,0 +1,662 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "玻璃造型",
+                      "item":  "endbound_ember:black_stained_glass_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "本條目列出模組新增的方塊變體，並展示對應的實際合成與切石機配方。"
+                  },
+                  {
+                      "title":  "黑色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:black_stained_glass_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:black_stained_glass_stairs_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黑色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:black_stained_glass_vertical_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:blue_stained_glass_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:blue_stained_glass_stairs_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "藍色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:blue_stained_glass_vertical_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:brown_stained_glass_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:brown_stained_glass_stairs_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "棕色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:brown_stained_glass_vertical_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_stairs_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "青色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_vertical_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "玻璃半磚",
+                      "recipe2":  "endbound_ember:glass_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "玻璃階梯",
+                      "recipe2":  "endbound_ember:glass_stairs_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "玻璃豎半磚",
+                      "recipe2":  "endbound_ember:glass_vertical_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:gray_stained_glass_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:gray_stained_glass_stairs_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "灰色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:gray_stained_glass_vertical_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:green_stained_glass_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:green_stained_glass_stairs_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "綠色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:green_stained_glass_vertical_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺藍色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺藍色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_stairs_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺藍色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_vertical_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺灰色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺灰色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_stairs_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "淺灰色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_vertical_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃綠色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:lime_stained_glass_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃綠色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:lime_stained_glass_stairs_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃綠色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:lime_stained_glass_vertical_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_stairs_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "洋紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_vertical_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:orange_stained_glass_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:orange_stained_glass_stairs_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "橙色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:orange_stained_glass_vertical_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:pink_stained_glass_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:pink_stained_glass_stairs_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "粉紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:pink_stained_glass_vertical_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:purple_stained_glass_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:purple_stained_glass_stairs_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紫色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:purple_stained_glass_vertical_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:red_stained_glass_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:red_stained_glass_stairs_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:red_stained_glass_vertical_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黑色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黑色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_stairs_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黑色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_vertical_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫藍色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫藍色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_stairs_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫藍色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_vertical_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫棕色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫棕色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_stairs_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫棕色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_vertical_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫青色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫青色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_stairs_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫青色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_glass_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_glass_stairs_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_glass_vertical_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫灰色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫灰色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_stairs_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫灰色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_vertical_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫綠色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫綠色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_stairs_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫綠色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_vertical_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺藍色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺藍色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_stairs_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺藍色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺灰色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺灰色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_stairs_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫淺灰色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃綠色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃綠色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_stairs_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃綠色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_vertical_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫洋紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫洋紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_stairs_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫洋紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫橙色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫橙色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_stairs_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫橙色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_vertical_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫粉紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫粉紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_stairs_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫粉紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_vertical_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紫色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紫色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_stairs_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紫色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_vertical_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紅色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紅色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_stairs_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫紅色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_vertical_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫遮光玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫遮光玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_stairs_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫遮光玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_vertical_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫白色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫白色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_stairs_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫白色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_vertical_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_stairs_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "無縫黃色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "遮光玻璃半磚",
+                      "recipe2":  "endbound_ember:tinted_glass_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "遮光玻璃階梯",
+                      "recipe2":  "endbound_ember:tinted_glass_stairs_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "遮光玻璃豎半磚",
+                      "recipe2":  "endbound_ember:tinted_glass_vertical_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:white_stained_glass_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:white_stained_glass_stairs_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "白色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:white_stained_glass_vertical_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色染色玻璃半磚",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色染色玻璃階梯",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_stairs_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "黃色染色玻璃豎半磚",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_vertical_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:black_stained_glass_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "玻璃造型",
+    "sortnum":  10
+}

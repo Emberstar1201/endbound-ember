@@ -1,0 +1,149 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Mineral Shapes",
+                      "item":  "endbound_ember:amethyst_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Amethyst Slab",
+                      "recipe":  "endbound_ember:amethyst_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Amethyst Stairs",
+                      "recipe":  "endbound_ember:amethyst_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Amethyst Vertical Slab",
+                      "recipe":  "endbound_ember:amethyst_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Copper Slab",
+                      "recipe":  "endbound_ember:copper_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Copper Stairs",
+                      "recipe":  "endbound_ember:copper_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Copper Vertical Slab",
+                      "recipe":  "endbound_ember:copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diamond Slab",
+                      "recipe":  "endbound_ember:diamond_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diamond Stairs",
+                      "recipe":  "endbound_ember:diamond_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diamond Vertical Slab",
+                      "recipe":  "endbound_ember:diamond_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Emerald Slab",
+                      "recipe":  "endbound_ember:emerald_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Emerald Stairs",
+                      "recipe":  "endbound_ember:emerald_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Emerald Vertical Slab",
+                      "recipe":  "endbound_ember:emerald_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gold Slab",
+                      "recipe":  "endbound_ember:gold_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gold Stairs",
+                      "recipe":  "endbound_ember:gold_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gold Vertical Slab",
+                      "recipe":  "endbound_ember:gold_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Iron Slab",
+                      "recipe":  "endbound_ember:iron_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Iron Stairs",
+                      "recipe":  "endbound_ember:iron_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Iron Vertical Slab",
+                      "recipe":  "endbound_ember:iron_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lapis Slab",
+                      "recipe":  "endbound_ember:lapis_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lapis Stairs",
+                      "recipe":  "endbound_ember:lapis_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lapis Vertical Slab",
+                      "recipe":  "endbound_ember:lapis_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Netherite Slab",
+                      "recipe":  "endbound_ember:netherite_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Netherite Stairs",
+                      "recipe":  "endbound_ember:netherite_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Netherite Vertical Slab",
+                      "recipe":  "endbound_ember:netherite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Redstone Slab",
+                      "recipe":  "endbound_ember:redstone_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Redstone Stairs",
+                      "recipe":  "endbound_ember:redstone_stairs",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Redstone Vertical Slab",
+                      "recipe":  "endbound_ember:redstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:amethyst_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Mineral Shapes",
+    "sortnum":  40
+}

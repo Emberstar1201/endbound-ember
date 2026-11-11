@@ -1,7 +1,9 @@
 package com.emberstar.endbounember.enchantment;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.emberstar.endbounember.Config;
 
@@ -33,15 +35,23 @@ public final class EnchantingTableRules {
         List<EnchantmentInstance> result = new ArrayList<>(candidates.size());
         int additions = 0;
 
+        Map<Holder<Enchantment>, EnchantmentInstance> uniqueCandidates = new LinkedHashMap<>();
         for (EnchantmentInstance candidate : candidates) {
+            uniqueCandidates.merge(candidate.enchantment, candidate,
+                    (first, second) -> first.level >= second.level ? first : second);
+        }
+
+        for (EnchantmentInstance candidate : uniqueCandidates.values()) {
             Holder<Enchantment> holder = candidate.enchantment;
-            if (existing.getLevel(holder) > 0) {
-                result.add(candidate);
+            int existingLevel = existing.getLevel(holder);
+            if (existingLevel > 0) {
+                if (candidate.level > existingLevel) result.add(candidate);
                 continue;
             }
-            if (existing.size() + additions >= max) break;
+            if (existing.size() + additions >= max) continue;
             boolean compatible = existing.keySet().stream()
-                    .allMatch(existingHolder -> Enchantment.areCompatible(holder, existingHolder));
+                    .allMatch(existingHolder -> Enchantment.areCompatible(holder, existingHolder))
+                    && result.stream().allMatch(accepted -> Enchantment.areCompatible(holder, accepted.enchantment));
             if (!compatible) continue;
             result.add(candidate);
             additions++;

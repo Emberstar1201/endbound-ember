@@ -1,7 +1,9 @@
 package com.emberstar.endbounember.world;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.emberstar.endbounember.Config;
@@ -16,8 +18,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -45,6 +49,8 @@ public final class FlywheelDash {
     private static final double MAX_VERTICAL = 0.5D;
     /** 抵达终点后额外保留的无敌帧。 */
     private static final int LINGER_TICKS = 20;
+    /** 冲刺结束后的额外无敌帧。 */
+    private static final int END_INVULNERABLE_TICKS = 5;
 
     private static final Map<UUID, DashState> DASHING = new HashMap<>();
     private static final Map<UUID, Boolean> WAS_ON_COOLDOWN = new HashMap<>();
@@ -57,8 +63,11 @@ public final class FlywheelDash {
         private final Vec3 direction;
         private final int totalTicks;
         private final boolean wasInvulnerable;
+        private final Set<UUID> hitEntities = new HashSet<>();
         private int ticksElapsed;
         private int lingerTicks;
+        private int endInvulnerableTicks;
+        private boolean ending;
 
         private DashState(Vec3 direction, int totalTicks, boolean wasInvulnerable) {
             this.direction = direction;
@@ -104,24 +113,39 @@ public final class FlywheelDash {
     }
 
     private static void updateDash(ServerPlayer player, DashState state) {
+        if (state.ending) {
+            state.endInvulnerableTicks++;
+            player.setInvulnerable(true);
+            if (state.endInvulnerableTicks >= END_INVULNERABLE_TICKS) {
+                stopDash(player, state);
+            }
+            return;
+        }
+
         state.ticksElapsed++;
 
         if (isInsideWall(player)) {
-            stopDash(player, state);
+            player.setDeltaMovement(Vec3.ZERO);
+            player.setInvulnerable(false);
+            player.hurt(player.damageSources().generic(), 1.0F);
+            player.setInvulnerable(true);
+            state.ending = true;
+            state.endInvulnerableTicks = 0;
             return;
         }
         if (state.ticksElapsed > state.totalTicks) {
             // 抵达终点后保留一段无敌帧，期间不再位移
             state.lingerTicks++;
             if (state.lingerTicks > LINGER_TICKS) {
-                stopDash(player, state);
-                return;
+                state.ending = true;
+                state.endInvulnerableTicks = 0;
             }
             player.setInvulnerable(true);
             return;
         }
 
         applyDashMotion(player, state);
+        damageCollidedEntities(player, state);
         spawnDashParticles(player.serverLevel(), player, state);
 
         if (state.ticksElapsed % 4 == 0) {
@@ -129,6 +153,16 @@ public final class FlywheelDash {
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.PHANTOM_FLAP, SoundSource.PLAYERS,
                     0.6F, 1.0F + level.random.nextFloat() * 0.3F);
+        }
+    }
+
+    private static void damageCollidedEntities(ServerPlayer player, DashState state) {
+        AABB area = player.getBoundingBox();
+        for (LivingEntity target : player.serverLevel().getEntitiesOfClass(LivingEntity.class, area,
+                entity -> entity != player && entity.isAlive() && !state.hitEntities.contains(entity.getUUID()))) {
+            if (target.hurt(player.damageSources().fellOutOfWorld(), 2.0F)) {
+                state.hitEntities.add(target.getUUID());
+            }
         }
     }
 
@@ -145,6 +179,9 @@ public final class FlywheelDash {
     private static void applyDashMotion(ServerPlayer player, DashState state) {
         Vec3 direction = state.direction;
         player.setDeltaMovement(direction.x * DASH_SPEED, direction.y * DASH_SPEED, direction.z * DASH_SPEED);
+        if (player.isSprinting()) {
+            player.getFoodData().setExhaustion(Math.max(0.0F, player.getFoodData().getExhaustionLevel() - 0.1F));
+        }
         player.setInvulnerable(true);
         // 告知客户端位置已被服务端修正，避免被判定为异常移动
         player.hurtMarked = true;

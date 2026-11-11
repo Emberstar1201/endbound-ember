@@ -46,6 +46,54 @@
     "subtitle": "subtitles.endbound_ember.time_chime",
     "sounds": ["endbound_ember:time_chime"]
   },
+  "spear_attack": {
+    "subtitle": "subtitles.endbound_ember.spear_attack",
+    "sounds": [
+      "endbound_ember:spear_attack1",
+      "endbound_ember:spear_attack2",
+      "endbound_ember:spear_attack3"
+    ]
+  },
+  "spear_hit": {
+    "subtitle": "subtitles.endbound_ember.spear_hit",
+    "sounds": [
+      "endbound_ember:spear_hit1",
+      "endbound_ember:spear_hit2",
+      "endbound_ember:spear_hit3"
+    ]
+  },
+  "spear_use": {
+    "subtitle": "subtitles.endbound_ember.spear_use",
+    "sounds": ["endbound_ember:spear_use"]
+  },
+  "spear_lunge": {
+    "subtitle": "subtitles.endbound_ember.spear_lunge",
+    "sounds": [
+      "endbound_ember:spear_lunge1",
+      "endbound_ember:spear_lunge2",
+      "endbound_ember:spear_lunge3"
+    ]
+  },
+  "spear_wood_attack": {
+    "subtitle": "subtitles.endbound_ember.spear_wood_attack",
+    "sounds": [
+      "endbound_ember:spear_wood_attack1",
+      "endbound_ember:spear_wood_attack2",
+      "endbound_ember:spear_wood_attack3"
+    ]
+  },
+  "spear_wood_hit": {
+    "subtitle": "subtitles.endbound_ember.spear_wood_hit",
+    "sounds": [
+      "endbound_ember:spear_wood_hit1",
+      "endbound_ember:spear_wood_hit2",
+      "endbound_ember:spear_wood_hit3"
+    ]
+  },
+  "spear_wood_use": {
+    "subtitle": "subtitles.endbound_ember.spear_wood_use",
+    "sounds": ["endbound_ember:spear_wood_use"]
+  },
   "herobrine_boss_music": {
     "sounds": [
       {

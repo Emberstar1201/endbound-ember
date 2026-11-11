@@ -108,7 +108,7 @@ public class SwordOfTheFreeWillItem extends Item {
             builder.add(Attributes.ARMOR_TOUGHNESS, modifier(ARMOR_TOUGHNESS_ID, armorToughnessBonus),
                     EquipmentSlotGroup.MAINHAND);
         }
-        return builder.build();
+        return builder.build().withTooltip(false);
     }
 
     private static AttributeModifier modifier(ResourceLocation id, double amount) {
@@ -124,6 +124,9 @@ public class SwordOfTheFreeWillItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
             TooltipFlag flag) {
+        tooltip.add(Component.translatable(this.enhanced
+                ? "item.endbound_ember.sword_of_the_free_will_enhanced.attack_speed"
+                : "item.endbound_ember.sword_of_the_free_will.attack_speed"));
         // 拂晓成长数值由 DawnEnchantment 统一追加。
         if (this.enhanced) {
             tooltip.add(Component.translatable("item.endbound_ember.sword_of_the_free_will_enhanced.human_will")
@@ -163,7 +166,7 @@ public class SwordOfTheFreeWillItem extends Item {
 
     /**
      * 随普通攻击挥出剑气：白火为 100%（晨映之花 350%），
-     * 强化版固有技能使剑气固定为 1000% 且必定暴击、无视护甲的蓝火。
+     * 强化版固有技能使剑气固定为 500% 且必定暴击、无视护甲的蓝火。
      */
     private void castQi(ServerLevel level, ServerPlayer player, ItemStack stack) {
         boolean blue = this.enhanced;

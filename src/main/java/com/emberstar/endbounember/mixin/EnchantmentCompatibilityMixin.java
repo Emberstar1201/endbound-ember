@@ -19,7 +19,7 @@ public abstract class EnchantmentCompatibilityMixin {
         if (Config.BETTER_LUCK_ENCHANTMENT.get()
                 && isVanillaEnchantment(first)
                 && isVanillaEnchantment(second)) {
-            cir.setReturnValue(true);
+            cir.setReturnValue(!first.equals(second));
         }
     }
 

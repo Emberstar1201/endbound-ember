@@ -1,5 +1,7 @@
 package com.emberstar.endbounember;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 
 import com.emberstar.endbounember.enchantment.AllNatureReviveEnchantment;
@@ -36,6 +38,7 @@ import com.emberstar.endbounember.item.StardustWitchHaloItem;
 import com.emberstar.endbounember.item.TimeHaloItem;
 import com.emberstar.endbounember.item.StarlightStarItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
+import com.emberstar.endbounember.item.SpearItem;
 import com.emberstar.endbounember.item.UnownedStardustItem;
 import com.emberstar.endbounember.item.VoidStarItem;
 import com.emberstar.endbounember.block.SeamlessGlassBlock;
@@ -57,8 +60,20 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.tags.BlockTags;
+import net.neoforged.neoforge.common.SimpleTier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
@@ -145,6 +160,17 @@ public class EndboundEmber {
                                         blocks.toArray(new Block[0]))
                                 .build(null);
                     });
+
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.DisenchantmentTableBlock> DISENCHANTMENT_TABLE =
+            BLOCKS.registerBlock("disenchantment_table", com.emberstar.endbounember.block.DisenchantmentTableBlock::new,
+                    BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(4.0F).noOcclusion());
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> DISENCHANTMENT_TABLE_ITEM =
+            ITEMS.registerSimpleBlockItem("disenchantment_table", DISENCHANTMENT_TABLE);
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>,
+            net.minecraft.world.level.block.entity.BlockEntityType<com.emberstar.endbounember.block.DisenchantmentTableBlockEntity>>
+            DISENCHANTMENT_TABLE_BLOCK_ENTITY = BLOCK_ENTITIES.register("disenchantment_table",
+                    () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
+                            .of(com.emberstar.endbounember.block.DisenchantmentTableBlockEntity::new, DISENCHANTMENT_TABLE.get()).build(null));
 
     /** 亡者之柱：Herobrine 第二阶段召出的黑曜石柱，平摊本体伤害并有独立血条 */
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.DoomPillarBlock> DOOM_PILLAR =
@@ -916,6 +942,9 @@ public class EndboundEmber {
                     .persistent(Codec.INT)
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
+    public static final DeferredHolder<MenuType<?>, MenuType<com.emberstar.endbounember.menu.DisenchantmentTableMenu>> DISENCHANTMENT_TABLE_MENU =
+            MENU_TYPES.register("disenchantment_table", () -> IMenuTypeExtension.create(
+                    com.emberstar.endbounember.menu.DisenchantmentTableMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.emberstar.endbounember.entity.ZombieGirl.CompanionMenu>> COMPANION_MENU =
             MENU_TYPES.register("companion_inventory", () -> IMenuTypeExtension.create((id, inventory, buffer) ->
                     new com.emberstar.endbounember.entity.ZombieGirl.CompanionMenu(id, inventory, buffer.readVarInt())));
@@ -961,6 +990,11 @@ public class EndboundEmber {
     /** 晨曦护符的获取仪式：环绕展示台数量（上下左右 + 四个斜角） */
     public static final int AMULET_RITUAL_PEDESTAL_COUNT = 8;
 
+    /** 阿娜希塔·晨曦·莉德尔护符的获取仪式：动画总时长（tick），15 秒 */
+    public static final int ANAHITA_RITUAL_DURATION = 300;
+    /** 阿娜希塔·晨曦·莉德尔护符的获取仪式：动画结束前多少 tick 完成护符替换 */
+    public static final int ANAHITA_RITUAL_SWAP_TICK = 280;
+
     /** 生命之星的获取仪式：动画总时长（tick），15 秒 */
     public static final int LIFE_STAR_RITUAL_DURATION = 300;
     /** 生命之星的获取仪式：动画结束前多少 tick 完成替换 */
@@ -995,6 +1029,60 @@ public class EndboundEmber {
 
     // 友好生物标签（与 minecraft:friendly_mobs 内容一致，供本模组实体直接绑定）
     public static final TagKey<EntityType<?>> FRIENDLY_MOB_TAG = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "friendly_mobs"));
+
+    // 铜工具介于石制与铁制之间：保留石制的掉落门槛（可采石及铁矿），但比铁制更低。
+    private static final Tier COPPER_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_STONE_TOOL, 190, 5.0F, 1.0F, 13,
+            () -> Ingredient.of(Items.COPPER_INGOT));
+
+    public static final DeferredItem<SwordItem> COPPER_SWORD = ITEMS.register("copper_sword",
+            () -> new SwordItem(COPPER_TIER, new Item.Properties().attributes(SwordItem.createAttributes(COPPER_TIER, 3, -2.4F))));
+    public static final DeferredItem<SpearItem> WOODEN_SPEAR = ITEMS.register("wooden_spear",
+            () -> new SpearItem(new Item.Properties().durability(59)
+                    .attributes(SwordItem.createAttributes(Tiers.WOOD, 2.0F, -2.9F)), true));
+    public static final DeferredItem<SpearItem> STONE_SPEAR = ITEMS.register("stone_spear",
+            () -> new SpearItem(new Item.Properties().durability(131)
+                    .attributes(SwordItem.createAttributes(Tiers.STONE, 3.0F, -2.9F))));
+    public static final DeferredItem<SpearItem> COPPER_SPEAR = ITEMS.register("copper_spear",
+            () -> new SpearItem(new Item.Properties().durability(190)
+                    .attributes(SwordItem.createAttributes(COPPER_TIER, 3.5F, -2.9F))));
+    public static final DeferredItem<SpearItem> IRON_SPEAR = ITEMS.register("iron_spear",
+            () -> new SpearItem(new Item.Properties().durability(250)
+                    .attributes(SwordItem.createAttributes(Tiers.IRON, 4.0F, -2.9F))));
+    public static final DeferredItem<SpearItem> GOLDEN_SPEAR = ITEMS.register("golden_spear",
+            () -> new SpearItem(new Item.Properties().durability(32)
+                    .attributes(SwordItem.createAttributes(Tiers.GOLD, 2.0F, -2.9F))));
+    public static final DeferredItem<SpearItem> DIAMOND_SPEAR = ITEMS.register("diamond_spear",
+            () -> new SpearItem(new Item.Properties().durability(1561)
+                    .attributes(SwordItem.createAttributes(Tiers.DIAMOND, 5.0F, -2.9F))));
+    public static final DeferredItem<SpearItem> NETHERITE_SPEAR = ITEMS.register("netherite_spear",
+            () -> new SpearItem(new Item.Properties().durability(2031)
+                    .fireResistant().attributes(SwordItem.createAttributes(Tiers.NETHERITE, 6.0F, -2.9F))));
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_ATTACK = registerSound("spear_attack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_HIT = registerSound("spear_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_USE = registerSound("spear_use");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_LUNGE = registerSound("spear_lunge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_ATTACK = registerSound("spear_wood_attack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_HIT = registerSound("spear_wood_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPEAR_WOOD_USE = registerSound("spear_wood_use");
+    public static final DeferredItem<PickaxeItem> COPPER_PICKAXE = ITEMS.register("copper_pickaxe",
+            () -> new PickaxeItem(COPPER_TIER, new Item.Properties().attributes(PickaxeItem.createAttributes(COPPER_TIER, 1, -2.8F))));
+    public static final DeferredItem<AxeItem> COPPER_AXE = ITEMS.register("copper_axe",
+            () -> new AxeItem(COPPER_TIER, new Item.Properties().attributes(AxeItem.createAttributes(COPPER_TIER, 6, -3.1F))));
+    public static final DeferredItem<ShovelItem> COPPER_SHOVEL = ITEMS.register("copper_shovel",
+            () -> new ShovelItem(COPPER_TIER, new Item.Properties().attributes(ShovelItem.createAttributes(COPPER_TIER, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> COPPER_HOE = ITEMS.register("copper_hoe",
+            () -> new HoeItem(COPPER_TIER, new Item.Properties().attributes(HoeItem.createAttributes(COPPER_TIER, -2, -1.0F))));
+
+    public static final DeferredItem<ArmorItem> COPPER_HELMET = ITEMS.register("copper_helmet",
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.HELMET, new Item.Properties().durability(121)));
+    public static final DeferredItem<ArmorItem> COPPER_CHESTPLATE = ITEMS.register("copper_chestplate",
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(176)));
+    public static final DeferredItem<ArmorItem> COPPER_LEGGINGS = ITEMS.register("copper_leggings",
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(165)));
+    public static final DeferredItem<ArmorItem> COPPER_BOOTS = ITEMS.register("copper_boots",
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.BOOTS, new Item.Properties().durability(143)));
 
     public static final DeferredItem<Item> LIFE_STAR = ITEMS.register("life_star",
             () -> new LifeStarItem(new Item.Properties().stacksTo(1)));
@@ -1136,17 +1224,17 @@ public class EndboundEmber {
         }
     }
 
-    // 人权剑：攻击伤害 30 / 攻速 4.5 / 护甲 10（属性值为相对玩家基础值的偏移）
+    // 人权剑：基础攻击伤害 20 / 攻速 3.5 / 护甲 10（属性值为相对玩家基础值的偏移）
     public static final DeferredItem<SwordOfTheFreeWillItem> SWORD_OF_THE_FREE_WILL = ITEMS.register(
             "sword_of_the_free_will", () -> new SwordOfTheFreeWillItem(false, new Item.Properties()
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
-                    .attributes(SwordOfTheFreeWillItem.attributes(29.0D, 0.5D, 10.0D, 0.0D))));
+                    .attributes(SwordOfTheFreeWillItem.attributes(19.0D, -0.5D, 10.0D, 0.0D))));
 
-    // 人权剑·星火永燃：攻击伤害 40 / 攻速 4.5 / 护甲 100 / 盔甲韧性 25
+    // 人权剑·星火永燃：基础攻击伤害 30 / 攻速 4.5 / 护甲 100 / 盔甲韧性 25
     public static final DeferredItem<SwordOfTheFreeWillItem> SWORD_OF_THE_FREE_WILL_ENHANCED = ITEMS.register(
             "sword_of_the_free_will_enhanced", () -> new SwordOfTheFreeWillItem(true, new Item.Properties()
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
-                    .attributes(SwordOfTheFreeWillItem.attributes(39.0D, 0.5D, 100.0D, 25.0D))));
+                    .attributes(SwordOfTheFreeWillItem.attributes(29.0D, 0.5D, 100.0D, 25.0D))));
 
     // 晨曦之星：击败 Herobrine 后掉落，锻造升级素材
     public static final DeferredItem<Item> DAWN_STAR = ITEMS.registerSimpleItem("dawn_star",
@@ -1163,7 +1251,18 @@ public class EndboundEmber {
 
     public static final DeferredItem<Item> VOID_EMBERSTAR = ITEMS.registerSimpleItem("void_emberstar");
 
-    public static final DeferredItem<SpawnEggItem> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg",
+    public static final DeferredItem<Item> CIVILIAN_RATION = ITEMS.registerSimpleItem("civilian_ration");
+    public static final DeferredItem<Item> MILITARY_RATION = ITEMS.registerSimpleItem("military_ration");
+    // 面粉不可食用；炒面 1 点饥饿值 / 1 点饱和度；湿炒面 2 点饥饿值 / 1.5 点饱和度
+    public static final DeferredItem<Item> FLOUR = ITEMS.registerSimpleItem("flour");
+    public static final DeferredItem<com.emberstar.endbounember.item.DryFriedFlourItem> DRY_FRIED_FLOUR = ITEMS.register("dry_fried_flour",
+            () -> new com.emberstar.endbounember.item.DryFriedFlourItem(new Item.Properties()
+                    .food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.5F).build())));
+    public static final DeferredItem<Item> WET_FRIED_FLOUR = ITEMS.register("wet_fried_flour",
+            () -> new Item(new Item.Properties()
+                    .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.375F).build())));
+
+    public static final DeferredItem<SpawnEggItem> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg", 
             () -> new SpawnEggItem(ModEntities.ZOMBIE_GIRL.get(), 0x4A5B4A, 0xB7B7B7, new Item.Properties()));
     public static final DeferredItem<SpawnEggItem> DROWNED_GIRL_SPAWN_EGG = ITEMS.register("drowned_girl_spawn_egg",
             () -> new SpawnEggItem(ModEntities.DROWNED_GIRL.get(), 0x2B5D66, 0x5AB5D1, new Item.Properties()));
@@ -1178,6 +1277,16 @@ public class EndboundEmber {
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .icon(() -> VOID_EMBERSTAR.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
+                        output.accept(COPPER_SWORD.get());
+                        output.accept(IRON_SPEAR.get());
+                        output.accept(COPPER_PICKAXE.get());
+                        output.accept(COPPER_AXE.get());
+                        output.accept(COPPER_SHOVEL.get());
+                        output.accept(COPPER_HOE.get());
+                        output.accept(COPPER_HELMET.get());
+                        output.accept(COPPER_CHESTPLATE.get());
+                        output.accept(COPPER_LEGGINGS.get());
+                        output.accept(COPPER_BOOTS.get());
                         output.accept(LIFE_STAR.get());
                         output.accept(END_STAR.get());
                         output.accept(OCEAN_STAR.get());
@@ -1201,9 +1310,24 @@ public class EndboundEmber {
                         output.accept(DAWN_AMULET.get());
                         output.accept(ANAHITA_FIRSTLIGHT_LIDDELL.get());
                         output.accept(LUO_HONGYU.get());
-                        ItemStack guideBook = createGuideBook();
+                        ItemStack guideBook = createGuideBookForGift();
                         if (!guideBook.isEmpty()) output.accept(guideBook);
                     }).build());
+
+    // 食物分区：五种新增物品，图标暂用面粉
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FOOD_TAB =
+            CREATIVE_MODE_TABS.register("food",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup.endbound_ember.food"))
+                            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+                            .icon(() -> FLOUR.get().getDefaultInstance())
+                            .displayItems((parameters, output) -> {
+                                output.accept(FLOUR.get());
+                                output.accept(DRY_FRIED_FLOUR.get());
+                                output.accept(WET_FRIED_FLOUR.get());
+                                output.accept(CIVILIAN_RATION.get());
+                                output.accept(MILITARY_RATION.get());
+                            }).build());
 
     // 建筑分区：竖半砖与展示台，图标使用展示台
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BUILDING_TAB =
@@ -1410,7 +1534,7 @@ public class EndboundEmber {
      * 构建《终界之书》：帕秋莉手册本体 + patchouli:book 组件。
      * 帕秋莉是软依赖，未安装时返回空栈，避免在分区里塞入无法打开的物品。
      */
-    private static ItemStack createGuideBook() {
+    public static ItemStack createGuideBookForGift() {
         if (!ModList.get().isLoaded("patchouli")) return ItemStack.EMPTY;
         Item guideBook = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("patchouli", "guide_book"));
         if (guideBook == null || guideBook == Items.AIR) return ItemStack.EMPTY;
@@ -1438,6 +1562,8 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.SwordParryPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.DualWieldAttackPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -1461,6 +1587,7 @@ public class EndboundEmber {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -1471,7 +1598,24 @@ public class EndboundEmber {
 
     /** 冰砖、雪砖及其楼梯注入原版建筑方块分区，作为砖块家族插在泥砖墙之后 */
     private void addCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(COPPER_PICKAXE.get());
+            event.accept(COPPER_AXE.get());
+            event.accept(COPPER_SHOVEL.get());
+            event.accept(COPPER_HOE.get());
+        }
+
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(COPPER_SWORD.get());
+            event.accept(IRON_SPEAR.get());
+            event.accept(COPPER_HELMET.get());
+            event.accept(COPPER_CHESTPLATE.get());
+            event.accept(COPPER_LEGGINGS.get());
+            event.accept(COPPER_BOOTS.get());
+        }
+
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(DISENCHANTMENT_TABLE_ITEM.get());
             ItemStack packedIceBricks = PACKED_ICE_BRICKS_ITEM.get().getDefaultInstance();
             ItemStack packedIceBrickStairs = PACKED_ICE_BRICK_STAIRS_ITEM.get().getDefaultInstance();
             ItemStack snowBricks = SNOW_BRICKS_ITEM.get().getDefaultInstance();

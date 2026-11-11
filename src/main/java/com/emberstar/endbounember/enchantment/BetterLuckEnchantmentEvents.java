@@ -9,11 +9,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
 
 /**
- * 按书架数量逐步改善三个附魔档位的候选等级。
+ * 按书架数量逐步提高三个附魔档位的菜单费用及候选生成等级。
  *
- * <p>这里只抬高原版用于筛选候选附魔的等级，不直接写入任何附魔，
- * 因此附魔池、兼容性、单附魔最大等级仍完全由原版控制；
- * 等级提高后，原版自带的“多附魔”判定也会自然多给附魔数量。</p>
+ * <p>事件值同时用于菜单等级门槛和候选生成，不直接写入附魔，
+ * 也不改变点击时按档位扣除的等级数。候选仍经过附魔池、兼容性及数量过滤。</p>
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class BetterLuckEnchantmentEvents {
@@ -22,7 +21,7 @@ public final class BetterLuckEnchantmentEvents {
      * 分别对应原版 15 书架时三档的理论上限，第三档保持 30 级，
      * 避免提高满级附魔台的等级消耗，也避免出现原版不存在的附魔等级。
      */
-    private static final int[] MAX_LEVEL_BY_ROW = {0, 13, 25, 30};
+    private static final int[] MAX_LEVEL_BY_ROW = {13, 25, 30};
 
     private BetterLuckEnchantmentEvents() {
     }
@@ -33,7 +32,7 @@ public final class BetterLuckEnchantmentEvents {
         if (!Config.BETTER_LUCK_ENCHANTMENT.get()) return;
 
         int row = event.getEnchantRow();
-        if (row < 1 || row >= MAX_LEVEL_BY_ROW.length) return;
+        if (row < 0 || row >= MAX_LEVEL_BY_ROW.length) return;
 
         int level = event.getEnchantLevel();
         // 费用为 0 的档位原本不可用，不做解锁，避免凭空多出一个附魔选项。
@@ -49,6 +48,6 @@ public final class BetterLuckEnchantmentEvents {
         if (random.nextInt(100) >= chancePercent) return;
 
         // 只做小幅提升并受档位上限约束，不会出现经验修补泛滥或保护 V 这类原版之外的结果。
-        event.setEnchantLevel(Math.min(MAX_LEVEL_BY_ROW[row], level + bonus));
+        event.setEnchantLevel(Math.max(level, Math.min(MAX_LEVEL_BY_ROW[row], level + bonus)));
     }
 }

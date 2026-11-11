@@ -1,6 +1,7 @@
 package com.emberstar.endbounember.world;
 
 import com.emberstar.endbounember.Config;
+import com.emberstar.endbounember.enchantment.DawnEnchantment;
 import com.emberstar.endbounember.EndboundEmber;
 
 import com.emberstar.endbounember.network.SwordParryPayload;
@@ -49,9 +50,10 @@ public final class SwordBlocking {
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
-        if (!Config.SWORD_BLOCKING_ENABLED.get()) return;
         Player player = event.getEntity();
+        if (!Config.SWORD_BLOCKING_ENABLED.get()) return;
         if (player.isSpectator() || player.isUsingItem()) return;
+        if (DawnEnchantment.hasFullEnergy(player)) return;
         // 副手拿着盾牌时优先举盾，不抢原版盾牌
         if (player.getOffhandItem().getItem() instanceof ShieldItem) return;
         if (!isBlockingSword(event.getItemStack())) return;

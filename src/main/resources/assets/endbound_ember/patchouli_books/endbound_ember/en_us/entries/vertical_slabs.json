@@ -1,0 +1,761 @@
+﻿{
+    "pages":  [
+                  {
+                      "title":  "Vertical Slabs",
+                      "item":  "endbound_ember:acacia_vertical_slab",
+                      "type":  "patchouli:spotlight",
+                      "text":  "This entry lists the added block variants with their actual crafting and stonecutting recipes."
+                  },
+                  {
+                      "title":  "Acacia Vertical Slab",
+                      "recipe":  "endbound_ember:acacia_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Amethyst Vertical Slab",
+                      "recipe":  "endbound_ember:amethyst_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Andesite Vertical Slab",
+                      "recipe2":  "endbound_ember:andesite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:andesite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Bamboo Mosaic Vertical Slab",
+                      "recipe":  "endbound_ember:bamboo_mosaic_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Bamboo Vertical Slab",
+                      "recipe":  "endbound_ember:bamboo_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Birch Vertical Slab",
+                      "recipe":  "endbound_ember:birch_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:black_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:black_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Black Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:black_stained_glass_vertical_slab_from_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blackstone Vertical Slab",
+                      "recipe2":  "endbound_ember:blackstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:blackstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:blue_stained_glass_vertical_slab_from_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brick Vertical Slab",
+                      "recipe2":  "endbound_ember:brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:brown_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:brown_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Brown Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:brown_stained_glass_vertical_slab_from_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Calcite Vertical Slab",
+                      "recipe2":  "endbound_ember:calcite_vertical_slab_from_calcite_stonecutting",
+                      "recipe":  "endbound_ember:calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cherry Vertical Slab",
+                      "recipe":  "endbound_ember:cherry_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cobbled Deepslate Vertical Slab",
+                      "recipe2":  "endbound_ember:cobbled_deepslate_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cobbled_deepslate_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cobblestone Vertical Slab",
+                      "recipe2":  "endbound_ember:cobblestone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cobblestone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Copper Vertical Slab",
+                      "recipe":  "endbound_ember:copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cracked Stone Brick Vertical Slab",
+                      "recipe":  "endbound_ember:cracked_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Crimson Vertical Slab",
+                      "recipe":  "endbound_ember:crimson_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Red Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:cut_red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cut Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:cut_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:cut_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:cyan_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:cyan_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Cyan Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:cyan_stained_glass_vertical_slab_from_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Dark Oak Vertical Slab",
+                      "recipe":  "endbound_ember:dark_oak_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Dark Prismarine Vertical Slab",
+                      "recipe2":  "endbound_ember:dark_prismarine_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:dark_prismarine_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Deepslate Brick Vertical Slab",
+                      "recipe":  "endbound_ember:deepslate_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Deepslate Tiles Vertical Slab",
+                      "recipe2":  "endbound_ember:deepslate_tile_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:deepslate_tile_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diamond Vertical Slab",
+                      "recipe":  "endbound_ember:diamond_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Diorite Vertical Slab",
+                      "recipe2":  "endbound_ember:diorite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:diorite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Emerald Vertical Slab",
+                      "recipe":  "endbound_ember:emerald_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "End Stone Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:end_stone_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:end_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Exposed Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:exposed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:exposed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:glass_vertical_slab_from_glass_stonecutting",
+                      "recipe":  "endbound_ember:glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gold Vertical Slab",
+                      "recipe":  "endbound_ember:gold_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Granite Vertical Slab",
+                      "recipe2":  "endbound_ember:granite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:granite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:gray_stained_glass_vertical_slab_from_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:green_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:green_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Green Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:green_stained_glass_vertical_slab_from_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Iron Vertical Slab",
+                      "recipe":  "endbound_ember:iron_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Jungle Vertical Slab",
+                      "recipe":  "endbound_ember:jungle_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lapis Vertical Slab",
+                      "recipe":  "endbound_ember:lapis_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:light_blue_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:light_blue_stained_glass_vertical_slab_from_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:light_gray_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Light Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:light_gray_stained_glass_vertical_slab_from_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:lime_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:lime_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Lime Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:lime_stained_glass_vertical_slab_from_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:magenta_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:magenta_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Magenta Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:magenta_stained_glass_vertical_slab_from_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mangrove Vertical Slab",
+                      "recipe":  "endbound_ember:mangrove_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mossy Cobblestone Vertical Slab",
+                      "recipe2":  "endbound_ember:mossy_cobblestone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:mossy_cobblestone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mossy Stone Brick Vertical Slab",
+                      "recipe":  "endbound_ember:mossy_stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Mud Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:mud_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:mud_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Nether Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:nether_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:nether_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Netherite Vertical Slab",
+                      "recipe":  "endbound_ember:netherite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Oak Vertical Slab",
+                      "recipe":  "endbound_ember:oak_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:orange_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:orange_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Orange Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:orange_stained_glass_vertical_slab_from_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Oxidized Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:oxidized_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:oxidized_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Packed Ice Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:packed_ice_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:packed_ice_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:pink_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:pink_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Pink Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:pink_stained_glass_vertical_slab_from_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Andesite Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_andesite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_andesite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Blackstone Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_blackstone_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_blackstone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Blackstone Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_blackstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_blackstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_bricks_vertical_slab_from_polished_calcite_bricks_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_bricks_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Calcite Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_calcite_vertical_slab_from_polished_calcite_stonecutting",
+                      "recipe":  "endbound_ember:polished_calcite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Deepslate Vertical Slab",
+                      "recipe":  "endbound_ember:polished_deepslate_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Diorite Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_diorite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_diorite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Granite Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_granite_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_granite_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Polished Tuff Vertical Slab",
+                      "recipe2":  "endbound_ember:polished_tuff_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:polished_tuff_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Prismarine Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:prismarine_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:prismarine_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Prismarine Vertical Slab",
+                      "recipe2":  "endbound_ember:prismarine_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:prismarine_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:purple_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:purple_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purple Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:purple_stained_glass_vertical_slab_from_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Purpur Vertical Slab",
+                      "recipe2":  "endbound_ember:purpur_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:purpur_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Quartz Vertical Slab",
+                      "recipe":  "endbound_ember:quartz_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:red_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:red_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Nether Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:red_nether_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:red_nether_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Red Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:red_stained_glass_vertical_slab_from_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Redstone Vertical Slab",
+                      "recipe":  "endbound_ember:redstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Black Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_black_stained_glass_vertical_slab_from_seamless_black_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_black_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_blue_stained_glass_vertical_slab_from_seamless_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Brown Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_brown_stained_glass_vertical_slab_from_seamless_brown_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_brown_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Cyan Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab_from_seamless_cyan_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_cyan_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_glass_vertical_slab_from_seamless_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_gray_stained_glass_vertical_slab_from_seamless_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Green Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_green_stained_glass_vertical_slab_from_seamless_green_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_green_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Blue Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab_from_seamless_light_blue_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_blue_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Light Gray Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab_from_seamless_light_gray_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_light_gray_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Lime Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_lime_stained_glass_vertical_slab_from_seamless_lime_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_lime_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Magenta Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab_from_seamless_magenta_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_magenta_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Orange Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_orange_stained_glass_vertical_slab_from_seamless_orange_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_orange_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Pink Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_pink_stained_glass_vertical_slab_from_seamless_pink_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_pink_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Purple Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_purple_stained_glass_vertical_slab_from_seamless_purple_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_purple_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Red Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_red_stained_glass_vertical_slab_from_seamless_red_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_red_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Tinted Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_tinted_glass_vertical_slab_from_seamless_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless White Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_white_stained_glass_vertical_slab_from_seamless_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Seamless Yellow Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab_from_seamless_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:seamless_yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Quartz Vertical Slab",
+                      "recipe":  "endbound_ember:smooth_quartz_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Red Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:smooth_red_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:smooth_red_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Sandstone Vertical Slab",
+                      "recipe2":  "endbound_ember:smooth_sandstone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:smooth_sandstone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Smooth Stone Vertical Slab",
+                      "recipe":  "endbound_ember:smooth_stone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Snow Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:snow_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:snow_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Spruce Vertical Slab",
+                      "recipe":  "endbound_ember:spruce_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Stone Brick Vertical Slab",
+                      "recipe":  "endbound_ember:stone_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Stone Vertical Slab",
+                      "recipe2":  "endbound_ember:stone_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:stone_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tinted Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:tinted_glass_vertical_slab_from_tinted_glass_stonecutting",
+                      "recipe":  "endbound_ember:tinted_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tuff Bricks Vertical Slab",
+                      "recipe2":  "endbound_ember:tuff_brick_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:tuff_brick_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Tuff Vertical Slab",
+                      "recipe2":  "endbound_ember:tuff_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:tuff_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Warped Vertical Slab",
+                      "recipe":  "endbound_ember:warped_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:waxed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Cut Copper Vertical Slab",
+                      "recipe":  "endbound_ember:waxed_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Exposed Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Exposed Cut Copper Vertical Slab",
+                      "recipe":  "endbound_ember:waxed_exposed_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Oxidized Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Oxidized Cut Copper Vertical Slab",
+                      "recipe":  "endbound_ember:waxed_oxidized_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Weathered Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Waxed Weathered Cut Copper Vertical Slab",
+                      "recipe":  "endbound_ember:waxed_weathered_cut_copper_vertical_slab_wax",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Weathered Cut Copper Vertical Slab",
+                      "recipe2":  "endbound_ember:weathered_cut_copper_vertical_slab_stonecutter",
+                      "recipe":  "endbound_ember:weathered_cut_copper_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:white_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:white_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "White Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:white_stained_glass_vertical_slab_from_white_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:white_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Concrete Vertical Slab",
+                      "recipe2":  "endbound_ember:yellow_concrete_vertical_slab_from_concrete_stonecutting",
+                      "recipe":  "endbound_ember:yellow_concrete_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  },
+                  {
+                      "title":  "Yellow Stained Glass Vertical Slab",
+                      "recipe2":  "endbound_ember:yellow_stained_glass_vertical_slab_from_yellow_stained_glass_stonecutting",
+                      "recipe":  "endbound_ember:yellow_stained_glass_vertical_slab",
+                      "type":  "patchouli:crafting"
+                  }
+              ],
+    "icon":  "endbound_ember:acacia_vertical_slab",
+    "category":  "endbound_ember:building_blocks",
+    "name":  "Vertical Slabs",
+    "sortnum":  20
+}

@@ -1,0 +1,19 @@
+{
+  "name": "祛魔台",
+  "category": "endbound_ember:building_blocks",
+  "icon": "endbound_ember:disenchantment_table",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:disenchantment_table",
+      "title": "祛魔台",
+      "text": "用於從裝備上祛除附魔。由 4 個石英塊、2 顆鑽石和 1 本書合成。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "合成配方",
+      "recipe": "endbound_ember:disenchantment_table"
+    }
+  ]
+}

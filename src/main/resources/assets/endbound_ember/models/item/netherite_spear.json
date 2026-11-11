@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "endbound_ember:item/netherite_spear"
+  },
+  "overrides": [
+    {
+      "predicate": {"endbound_ember:in_gui": 1},
+      "model": "endbound_ember:item/netherite_spear_in_hand"
+    }
+  ]
+}
