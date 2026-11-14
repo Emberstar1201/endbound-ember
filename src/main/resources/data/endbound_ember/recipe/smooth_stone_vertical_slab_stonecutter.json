@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
   "ingredient": {"item": "minecraft:smooth_stone"},
-  "result": "endbound_ember:smooth_stone_vertical_slab",
-  "count": 2
+  "result": {
+    "id": "endbound_ember:smooth_stone_vertical_slab",
+    "count": 2
+  }
 }

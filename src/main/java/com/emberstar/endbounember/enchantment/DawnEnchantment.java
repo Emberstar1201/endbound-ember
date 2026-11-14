@@ -130,26 +130,34 @@ public final class DawnEnchantment {
     }
 
     public static double damageMultiplier(int level) {
-        return 1.0D + stat(level, 0.20D, 10.0D);
+        return 1.0D + stat(level, 0.15D, 2.0D);
     }
 
     public static double critChance(int level) {
-        return Math.min(1.0D, stat(level, 0.05D, 1.00D));
+        return Math.min(1.0D, stat(level, 0.05D, 0.35D));
     }
 
     public static double critMultiplier(int level) {
-        return 1.0D + stat(level, 0.50D, 1.50D);
+        return 1.0D + stat(level, 0.50D, 1.00D);
     }
 
     public static double rangeBonus(int level) {
-        return stat(level, 1.0D, 10.0D);
+        return stat(level, 1.0D, 2.5D);
     }
 
-    /** 等级 0 为 0，等级 1 为 atOne，等级 100 为 atMax，中间线性增长。 */
+    /** 成长曲线的指数：小于 1 时前段涨得快、后段趋于平缓。 */
+    private static final double GROWTH_EXPONENT = 0.65D;
+
+    /**
+     * 等级 0 为 0，等级 1 为 atOne，等级 100 为 atMax。
+     * 中间按 {@link #GROWTH_EXPONENT} 的指数曲线增长：前期提升明显，后期逐渐收敛，
+     * 避免满级时数值叠加过头导致一刀秒怪。
+     */
     private static double stat(int level, double atOne, double atMax) {
         if (level <= 0) return 0.0D;
         if (level >= MAX_LEVEL) return atMax;
-        return atOne + (atMax - atOne) * (level - 1) / (double) (MAX_LEVEL - 1);
+        double progress = (level - 1) / (double) (MAX_LEVEL - 1);
+        return atOne + (atMax - atOne) * Math.pow(progress, GROWTH_EXPONENT);
     }
 
     private static Holder<Enchantment> holder(Level level) {
@@ -284,7 +292,7 @@ public final class DawnEnchantment {
         resetEnergy(player);
 
         double attack = player.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float damage = (float) (attack * (4.0D + growth * 0.06D));
+        float damage = (float) (attack * (2.0D + growth * 0.02D));
         Vec3 eye = player.getEyePosition();
         Vec3 direction = player.getLookAngle().normalize();
         DamageSource source = level.damageSources().source(DAMAGE_TYPE, player);

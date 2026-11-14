@@ -1,0 +1,8 @@
+{
+  "type": "endbound_ember:ore_expansion",
+  "biomes": "#minecraft:is_mountain",
+  "features": [
+    "endbound_ember:extra_emerald"
+  ],
+  "step": "underground_ores"
+}

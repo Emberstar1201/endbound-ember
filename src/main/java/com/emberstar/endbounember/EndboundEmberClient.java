@@ -8,6 +8,8 @@ import com.emberstar.endbounember.compat.CuriosCompat;
 import com.emberstar.endbounember.compat.ysm.YsmAdapter;
 import com.emberstar.endbounember.compat.ysm.YsmHeadCapture;
 import com.emberstar.endbounember.compat.ysm.YsmHaloRenderer;
+import com.emberstar.endbounember.entity.HerobrineBossMusic;
+import com.emberstar.endbounember.network.BossMusicLengthPayload;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
@@ -30,6 +32,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -74,6 +78,16 @@ public class EndboundEmberClient {
         });
         EndboundEmber.LOGGER.info("HELLO FROM CLIENT SETUP");
         EndboundEmber.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+    }
+
+    /**
+     * 登录服务器后把本地实际播放的 BOSS 曲目时长告诉服务端。
+     * <p>自定义曲目只存在于客户端资源包，服务端读不到，若按自带曲目计时会在中途重播。</p>
+     */
+    @SubscribeEvent
+    static void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+        PacketDistributor.sendToServer(
+                new BossMusicLengthPayload(HerobrineBossMusic.localLoopTicks()));
     }
 
     /** 为时间乱流维度类型注册纯白天空与巨型时钟的天空特效 */

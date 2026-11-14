@@ -1,0 +1,9 @@
+{
+  "feature": "minecraft:ore_iron",
+  "placement": [
+    { "type": "endbound_ember:dynamic_ore_count", "ore": "endbound_ember:iron" },
+    { "type": "minecraft:in_square" },
+    { "type": "minecraft:height_range", "height": { "type": "minecraft:trapezoid", "min_inclusive": { "absolute": -24 }, "max_inclusive": { "absolute": 56 } } },
+    { "type": "minecraft:biome" }
+  ]
+}

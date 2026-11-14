@@ -1,0 +1,26 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "minecraft:totem_of_undying"},
+    "title": {
+      "translate": "advancements.endbound_ember.last_stand.title",
+      "color": "#FFB86F"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.last_stand.description",
+      "color": "#fffffb"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 10000
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

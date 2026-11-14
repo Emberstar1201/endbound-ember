@@ -1,0 +1,11 @@
+{
+  "type": "endbound_ember:ore_expansion",
+  "biomes": "#minecraft:is_nether",
+  "features": [
+    "endbound_ember:extra_ancient_debris",
+    "endbound_ember:extra_ancient_debris_small",
+    "endbound_ember:extra_nether_gold",
+    "endbound_ember:extra_quartz"
+  ],
+  "step": "underground_ores"
+}

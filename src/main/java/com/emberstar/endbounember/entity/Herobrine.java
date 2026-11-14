@@ -139,12 +139,6 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int REGEN_PAUSE_CAP = 600;
     /** 小怪回血加成的最大计入数量，封顶小怪乘区 */
     private static final int REGEN_MINION_CAP = 3;
-    /** 停滞穿透每级削减受击无敌帧的比例 */
-    private static final float INVULN_REDUCTION_PER_LEVEL = 0.2F;
-    /** 停滞穿透生效的最大等级 */
-    private static final int STAGNATION_PIERCE_MAX_LEVEL = 5;
-    /** 受击无敌帧的下限，保证不会被完全削没 */
-    private static final int MIN_INVULNERABLE_TICKS = 5;
     /** 呼唤亡灵：召唤间隔（tick），10 秒一波 */
     private static final int SUMMON_INTERVAL = 200;
     /** 判罚之雷 buff 的持续时间（tick）与刷新阈值 */
@@ -667,12 +661,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         boolean damaged = super.hurt(source, finalAmount);
         if (damaged) {
-            // 停滞穿透：按附魔等级削减受击无敌帧，任意武器可附
-            int pierceLevel = getStagnationPierceLevel(source);
-            float invulnScale = 1.0F
-                    - INVULN_REDUCTION_PER_LEVEL * Math.min(pierceLevel, STAGNATION_PIERCE_MAX_LEVEL);
-            this.invulnerableTime = Math.max(MIN_INVULNERABLE_TICKS,
-                    Math.round(HURT_INVULNERABLE_TICKS * invulnScale));
+            // Boss 自身受击后固定 60 tick 无敌帧；额外削减交由停滞穿透事件统一处理
+            this.invulnerableTime = HURT_INVULNERABLE_TICKS;
             // 通用受击抑制：任何玩家命中都会短暂拖延回血，不再只有亡灵杀手能压住再生
             if (source.getEntity() instanceof Player) {
                 this.regenPauseTicks = Math.min(REGEN_PAUSE_CAP, this.regenPauseTicks + HIT_REGEN_DELAY);
@@ -722,17 +712,6 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         return EnchantmentHelper.getEnchantmentLevel(
                 attacker.level().holderLookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SMITE),
-                attacker);
-    }
-
-    /** 攻击者手持武器上的停滞穿透等级 */
-    private static int getStagnationPierceLevel(DamageSource source) {
-        if (!(source.getEntity() instanceof LivingEntity attacker)) {
-            return 0;
-        }
-        return EnchantmentHelper.getEnchantmentLevel(
-                attacker.level().holderLookup(Registries.ENCHANTMENT)
-                        .getOrThrow(FreeWillEnchantments.STAGNATION_PIERCE),
                 attacker);
     }
 

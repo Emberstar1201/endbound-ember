@@ -28,7 +28,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 - **Sword blocking**: right-click blocking, damage reduction, perfect parry bar reset, and deflection of incoming arrows.
 - **Movement mechanics**: momentum glide, bunny hop, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
 - **Zoom and moving light**: hold C to zoom (rebindable); light-emitting blocks provide moving light when held.
-- **Built-in Flywheel Dash**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing.
+- **Built-in Ironclad Frame**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing. Hitting mobs deals kinetic impact, and the dash leaves residual momentum plus a Kinetic Release window.
 - **Mob and world additions**: girls assist in defense, and the Time Turbulence biome is added.
 
 ## 1.2.0

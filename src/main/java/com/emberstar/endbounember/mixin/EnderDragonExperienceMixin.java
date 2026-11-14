@@ -31,17 +31,20 @@ import net.minecraft.world.phys.Vec3;
  * {@link EnderDragonEmpowerment#enqueueDragonExperience} 的分波掉落队列，
  * 在死亡位置逐颗掉落、上一颗被拾取后才生成下一颗，同一时刻只存在一颗球，
  * 从根本上避开合并与截断；玩家必须亲自到死亡点拾取，挂机不会分到经验。</p>
+ *
+ * <p>注入点全部声明 {@code require = 0}：原版方法名在某些混合端（如 Mohist/Youer）
+ * 无法解析时只记录警告，不再让整个服务端在 Bootstrap 阶段崩溃并回退到原版经验值。</p>
  */
 @Mixin(EnderDragon.class)
 public abstract class EnderDragonExperienceMixin {
     private static final String TAG_PENDING = "EndboundEmberDragonExperience";
 
-    @ModifyConstant(method = "tickDeath", constant = @Constant(intValue = 12000))
+    @ModifyConstant(method = "tickDeath", constant = @Constant(intValue = 12000), require = 0)
     private int endboundEmber$firstKillExperience(int original) {
         return 120000;
     }
 
-    @ModifyConstant(method = "tickDeath", constant = @Constant(intValue = 500))
+    @ModifyConstant(method = "tickDeath", constant = @Constant(intValue = 500), require = 0)
     private int endboundEmber$rebirthExperience(int original) {
         return 60000;
     }
@@ -50,7 +53,8 @@ public abstract class EnderDragonExperienceMixin {
             method = "tickDeath",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"))
+                    target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"),
+            require = 0)
     private static void endboundEmber$gatherExperience(ServerLevel level, Vec3 pos, int amount) {
         if (amount <= 0) return;
 
@@ -68,7 +72,7 @@ public abstract class EnderDragonExperienceMixin {
         data.putInt(TAG_PENDING, data.getInt(TAG_PENDING) + amount);
     }
 
-    @Inject(method = "tickDeath", at = @At("TAIL"))
+    @Inject(method = "tickDeath", at = @At("TAIL"), require = 0)
     private void endboundEmber$awardExperience(CallbackInfo ci) {
         EnderDragon self = (EnderDragon) (Object) this;
         CompoundTag data = self.getPersistentData();

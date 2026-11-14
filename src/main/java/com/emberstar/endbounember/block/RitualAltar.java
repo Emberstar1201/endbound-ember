@@ -101,12 +101,17 @@ public final class RitualAltar {
     /** 失败点类型。 */
     public enum IssueKind {
         MISSING_PEDESTAL,
+        /** 槽位旁有展示台，但没摆在要求的位置上。 */
+        OFFSET_PEDESTAL,
         WRONG_ITEM,
         BAD_BASE
     }
 
-    /** 一处失败点：坐标 + 期望内容。 */
-    public record Issue(BlockPos pos, IssueKind kind, String expectedKey) {
+    /** 一处失败点：坐标 + 期望内容；放偏时额外记录本应在的坐标。 */
+    public record Issue(BlockPos pos, IssueKind kind, String expectedKey, @Nullable BlockPos correctPos) {
+        public Issue(BlockPos pos, IssueKind kind, String expectedKey) {
+            this(pos, kind, expectedKey, null);
+        }
     }
 
     /** 扫描结果：成功时带 {@link Match}，失败时带诊断列表。 */
@@ -224,11 +229,11 @@ public final class RitualAltar {
             for (Slot slot : slots) {
                 BlockPos pos = center.offset(slot.dx(), 0, slot.dz());
                 if (!(level.getBlockState(pos).getBlock() instanceof DisplayPedestalBlock)) {
-                    issues.add(new Issue(pos, IssueKind.MISSING_PEDESTAL, slot.expectedKey()));
+                    issues.add(missingIssue(level, pos, slot.expectedKey()));
                     continue;
                 }
                 if (!(level.getBlockEntity(pos) instanceof DisplayPedestalBlockEntity pedestal)) {
-                    issues.add(new Issue(pos, IssueKind.MISSING_PEDESTAL, slot.expectedKey()));
+                    issues.add(missingIssue(level, pos, slot.expectedKey()));
                     continue;
                 }
                 if (!slot.expected().test(pedestal.getStoredItem())) {
@@ -246,6 +251,24 @@ public final class RitualAltar {
             }
         }
         return best != null ? best : new Result(null, List.of());
+    }
+
+    /**
+     * 槽位没有有效展示台时的诊断。若紧邻的格子有展示台，说明玩家只是摆偏了一格，
+     * 此时报告放偏的坐标与正确坐标，避免玩家误以为结构描述有误。
+     */
+    private static Issue missingIssue(Level level, BlockPos expected, String expectedKey) {
+        for (BlockPos nearby : BlockPos.betweenClosed(
+                expected.offset(-1, -1, -1), expected.offset(1, 1, 1))) {
+            if (nearby.equals(expected)) {
+                continue;
+            }
+            if (level.getBlockState(nearby).getBlock() instanceof DisplayPedestalBlock) {
+                return new Issue(nearby.immutable(), IssueKind.OFFSET_PEDESTAL,
+                        expectedKey, expected.immutable());
+            }
+        }
+        return new Issue(expected, IssueKind.MISSING_PEDESTAL, expectedKey);
     }
 
     /** 生成某个半径下的全部槽位。 */
@@ -337,6 +360,13 @@ public final class RitualAltar {
             case MISSING_PEDESTAL -> Component.translatable(
                     "block.endbound_ember.display_pedestal.issue_missing_pedestal",
                     pos.getX(), pos.getY(), pos.getZ());
+            case OFFSET_PEDESTAL -> {
+                BlockPos correct = issue.correctPos() != null ? issue.correctPos() : pos;
+                yield Component.translatable(
+                        "block.endbound_ember.display_pedestal.issue_offset_pedestal",
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        correct.getX(), correct.getY(), correct.getZ());
+            }
             case WRONG_ITEM -> Component.translatable(
                     "block.endbound_ember.display_pedestal.issue_wrong_item",
                     pos.getX(), pos.getY(), pos.getZ(), expected);

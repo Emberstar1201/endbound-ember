@@ -46,6 +46,13 @@ public final class HerobrineBossMusic {
     /** 玩家 UUID -> 距离下一次重新触发音乐的 tick 数 */
     private static final Map<UUID, Integer> REMAINING = new HashMap<>();
 
+    /**
+     * 玩家 UUID -> 客户端上报的实际曲目时长（tick）。
+     * <p>自定义曲目只存在于客户端资源包，服务端读不到对应 OGG，只能由客户端告知真实时长，
+     * 否则会按自带默认曲目的时长提前重播。</p>
+     */
+    private static final Map<UUID, Integer> CLIENT_LOOP_TICKS = new HashMap<>();
+
     /** 自带默认曲目在 mod 内的路径 */
     private static final String DEFAULT_MUSIC_PATH = "assets/endbound_ember/sounds/music/herobrine_boss_music.ogg";
 
@@ -176,7 +183,7 @@ public final class HerobrineBossMusic {
         Integer remaining = REMAINING.get(player.getUUID());
         if (remaining == null || remaining <= 0) {
             play(player);
-            REMAINING.put(player.getUUID(), (int) detectLoopTicks());
+            REMAINING.put(player.getUUID(), (int) detectLoopTicks(player));
             return;
         }
         REMAINING.put(player.getUUID(), remaining - 1);
@@ -197,14 +204,34 @@ public final class HerobrineBossMusic {
         return false;
     }
 
-    /** 优先读取 OGG 的实际时长，读不到时退回配置里的兜底值 */
-    private static long detectLoopTicks() {
+    /**
+     * 优先使用客户端上报的实际曲目时长；没有上报时才解析服务端本地文件。
+     * <p>专用服务器上没有玩家的自定义曲目，若按自带曲目时长循环会导致音乐中途重播。</p>
+     */
+    private static long detectLoopTicks(ServerPlayer player) {
+        Integer synced = CLIENT_LOOP_TICKS.get(player.getUUID());
+        if (synced != null && synced > 0) return synced;
+
         double seconds = readOggSeconds();
         if (seconds > 1.0D) {
             // 略微提前重触发，避免出现明显静音间隙
             return Math.max(20L, (long) (seconds * 20.0D));
         }
         return Math.max(20, Config.HEROBRINE_BOSS_MUSIC_LOOP_SECONDS.get() * 20);
+    }
+
+    /** 客户端实际播放曲目的时长（tick），由客户端在登录与换歌后上报给服务端 */
+    public static int localLoopTicks() {
+        double seconds = readOggSeconds();
+        if (seconds > 1.0D) {
+            return (int) Math.max(20L, (long) (seconds * 20.0D));
+        }
+        return Math.max(20, Config.HEROBRINE_BOSS_MUSIC_LOOP_SECONDS.get() * 20);
+    }
+
+    /** 接收客户端上报的曲目时长，限制在 1 秒到 1 小时之间，避免异常值 */
+    public static void setClientLoopTicks(ServerPlayer player, int ticks) {
+        CLIENT_LOOP_TICKS.put(player.getUUID(), Math.max(20, Math.min(ticks, 20 * 60 * 60)));
     }
 
     /**
@@ -319,6 +346,7 @@ public final class HerobrineBossMusic {
     @SubscribeEvent
     public static void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         REMAINING.remove(event.getEntity().getUUID());
+        CLIENT_LOOP_TICKS.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent

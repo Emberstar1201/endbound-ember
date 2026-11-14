@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_torch",
+  "textures": {
+    "torch": "endbound_ember:block/accelerator_torch"
+  }
+}
