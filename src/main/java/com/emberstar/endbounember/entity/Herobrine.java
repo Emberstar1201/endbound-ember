@@ -1396,7 +1396,11 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (stack.is(EndboundEmber.STARDUST_WITCH_HALO.get())
                 || stack.is(EndboundEmber.TIME_HALO.get())
                 || stack.is(EndboundEmber.DAWN_AMULET.get())
-                || stack.is(EndboundEmber.LIFE_STAR.get())) {
+                || stack.is(EndboundEmber.LIFE_STAR.get())
+                || stack.is(EndboundEmber.DAWN_HELMET.get())
+                || stack.is(EndboundEmber.DAWN_CHESTPLATE.get())
+                || stack.is(EndboundEmber.DAWN_LEGGINGS.get())
+                || stack.is(EndboundEmber.DAWN_BOOTS.get())) {
             return true;
         }
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());

@@ -37,6 +37,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraft.client.particle.FlameParticle;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = EndboundEmber.MODID, dist = Dist.CLIENT)
@@ -50,6 +52,11 @@ public class EndboundEmberClient {
         container.registerExtensionPoint(IConfigScreenFactory.class,
                 (minecraft, parent) -> new ConfigurationScreen(container, parent,
                         (screen, type, config, title) -> new BossMusicConfigScreen(screen, type, config, title)));
+    }
+
+    @SubscribeEvent
+    static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(EndboundEmber.ACCELERATOR_FLAME.get(), FlameParticle.Provider::new);
     }
 
     @SubscribeEvent

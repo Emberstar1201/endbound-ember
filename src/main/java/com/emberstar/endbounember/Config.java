@@ -161,6 +161,11 @@ public class Config {
             .comment("空中控制增强：滞空时按方向键可以更顺滑地改变移动方向。")
             .define("movementAirControl", true);
 
+    /** 空中桥接：在空中按原版使用键辅助放置邻接方块。 */
+    public static final ModConfigSpec.BooleanValue BEDROCK_BRIDGING_ENABLED = BUILDER
+            .comment("空中桥接：在空中按住使用键时，辅助向脚下桥接放置手持方块。")
+            .define("bedrockBridgingEnabled", true);
+
     /** 墙跳：空中按住可重绑按键并贴近墙面时向上弹开。 */
     public static final ModConfigSpec.BooleanValue WALL_JUMP_ENABLED = BUILDER
             .comment("墙跳：在空中按住墙跳键（默认 Shift，可在按键绑定中修改）并贴近墙面时向上弹开。")

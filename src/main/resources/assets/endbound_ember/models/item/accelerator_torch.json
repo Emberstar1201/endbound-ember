@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:block/torch"
+    "layer0": "endbound_ember:item/accelerator_torch"
   }
 }

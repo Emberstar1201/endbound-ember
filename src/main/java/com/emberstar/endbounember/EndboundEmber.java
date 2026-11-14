@@ -118,6 +118,8 @@ public class EndboundEmber {
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "endbound_ember" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, MODID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLE_TYPES =
+            DeferredRegister.create(Registries.PARTICLE_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS =
             DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
@@ -175,6 +177,9 @@ public class EndboundEmber {
                             .of(com.emberstar.endbounember.block.DisenchantmentTableBlockEntity::new, DISENCHANTMENT_TABLE.get()).build(null));
 
     /** 加速火把：持续加速半径内方块的随机刻与方块实体 */
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> ACCELERATOR_FLAME =
+            PARTICLE_TYPES.register("accelerator_flame", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.AcceleratorTorchBlock> ACCELERATOR_TORCH =
             BLOCKS.registerBlock("accelerator_torch",
                     com.emberstar.endbounember.block.AcceleratorTorchBlock::new,
@@ -1597,6 +1602,7 @@ public class EndboundEmber {
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         SOUND_EVENTS.register(modEventBus);
+        PARTICLE_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);

@@ -48,6 +48,8 @@ public final class FlywheelDash {
 
     /** 冲刺距离（格）。 */
     private static final double DASH_DISTANCE = 8.0D;
+    /** 创造模式飞行时的冲刺距离（格）。 */
+    private static final double CREATIVE_FLYING_DASH_DISTANCE = 16.0D;
     /** 完成「绝处逢生」后的充能上限：可连续使用三次。 */
     private static final int MAX_CHARGES = 3;
     /** 未完成「绝处逢生」时的充能上限：单次使用。 */
@@ -71,7 +73,11 @@ public final class FlywheelDash {
     /** 动能余速：滑行初始速度相对冲刺速度的比例。 */
     private static final double COAST_SPEED_RATIO = 0.55D;
     /** 冲刺收尾的额外无敌帧。 */
-    private static final int END_INVULNERABLE_TICKS = 5;
+    private static final int END_INVULNERABLE_TICKS = 20;
+    /** 空中冲刺结束后的下坠缓冲 tick 数。 */
+    private static final int AIR_RELEASE_BUFFER_TICKS = 4;
+    /** 空中缓冲与动能余速允许的最大下坠速度。 */
+    private static final double MAX_COAST_FALL_SPEED = -0.2D;
 
     /** 动能冲击：伤害区间（越早命中越高）。 */
     private static final double IMPACT_MIN_DAMAGE = 2.0D;
@@ -107,6 +113,7 @@ public final class FlywheelDash {
         private int ticksElapsed;
         private int coastTicks;
         private int endInvulnerableTicks;
+        private int airReleaseBufferTicks;
         private boolean ending;
 
         private DashState(Vec3 direction, int totalTicks, boolean wasInvulnerable) {
@@ -135,8 +142,11 @@ public final class FlywheelDash {
         setChargeCount(player, charges - 1);
 
         Vec3 direction = dashDirection(player);
+        double dashDistance = player.isCreative() && player.getAbilities().flying
+                ? CREATIVE_FLYING_DASH_DISTANCE
+                : DASH_DISTANCE;
         int totalTicks = Math.max(MIN_DASH_TICKS,
-                (int) Math.ceil(DASH_DISTANCE / DASH_SPEED));
+                (int) Math.ceil(dashDistance / DASH_SPEED));
 
         DashState state = new DashState(direction, totalTicks, player.isInvulnerable());
         DASHING.put(player.getUUID(), state);
@@ -177,6 +187,18 @@ public final class FlywheelDash {
         if (state.ending) {
             state.endInvulnerableTicks++;
             player.setInvulnerable(true);
+            if (state.airReleaseBufferTicks > 0) {
+                if (player.onGround()) {
+                    state.airReleaseBufferTicks = 0;
+                } else {
+                    Vec3 velocity = player.getDeltaMovement();
+                    if (velocity.y < MAX_COAST_FALL_SPEED) {
+                        player.setDeltaMovement(velocity.x, MAX_COAST_FALL_SPEED, velocity.z);
+                        player.hurtMarked = true;
+                    }
+                    state.airReleaseBufferTicks--;
+                }
+            }
             if (state.endInvulnerableTicks >= END_INVULNERABLE_TICKS) {
                 stopDash(player, state);
             }
@@ -196,7 +218,7 @@ public final class FlywheelDash {
             player.setInvulnerable(false);
             player.hurt(player.damageSources().generic(), 1.0F);
             player.setInvulnerable(true);
-            beginEnding(player, state);
+            beginEnding(player, state, false);
             return;
         }
 
@@ -217,21 +239,21 @@ public final class FlywheelDash {
     private static void updateCoast(ServerPlayer player, DashState state) {
         if (isInsideWall(player)) {
             player.setDeltaMovement(Vec3.ZERO);
-            beginEnding(player, state);
+            beginEnding(player, state, false);
             return;
         }
 
         state.coastTicks++;
         if (state.coastTicks > COAST_TICKS) {
-            beginEnding(player, state);
+            beginEnding(player, state, true);
             return;
         }
 
         double ratio = COAST_SPEED_RATIO * (1.0D - (double) state.coastTicks / COAST_TICKS);
         Vec3 movement = state.direction.scale(DASH_SPEED * ratio);
         // 向下滑行时限制垂直速度，避免直接砸进地面
-        if (movement.y < -0.2D) {
-            movement = new Vec3(movement.x, -0.2D, movement.z);
+        if (movement.y < MAX_COAST_FALL_SPEED) {
+            movement = new Vec3(movement.x, MAX_COAST_FALL_SPEED, movement.z);
         }
         applyMotion(player, movement);
         damageCollidedEntities(player, state, movement);
@@ -289,9 +311,12 @@ public final class FlywheelDash {
     }
 
     /** 进入收尾阶段：保留短暂无敌，并开启动能释放窗口。 */
-    private static void beginEnding(ServerPlayer player, DashState state) {
+    private static void beginEnding(ServerPlayer player, DashState state, boolean allowAirReleaseBuffer) {
         state.ending = true;
         state.endInvulnerableTicks = 0;
+        state.airReleaseBufferTicks = allowAirReleaseBuffer && !player.onGround()
+                ? AIR_RELEASE_BUFFER_TICKS
+                : 0;
         RELEASE_WINDOWS.put(player.getUUID(), RELEASE_WINDOW_TICKS);
         player.displayClientMessage(
                 Component.translatable("endbound_ember.flywheel_effect.release_ready")
