@@ -26,13 +26,13 @@
   },
   "exclusive_set": "#minecraft:exclusive_set/damage",
   "max_cost": {
-    "base": 21,
-    "per_level_above_first": 8
+    "base": 21.0,
+    "per_level_above_first": 6.0
   },
-  "max_level": 5,
+  "max_level": 12,
   "min_cost": {
-    "base": 1,
-    "per_level_above_first": 8
+    "base": 1.0,
+    "per_level_above_first": 2.5
   },
   "primary_items": "#endbound_ember:sword_trident_enchantable",
   "slots": [

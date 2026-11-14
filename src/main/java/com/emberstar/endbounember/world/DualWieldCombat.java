@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.network.DualWieldCooldownPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.EntityHitResult;
@@ -137,6 +139,8 @@ public final class DualWieldCombat {
         double attackDamage = player.getAttributeValue(Attributes.ATTACK_DAMAGE);
         float damage = (float) Math.max(1.0D, attackDamage);
         DamageSource source = player.damageSources().playerAttack(player);
+        // 补上原版主手攻击必经的附魔伤害结算，否则副手这一刀锋利/亡灵杀手等附魔完全不生效。
+        damage = EnchantmentHelper.modifyDamage(player.serverLevel(), weapon, target, source, damage);
         if (!target.hurt(source, damage)) return;
 
         target.knockback(0.4F, player.getX() - target.getX(), player.getZ() - target.getZ());

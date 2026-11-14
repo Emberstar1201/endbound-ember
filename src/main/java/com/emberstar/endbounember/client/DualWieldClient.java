@@ -37,6 +37,18 @@ public final class DualWieldClient {
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         if (!event.isUseItem() || event.getHand() != InteractionHand.MAIN_HAND) return;
         Minecraft minecraft = Minecraft.getInstance();
+        // #region debug-point 双持拦截右键
+        boolean dualEnabled = Config.DUAL_WIELD_ENABLED.get();
+        boolean matching = minecraft.player != null && DualWieldCombat.hasMatchingDualWeapon(minecraft.player);
+        EndboundEmber.LOGGER.info("[双持诊断] 右键使用 hand={} 双持开关={} 双持匹配={} 主手={} 副手={}",
+                event.getHand(), dualEnabled, matching,
+                minecraft.player == null ? "无"
+                        : net.minecraft.core.registries.BuiltInRegistries.ITEM
+                                .getKey(minecraft.player.getMainHandItem().getItem()),
+                minecraft.player == null ? "无"
+                        : net.minecraft.core.registries.BuiltInRegistries.ITEM
+                                .getKey(minecraft.player.getOffhandItem().getItem()));
+        // #endregion debug-point
         if (minecraft.player == null || !Config.DUAL_WIELD_ENABLED.get()
                 || !DualWieldCombat.hasMatchingDualWeapon(minecraft.player)) return;
         event.setSwingHand(false);

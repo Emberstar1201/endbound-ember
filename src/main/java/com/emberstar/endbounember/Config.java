@@ -77,6 +77,24 @@ public class Config {
             .comment("Experience cost for one disenchantment operation.")
             .defineInRange("disenchantmentExperienceCost", 25, 0, 1000000);
 
+    /** 加速火把总开关 */
+    public static final ModConfigSpec.BooleanValue ACCELERATOR_TORCH_ENABLED = BUILDER
+            .comment("Enable the accelerator torch.",
+                    "It speeds up random ticks and block entities inside its radius.")
+            .define("acceleratorTorchEnabled", true);
+
+    /** 加速火把作用半径（水平与垂直方向都是该格数） */
+    public static final ModConfigSpec.IntValue ACCELERATOR_TORCH_RADIUS = BUILDER
+            .comment("Radius of the accelerator torch in blocks (1-8).",
+                    "Larger radii cost more server time because the whole volume is scanned every tick.")
+            .defineInRange("acceleratorTorchRadius", 4, 1, 8);
+
+    /** 加速倍率：2 表示范围内以两倍速度推进随机刻与方块实体 */
+    public static final ModConfigSpec.IntValue ACCELERATOR_TORCH_SPEED = BUILDER
+            .comment("Speed multiplier inside the accelerator torch radius (1-8).",
+                    "1 disables acceleration entirely.")
+            .defineInRange("acceleratorTorchSpeed", 2, 1, 8);
+
     /** Him Boss 战背景音乐总开关 */
     public static final ModConfigSpec.BooleanValue HEROBRINE_BOSS_MUSIC_ENABLED = BUILDER
             .comment("Play the boss battle music while players stay inside the music radius.")
@@ -143,6 +161,11 @@ public class Config {
             .comment("空中控制增强：滞空时按方向键可以更顺滑地改变移动方向。")
             .define("movementAirControl", true);
 
+    /** 空中桥接：在空中按原版使用键辅助放置邻接方块。 */
+    public static final ModConfigSpec.BooleanValue BEDROCK_BRIDGING_ENABLED = BUILDER
+            .comment("空中桥接：在空中按住使用键时，辅助向脚下桥接放置手持方块。")
+            .define("bedrockBridgingEnabled", true);
+
     /** 墙跳：空中按住可重绑按键并贴近墙面时向上弹开。 */
     public static final ModConfigSpec.BooleanValue WALL_JUMP_ENABLED = BUILDER
             .comment("墙跳：在空中按住墙跳键（默认 Shift，可在按键绑定中修改）并贴近墙面时向上弹开。")
@@ -158,9 +181,9 @@ public class Config {
             .comment("剑右键格挡：手持剑按住右键进入格挡姿态，正面受到的伤害减半。")
             .define("swordBlockingEnabled", true);
 
-    /** 飞轮冲刺：内置能力，默认按 R 朝准心突进，冷却 5 秒。 */
+    /** 钢筋铁骨：内置能力，默认按 R 朝准心突进；5 秒恢复 1 层，完成「绝处逢生」后上限提升到 3 层。 */
     public static final ModConfigSpec.BooleanValue FLYWHEEL_DASH_ENABLED = BUILDER
-            .comment("飞轮冲刺：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物。")
+            .comment("钢筋铁骨：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物，冲刺结束保留余速并开启动能释放窗口。每 5 秒恢复一层充能，完成成就「绝处逢生」后可连续使用三次。")
             .define("flywheelDashEnabled", true);
 
     /** 更好的村民交易总开关。 */
@@ -173,10 +196,27 @@ public class Config {
             .comment("启用免费改名、移除铁砧过于昂贵限制并大幅降低铁砧损耗概率。")
             .define("anvilMechanicsEnabled", true);
 
+    /** 原版矿脉扩张总开关：在原有生成之外追加额外矿脉，并让浅层钻石、下界远古残骸更容易遇到。 */
+    public static final ModConfigSpec.BooleanValue ORE_VEIN_EXPANSION_ENABLED = BUILDER
+            .comment("Vanilla ore vein expansion: add extra ore passes on top of vanilla generation.",
+                    "Ores become more common without being extremely dense, shallow diamond veins appear,",
+                    "and ancient debris in the Nether becomes less rare.")
+            .define("oreVeinExpansionEnabled", true);
+
     /** 双持近战攻击总开关，由服务器规则控制。 */
     public static final ModConfigSpec.BooleanValue DUAL_WIELD_ENABLED = BUILDER
             .comment("启用副手近战攻击和主副手独立攻击冷却。")
             .define("dualWieldEnabled", true);
+
+    /** 允许从快捷栏和主背包触发图腾。 */
+    public static final ModConfigSpec.BooleanValue INVENTORY_TOTEM_ENABLED = BUILDER
+            .comment("Allow totems in the player's inventory to activate without being held.")
+            .define("inventoryTotemEnabled", true);
+
+    /** 主手快捷栏物品损坏后自动换入同类完好物品。 */
+    public static final ModConfigSpec.BooleanValue AUTO_REPLACE_ENABLED = BUILDER
+            .comment("Replace a broken main-hand hotbar item with an undamaged item of the same type from inventory.")
+            .define("autoReplaceEnabled", true);
 
     /** 耐久 HUD 客户端显示开关。 */
     public static final ModConfigSpec.BooleanValue DURABILITY_HUD_ENABLED = CLIENT_BUILDER

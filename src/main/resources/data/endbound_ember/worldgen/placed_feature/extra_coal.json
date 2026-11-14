@@ -1,0 +1,9 @@
+{
+  "feature": "minecraft:ore_coal",
+  "placement": [
+    { "type": "endbound_ember:dynamic_ore_count", "ore": "endbound_ember:coal" },
+    { "type": "minecraft:in_square" },
+    { "type": "minecraft:height_range", "height": { "type": "minecraft:trapezoid", "min_inclusive": { "absolute": 0 }, "max_inclusive": { "absolute": 128 } } },
+    { "type": "minecraft:biome" }
+  ]
+}

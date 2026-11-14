@@ -12,6 +12,18 @@
     "endbound_ember:bamboo_vertical_slab",
     "endbound_ember:crimson_vertical_slab",
     "endbound_ember:warped_vertical_slab",
-    "endbound_ember:bamboo_mosaic_vertical_slab"
+    "endbound_ember:bamboo_mosaic_vertical_slab",
+    "endbound_ember:oak_display_pedestal",
+    "endbound_ember:spruce_display_pedestal",
+    "endbound_ember:birch_display_pedestal",
+    "endbound_ember:jungle_display_pedestal",
+    "endbound_ember:acacia_display_pedestal",
+    "endbound_ember:dark_oak_display_pedestal",
+    "endbound_ember:mangrove_display_pedestal",
+    "endbound_ember:cherry_display_pedestal",
+    "endbound_ember:bamboo_display_pedestal",
+    "endbound_ember:crimson_display_pedestal",
+    "endbound_ember:warped_display_pedestal",
+    "endbound_ember:bamboo_mosaic_display_pedestal"
   ]
 }

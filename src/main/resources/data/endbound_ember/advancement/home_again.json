@@ -1,0 +1,23 @@
+{
+  "parent": "endbound_ember:root",
+  "display": {
+    "icon": {"id": "minecraft:flint_and_steel"},
+    "title": {
+      "translate": "advancements.endbound_ember.home_again.title",
+      "color": "#D8C7A0"
+    },
+    "description": {
+      "translate": "advancements.endbound_ember.home_again.description",
+      "color": "#b8c6d9"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

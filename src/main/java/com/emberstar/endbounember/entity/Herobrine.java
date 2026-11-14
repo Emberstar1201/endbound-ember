@@ -139,12 +139,6 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int REGEN_PAUSE_CAP = 600;
     /** 小怪回血加成的最大计入数量，封顶小怪乘区 */
     private static final int REGEN_MINION_CAP = 3;
-    /** 停滞穿透每级削减受击无敌帧的比例 */
-    private static final float INVULN_REDUCTION_PER_LEVEL = 0.2F;
-    /** 停滞穿透生效的最大等级 */
-    private static final int STAGNATION_PIERCE_MAX_LEVEL = 5;
-    /** 受击无敌帧的下限，保证不会被完全削没 */
-    private static final int MIN_INVULNERABLE_TICKS = 5;
     /** 呼唤亡灵：召唤间隔（tick），10 秒一波 */
     private static final int SUMMON_INTERVAL = 200;
     /** 判罚之雷 buff 的持续时间（tick）与刷新阈值 */
@@ -203,17 +197,18 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int PHASE_TWO_GRACE_TICKS = 60;
     /** 二阶段呼唤亡灵时场上精锐的上限，覆盖词条提供的召唤上限 */
     private static final int PHASE_TWO_SUMMON_CAP = 20;
-    /** 亡者之柱：数量、召唤半径（格） */
-    private static final int DOOM_PILLAR_COUNT = 3;
+    /** 亡者之柱：同时存活上限、补召间隔（tick）与召唤半径（格） */
+    private static final int DOOM_PILLAR_COUNT = 5;
+    private static final int DOOM_PILLAR_RESPAWN_INTERVAL = 200;
     private static final double DOOM_PILLAR_RADIUS = 7.5D;
     /** 只剩 1 根柱子时的分摊比例，每多存活 1 根按 {@link #DOOM_PILLAR_SHARE_STEP} 递增 */
     private static final float DOOM_PILLAR_SHARE = 0.6F;
     /** 每多一根存活柱子带来的分摊比例增量：1 根 60%、2 根 75%、3 根 90% */
     private static final float DOOM_PILLAR_SHARE_STEP = 0.15F;
     /** 指示线：间隔、持续时间与重绘间隔（tick） */
-    private static final int PILLAR_HINT_INTERVAL = 140;
-    private static final int PILLAR_HINT_DURATION = 50;
-    private static final int PILLAR_BEAM_REDRAW = 4;
+    private static final int PILLAR_HINT_INTERVAL = 240;
+    private static final int PILLAR_HINT_DURATION = 12;
+    private static final int PILLAR_BEAM_REDRAW = 12;
     /** 指示线的终点高度（格），对齐三格高柱子的顶部 */
     private static final double PILLAR_BEAM_HEIGHT = 2.7D;
     /** 不死执念锁血时给全场玩家的黑暗时长（tick） */
@@ -319,6 +314,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private int pillarHintCooldown = PILLAR_HINT_INTERVAL;
     /** 指示线剩余显示 tick */
     private int pillarHintTicks;
+    /** 距离下一次亡者之柱补召的 tick */
+    private int pillarRespawnCooldown = DOOM_PILLAR_RESPAWN_INTERVAL;
 
     /** 万灵之主夺走的玩家装备，击败后原样装进地下箱子 */
     private final List<ItemStack> plunderLoot = new ArrayList<>();
@@ -430,6 +427,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
         tag.putBoolean("EndboundEmberLockUsed", this.lockUsed);
         tag.putInt("EndboundEmberPhantomLife", this.phantomLife);
         tag.putInt("EndboundEmberPhase", this.phase);
+        tag.putInt("EndboundEmberPillarRespawnCooldown", this.pillarRespawnCooldown);
         ListTag pillarList = new ListTag();
         for (BlockPos pos : this.doomPillars) {
             CompoundTag entry = new CompoundTag();
@@ -469,6 +467,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
             this.phantomLife = tag.getInt("EndboundEmberPhantomLife");
         }
         this.phase = tag.contains("EndboundEmberPhase") ? tag.getInt("EndboundEmberPhase") : PHASE_ONE;
+        this.pillarRespawnCooldown = tag.contains("EndboundEmberPillarRespawnCooldown")
+                ? tag.getInt("EndboundEmberPillarRespawnCooldown") : DOOM_PILLAR_RESPAWN_INTERVAL;
         this.doomPillars.clear();
         ListTag pillarList = tag.getList("EndboundEmberDoomPillars", Tag.TAG_COMPOUND);
         for (int i = 0; i < pillarList.size(); i++) {
@@ -565,6 +565,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
             return;
         }
         this.tickTitleByHealth(false);
+        this.tickPhantomReveal();
         this.tickRegeneration();
         this.tickJudgementThunder();
         this.tickSummonUndead();
@@ -667,12 +668,8 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         boolean damaged = super.hurt(source, finalAmount);
         if (damaged) {
-            // 停滞穿透：按附魔等级削减受击无敌帧，任意武器可附
-            int pierceLevel = getStagnationPierceLevel(source);
-            float invulnScale = 1.0F
-                    - INVULN_REDUCTION_PER_LEVEL * Math.min(pierceLevel, STAGNATION_PIERCE_MAX_LEVEL);
-            this.invulnerableTime = Math.max(MIN_INVULNERABLE_TICKS,
-                    Math.round(HURT_INVULNERABLE_TICKS * invulnScale));
+            // Boss 自身受击后固定 60 tick 无敌帧；额外削减交由停滞穿透事件统一处理
+            this.invulnerableTime = HURT_INVULNERABLE_TICKS;
             // 通用受击抑制：任何玩家命中都会短暂拖延回血，不再只有亡灵杀手能压住再生
             if (source.getEntity() instanceof Player) {
                 this.regenPauseTicks = Math.min(REGEN_PAUSE_CAP, this.regenPauseTicks + HIT_REGEN_DELAY);
@@ -722,17 +719,6 @@ public class Herobrine extends Monster implements RangedAttackMob {
         }
         return EnchantmentHelper.getEnchantmentLevel(
                 attacker.level().holderLookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SMITE),
-                attacker);
-    }
-
-    /** 攻击者手持武器上的停滞穿透等级 */
-    private static int getStagnationPierceLevel(DamageSource source) {
-        if (!(source.getEntity() instanceof LivingEntity attacker)) {
-            return 0;
-        }
-        return EnchantmentHelper.getEnchantmentLevel(
-                attacker.level().holderLookup(Registries.ENCHANTMENT)
-                        .getOrThrow(FreeWillEnchantments.STAGNATION_PIERCE),
                 attacker);
     }
 
@@ -1092,6 +1078,17 @@ public class Herobrine extends Monster implements RangedAttackMob {
         return new Vec3(pos.x, pos.y, pos.z);
     }
 
+    private void tickPhantomReveal() {
+        if (!this.titleStats.phantomClones) {
+            return;
+        }
+        boolean phantomNearby = !this.level().getEntitiesOfClass(Herobrine.class,
+                this.getBoundingBox().inflate(128.0D), Herobrine::isPhantom).isEmpty();
+        if (phantomNearby) {
+            this.addEffect(new MobEffectInstance(MobEffects.GLOWING, 30, 0, false, false, true));
+        }
+    }
+
     /**
      * 幻影分身：虚影游魂词条下定期分裂出若干个持弓幻影，和本体一起向目标射击。
      * <p>幻影只继承了本体的射击逻辑，没有词条、召唤与掉落，血量耗尽或到期后自动消散。</p>
@@ -1399,7 +1396,11 @@ public class Herobrine extends Monster implements RangedAttackMob {
         if (stack.is(EndboundEmber.STARDUST_WITCH_HALO.get())
                 || stack.is(EndboundEmber.TIME_HALO.get())
                 || stack.is(EndboundEmber.DAWN_AMULET.get())
-                || stack.is(EndboundEmber.LIFE_STAR.get())) {
+                || stack.is(EndboundEmber.LIFE_STAR.get())
+                || stack.is(EndboundEmber.DAWN_HELMET.get())
+                || stack.is(EndboundEmber.DAWN_CHESTPLATE.get())
+                || stack.is(EndboundEmber.DAWN_LEGGINGS.get())
+                || stack.is(EndboundEmber.DAWN_BOOTS.get())) {
             return true;
         }
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -1530,7 +1531,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
         this.bossEvent.setOverlay(BossEvent.BossBarOverlay.NOTCHED_10);
         this.bossEvent.setProgress(1.0F);
         if (this.level() instanceof ServerLevel level) {
-            this.spawnDoomPillars(level);
+            this.spawnDoomPillars(level, DOOM_PILLAR_COUNT);
             Vec3 eye = this.getEyePosition();
             level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, eye.x, eye.y, eye.z, 4,
                     1.0D, 1.0D, 1.0D, 0.0D);
@@ -1549,12 +1550,12 @@ public class Herobrine extends Monster implements RangedAttackMob {
         this.announcePillars();
     }
 
-    /** 在本体周围的地面上召出三根亡者之柱 */
-    private void spawnDoomPillars(ServerLevel level) {
-        this.doomPillars.clear();
+    /** 在本体周围的地面上补召指定数量的亡者之柱 */
+    private void spawnDoomPillars(ServerLevel level, int count) {
         double baseAngle = this.random.nextDouble() * Math.PI * 2.0D;
-        for (int i = 0; i < DOOM_PILLAR_COUNT; i++) {
-            double angle = baseAngle + Math.PI * 2.0D * i / DOOM_PILLAR_COUNT;
+        int attempts = count * 3;
+        for (int i = 0; i < attempts && count > 0; i++) {
+            double angle = baseAngle + Math.PI * 2.0D * i * 0.61803398875D;
             double x = this.getX() + Math.cos(angle) * DOOM_PILLAR_RADIUS;
             double z = this.getZ() + Math.sin(angle) * DOOM_PILLAR_RADIUS;
             BlockPos base = this.findPillarBase(level, BlockPos.containing(x, this.getY(), z));
@@ -1563,6 +1564,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
             }
             DoomPillarBlock.placePillar(level, base);
             this.doomPillars.add(base.immutable());
+            count--;
             level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                     base.getX() + 0.5D, base.getY() + 0.5D, base.getZ() + 0.5D, 40,
                     0.4D, 1.2D, 0.4D, 0.04D);
@@ -1598,7 +1600,7 @@ public class Herobrine extends Monster implements RangedAttackMob {
         return null;
     }
 
-    /** 二阶段每 tick：清理被打碎的柱子、周期性绘制指示线并提示玩家 */
+    /** 二阶段每 tick：清理被打碎的柱子、周期性补召并低频绘制指示线 */
     private void tickDoomPillars() {
         if (this.phase < PHASE_TWO || !(this.level() instanceof ServerLevel level)) {
             return;
@@ -1606,10 +1608,25 @@ public class Herobrine extends Monster implements RangedAttackMob {
         this.doomPillars.removeIf(pos ->
                 !(level.getBlockEntity(pos) instanceof DoomPillarBlockEntity pillar)
                         || !pillar.isAlivePillar());
+        if (this.pillarRespawnCooldown > 0) {
+            this.pillarRespawnCooldown--;
+        }
+        if (this.pillarRespawnCooldown <= 0) {
+            int missing = DOOM_PILLAR_COUNT - this.doomPillars.size();
+            if (missing > 0) {
+                this.spawnDoomPillars(level, missing);
+                this.announcePillars();
+            }
+            this.pillarRespawnCooldown = DOOM_PILLAR_RESPAWN_INTERVAL;
+        }
+        if (this.doomPillars.isEmpty()) {
+            this.pillarHintTicks = 0;
+            this.pillarHintCooldown = PILLAR_HINT_INTERVAL;
+        }
         if (this.pillarHintCooldown > 0) {
             this.pillarHintCooldown--;
         }
-        if (this.pillarHintCooldown <= 0) {
+        if (!this.doomPillars.isEmpty() && this.pillarHintCooldown <= 0) {
             this.pillarHintCooldown = PILLAR_HINT_INTERVAL;
             this.pillarHintTicks = PILLAR_HINT_DURATION;
             this.announcePillars();
