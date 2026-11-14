@@ -48,6 +48,10 @@ public final class RitualAltar {
             stack -> stack.is(Items.BLAZE_POWDER);
     private static final Predicate<ItemStack> NETHER_STAR =
             stack -> stack.is(Items.NETHER_STAR);
+    private static final Predicate<ItemStack> ENDER_EYE =
+            stack -> stack.is(Items.ENDER_EYE);
+    private static final Predicate<ItemStack> END_CRYSTAL =
+            stack -> stack.is(Items.END_CRYSTAL);
     private static final Predicate<ItemStack> DAWN_BOOK = RitualAltar::hasDawnEnchantment;
     private static final Predicate<ItemStack> DAWN_AMULET =
             stack -> stack.is(EndboundEmber.DAWN_AMULET.get());
@@ -101,6 +105,7 @@ public final class RitualAltar {
     /** 失败点类型。 */
     public enum IssueKind {
         MISSING_PEDESTAL,
+        BAD_STRUCTURE_BLOCK,
         /** 槽位旁有展示台，但没摆在要求的位置上。 */
         OFFSET_PEDESTAL,
         WRONG_ITEM,
@@ -154,11 +159,15 @@ public final class RitualAltar {
                     || state.is(BlockTags.NYLIUM),
             false, 3, "block.endbound_ember.display_pedestal.base_plant");
 
+    /**
+     * Him 仪式：中心展示台放末影水晶，四角展示台按对角分组，
+     * 一组放两个下界之星，另一组放两个末影之眼；四角材料由 {@link #slots} 逐格指定。
+     */
     private static final Definition HEROBRINE = new Definition(
-            RitualType.HEROBRINE, NETHER_STAR, 2, 3, SlotMode.CORNERS,
+            RitualType.HEROBRINE, END_CRYSTAL, 2, 2, SlotMode.CORNERS,
             NETHER_STAR, "item.minecraft.nether_star",
-            NETHER_STAR, "item.minecraft.nether_star",
-            (level, pos, state) -> isNecroBaseBlock(state), true, 0,
+            ENDER_EYE, "item.minecraft.ender_eye",
+            (level, pos, state) -> true, false, 2,
             "block.endbound_ember.display_pedestal.base_necro");
 
     private static final List<Definition> DEFINITIONS = List.of(HALO, AMULET, ANAHITA, LIFE_STAR, HEROBRINE);
@@ -187,15 +196,24 @@ public final class RitualAltar {
      */
     public static Result find(Level level, BlockPos clicked) {
         BlockPos clickedPos = clicked.immutable();
+        Result herobrine = findHerobrineWithoutStructureCheck(level, clickedPos);
+        if (herobrine != null) {
+            return herobrine;
+        }
         Result clickedFailure = null;
         Result otherFailure = null;
+        Result herobrineRelatedFailure = null;
         for (BlockPos candidate : BlockPos.betweenClosed(
-                clicked.offset(-MAX_RADIUS, 0, -MAX_RADIUS), clicked.offset(MAX_RADIUS, 0, MAX_RADIUS))) {
+                clicked.offset(-MAX_RADIUS, -2, -MAX_RADIUS), clicked.offset(MAX_RADIUS, 0, MAX_RADIUS))) {
             if (!(level.getBlockEntity(candidate) instanceof DisplayPedestalBlockEntity pedestal)) {
                 continue;
             }
             Definition definition = definitionFor(pedestal.getStoredItem());
             if (definition == null) {
+                continue;
+            }
+            if (definition == HEROBRINE && !candidate.equals(clickedPos)
+                    && !isHerobrineCornerPedestal(candidate, clickedPos)) {
                 continue;
             }
             BlockPos center = candidate.immutable();
@@ -207,6 +225,15 @@ public final class RitualAltar {
                 }
                 continue;
             }
+            if (definition == HEROBRINE) {
+                if (candidate.equals(clickedPos) || isHerobrineCornerPedestal(candidate, clickedPos)) {
+                    if (herobrineRelatedFailure == null
+                            || result.issues().size() < herobrineRelatedFailure.issues().size()) {
+                        herobrineRelatedFailure = result;
+                    }
+                }
+                continue;
+            }
             if (center.equals(clickedPos)) {
                 if (clickedFailure == null || result.issues().size() < clickedFailure.issues().size()) {
                     clickedFailure = result;
@@ -215,7 +242,8 @@ public final class RitualAltar {
                 otherFailure = result;
             }
         }
-        Result failure = clickedFailure != null ? clickedFailure : otherFailure;
+        Result failure = clickedFailure != null ? clickedFailure
+                : herobrineRelatedFailure != null ? herobrineRelatedFailure : otherFailure;
         return failure != null ? failure : new Result(null, List.of());
     }
 
@@ -228,6 +256,23 @@ public final class RitualAltar {
             List<BlockPos> found = new ArrayList<>();
             for (Slot slot : slots) {
                 BlockPos pos = center.offset(slot.dx(), 0, slot.dz());
+                if (definition == HEROBRINE) {
+                    BlockPos pedestalPos = center.offset(slot.dx(), 2, slot.dz());
+                    if (!(level.getBlockState(pedestalPos).getBlock() instanceof DisplayPedestalBlock)) {
+                        issues.add(new Issue(pedestalPos, IssueKind.MISSING_PEDESTAL, slot.expectedKey()));
+                        continue;
+                    }
+                    if (!(level.getBlockEntity(pedestalPos) instanceof DisplayPedestalBlockEntity pedestal)) {
+                        issues.add(new Issue(pedestalPos, IssueKind.MISSING_PEDESTAL, slot.expectedKey()));
+                        continue;
+                    }
+                    if (!slot.expected().test(pedestal.getStoredItem())) {
+                        issues.add(new Issue(pedestalPos, IssueKind.WRONG_ITEM, slot.expectedKey()));
+                        continue;
+                    }
+                    found.add(pedestalPos.immutable());
+                    continue;
+                }
                 if (!(level.getBlockState(pos).getBlock() instanceof DisplayPedestalBlock)) {
                     issues.add(missingIssue(level, pos, slot.expectedKey()));
                     continue;
@@ -251,6 +296,41 @@ public final class RitualAltar {
             }
         }
         return best != null ? best : new Result(null, List.of());
+    }
+
+    private static Result findHerobrineWithoutStructureCheck(Level level, BlockPos clicked) {
+        if (!(level.getBlockEntity(clicked) instanceof DisplayPedestalBlockEntity clickedPedestal)) {
+            return null;
+        }
+        if (definitionFor(clickedPedestal.getStoredItem()) == HEROBRINE) {
+            return new Result(new Match(clicked, HEROBRINE, 2, herobrineCornerPedestals(clicked)), List.of());
+        }
+        if (!isHerobrineCornerPedestal(clicked.above(2), clicked)) {
+            return null;
+        }
+        BlockPos center = clicked.below(2);
+        if (!(level.getBlockEntity(center) instanceof DisplayPedestalBlockEntity centerPedestal)
+                || definitionFor(centerPedestal.getStoredItem()) != HEROBRINE) {
+            return null;
+        }
+        return new Result(new Match(center, HEROBRINE, 2, herobrineCornerPedestals(center)), List.of());
+    }
+
+    private static List<BlockPos> herobrineCornerPedestals(BlockPos center) {
+        List<BlockPos> pedestals = new ArrayList<>();
+        for (int dx : new int[] {-2, 2}) {
+            for (int dz : new int[] {-2, 2}) {
+                pedestals.add(center.offset(dx, 2, dz));
+            }
+        }
+        return List.copyOf(pedestals);
+    }
+
+    /** 判断点击位置是否为中心展示台正上方的四角展示台之一。 */
+    private static boolean isHerobrineCornerPedestal(BlockPos center, BlockPos clicked) {
+        return clicked.getY() == center.getY() + 2
+                && Math.abs(clicked.getX() - center.getX()) == 2
+                && Math.abs(clicked.getZ() - center.getZ()) == 2;
     }
 
     /**
@@ -284,6 +364,13 @@ public final class RitualAltar {
                     if (!corner || Math.abs(dx) != radius) {
                         continue;
                     }
+                    // Him 仪式按对角区分：同号对角放下界之星，异号对角放末影之眼
+                    if (definition == HEROBRINE) {
+                        slots.add(dx == dz
+                                ? new Slot(dx, dz, definition.cornerItem(), definition.cornerKey())
+                                : new Slot(dx, dz, definition.edgeItem(), definition.edgeKey()));
+                        continue;
+                    }
                     slots.add(new Slot(dx, dz, definition.cornerItem(), definition.cornerKey()));
                 } else if (onRing && onCross) {
                     slots.add(corner
@@ -301,6 +388,9 @@ public final class RitualAltar {
         if (definition == AMULET || definition == ANAHITA) {
             baseRadius = AMULET_BASE_RADIUS;
         }
+        if (definition == HEROBRINE) {
+            return checkHerobrineStructure(level, center);
+        }
         BlockPos baseCenter = center.below();
         List<Issue> issues = new ArrayList<>();
         for (BlockPos base : BlockPos.betweenClosed(
@@ -312,23 +402,48 @@ public final class RitualAltar {
         return issues;
     }
 
+    private static List<Issue> checkHerobrineStructure(Level level, BlockPos center) {
+        List<Issue> issues = new ArrayList<>();
+        // 中心展示台必须放末影水晶
+        if (!(level.getBlockEntity(center) instanceof DisplayPedestalBlockEntity centerPedestal)
+                || !centerPedestal.getStoredItem().is(Items.END_CRYSTAL)) {
+            issues.add(new Issue(center, IssueKind.WRONG_ITEM, "item.minecraft.end_crystal"));
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                BlockPos pos = center.below().offset(dx, 0, dz);
+                BlockState state = level.getBlockState(pos);
+                boolean corner = Math.abs(dx) == 2 && Math.abs(dz) == 2;
+                boolean cross = dx == 0 || dz == 0;
+                boolean expected = corner ? state.is(Blocks.CRYING_OBSIDIAN)
+                        : cross ? state.is(Blocks.GOLD_BLOCK)
+                        : state.is(Blocks.NETHERRACK) || state.is(Blocks.GOLD_BLOCK);
+                if (!expected) {
+                    String key = corner ? "block.minecraft.crying_obsidian"
+                            : cross ? "block.minecraft.gold_block" : "block.minecraft.netherrack";
+                    issues.add(new Issue(pos, IssueKind.BAD_BASE, key));
+                }
+            }
+        }
+        for (int dx : new int[] {-2, 2}) {
+            for (int dz : new int[] {-2, 2}) {
+                for (int dy = 0; dy <= 1; dy++) {
+                    BlockPos pos = center.offset(dx, dy, dz);
+                    if (!level.getBlockState(pos).is(Blocks.CRYING_OBSIDIAN)) {
+                        issues.add(new Issue(pos, IssueKind.BAD_STRUCTURE_BLOCK,
+                                "block.minecraft.crying_obsidian"));
+                    }
+                }
+            }
+        }
+        return issues;
+    }
+
     /** 发光完整方块：任意发光且碰撞箱完整的方块，红石灯除外。 */
     private static boolean isLightFullBase(Level level, BlockPos pos, BlockState state) {
         return state.getLightEmission(level, pos) > 0
                 && state.isCollisionShapeFullBlock(level, pos)
                 && !state.is(Blocks.REDSTONE_LAMP);
-    }
-
-    /** 下界 / 亡灵风格的底座方块白名单（含金块：金在下界象征猪灵供奉）。 */
-    private static boolean isNecroBaseBlock(BlockState state) {
-        return state.is(Blocks.GLOWSTONE) || state.is(Blocks.SHROOMLIGHT)
-                || state.is(Blocks.NETHER_WART_BLOCK) || state.is(Blocks.WARPED_WART_BLOCK)
-                || state.is(Blocks.NETHERRACK) || state.is(Blocks.MAGMA_BLOCK)
-                || state.is(Blocks.SOUL_SOIL) || state.is(Blocks.SOUL_SAND)
-                || state.is(Blocks.BLACKSTONE) || state.is(Blocks.POLISHED_BLACKSTONE)
-                || state.is(Blocks.BASALT) || state.is(Blocks.CRIMSON_NYLIUM)
-                || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.NETHER_BRICKS)
-                || state.is(Blocks.RED_NETHER_BRICKS) || state.is(Blocks.GOLD_BLOCK);
     }
 
     /** 附魔书是否带有拂晓附魔。 */
@@ -349,15 +464,15 @@ public final class RitualAltar {
     /** 把第一处失败点提示到动作栏，并在该坐标播报粒子。 */
     public static void report(Player player, Level level, Result result) {
         if (result.issues().isEmpty()) {
-            player.displayClientMessage(
-                    Component.translatable("block.endbound_ember.display_pedestal.altar_incomplete"), true);
+            player.displayClientMessage(Component.translatable(
+                    "block.endbound_ember.display_pedestal.altar_incomplete"), true);
             return;
         }
         Issue issue = result.issues().get(0);
         BlockPos pos = issue.pos();
         Component expected = Component.translatable(issue.expectedKey());
         Component message = switch (issue.kind()) {
-            case MISSING_PEDESTAL -> Component.translatable(
+            case MISSING_PEDESTAL, BAD_STRUCTURE_BLOCK -> Component.translatable(
                     "block.endbound_ember.display_pedestal.issue_missing_pedestal",
                     pos.getX(), pos.getY(), pos.getZ());
             case OFFSET_PEDESTAL -> {

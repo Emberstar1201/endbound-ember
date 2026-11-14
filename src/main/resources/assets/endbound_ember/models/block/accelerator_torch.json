@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:block/template_torch",
+  "render_type": "minecraft:cutout",
   "textures": {
-    "torch": "endbound_ember:block/accelerator_torch"
+    "torch": "minecraft:block/torch"
   }
 }

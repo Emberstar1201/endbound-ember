@@ -136,6 +136,7 @@ public class EndboundEmber {
                             .mapColor(MapColor.STONE)
                             // 徒手挖掘约 10 秒（无工具需求时破坏速度按 hardness × 30 tick 计算）
                             .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
+                            .requiresCorrectToolForDrops()
                             .noOcclusion()
                             // 使用完整方块的遮挡形状，避免空手/持物右键时被判定为「可穿过」而不触发交互
                             .isViewBlocking((state, level, pos) -> true)
@@ -1177,6 +1178,7 @@ public class EndboundEmber {
                             BlockBehaviour.Properties.of()
                                     .mapColor(MapColor.STONE)
                                     .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
+                                    .requiresCorrectToolForDrops()
                                     .noOcclusion()
                                     .isViewBlocking((state, level, pos) -> true)
                                     .isSuffocating((state, level, pos) -> false));
