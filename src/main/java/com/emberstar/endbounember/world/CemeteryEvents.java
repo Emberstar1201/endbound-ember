@@ -44,7 +44,7 @@ import net.minecraft.server.packs.resources.Resource;
 public final class CemeteryEvents {
     private static final ResourceLocation STRUCTURE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "cemetery");
     private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "structures/cemetery.nbt");
-    private static final int SPACING = 12;
+    private static final int SPACING = 16;
     private static final Queue<Candidate> PENDING = new ArrayDeque<>();
     private static final Set<String> ATTEMPTED = new HashSet<>();
     private static final Set<String> QUEUED = new HashSet<>();
@@ -88,12 +88,10 @@ public final class CemeteryEvents {
         }
         CemeterySavedData data = CemeterySavedData.get(level);
         data.add(new CemeterySavedData.Cemetery(level.dimension(), target, origin, false, false, candles));
-        boolean lootInitialized = fillContainers(level, origin, size);
-        if (lootInitialized) {
-            int index = data.cemeteries().size() - 1;
-            data.cemeteries().set(index, data.cemeteries().get(index).withLootInitialized());
-            data.changed();
-        }
+        fillContainers(level, origin, size);
+        int index = data.cemeteries().size() - 1;
+        data.cemeteries().set(index, data.cemeteries().get(index).withLootInitialized());
+        data.changed();
         return true;
     }
 
@@ -127,16 +125,6 @@ public final class CemeteryEvents {
             }
         }
         PENDING.addAll(retry);
-        ServerLevel overworld = event.getServer().overworld();
-        for (CemeterySavedData.Cemetery cemetery : CemeterySavedData.get(overworld).cemeteries()) {
-            if (!cemetery.lootInitialized() && overworld.hasChunkAt(cemetery.origin())
-                    && fillContainers(overworld, cemetery.origin(), new Vec3i(51, 9, 51))) {
-                CemeterySavedData data = CemeterySavedData.get(overworld);
-                int index = data.cemeteries().indexOf(cemetery);
-                data.cemeteries().set(index, cemetery.withLootInitialized());
-                data.changed();
-            }
-        }
         int candleChecks = CANDLE_CHECKS.size();
         while (candleChecks-- > 0) {
             CandleCheck candleCheck = CANDLE_CHECKS.poll();
@@ -190,7 +178,7 @@ public final class CemeteryEvents {
                 BlockPos check = origin.offset(dx, 0, dz);
                 int checkY = level.getHeight(Heightmap.Types.WORLD_SURFACE, check.getX(), check.getZ());
                 BlockPos ground = new BlockPos(check.getX(), checkY - 1, check.getZ());
-                if (Math.abs(checkY - surfaceY) > 8 || !isAllowedBiome(level, ground)
+                if (Math.abs(checkY - surfaceY) > 4 || !isAllowedBiome(level, ground)
                         || level.getFluidState(ground).isSource()) {
                     ATTEMPTED.add(key);
                     return true;
@@ -207,113 +195,46 @@ public final class CemeteryEvents {
         }
         CemeterySavedData.Cemetery cemetery = new CemeterySavedData.Cemetery(level.dimension(), chunkCenter, origin, false, false, candles);
         data.add(cemetery);
-        boolean lootInitialized = fillContainers(level, origin, size);
-        if (lootInitialized) {
-            int index = data.cemeteries().indexOf(cemetery);
-            data.cemeteries().set(index, cemetery.withLootInitialized());
-            data.changed();
-        }
+        fillContainers(level, origin, size);
+        int index = data.cemeteries().indexOf(cemetery);
+        data.cemeteries().set(index, cemetery.withLootInitialized());
+        data.changed();
         ATTEMPTED.add(key);
         return true;
     }
 
-    private static boolean fillContainers(ServerLevel level, BlockPos origin, Vec3i size) {
-        int minChunkX = origin.getX() >> 4;
-        int maxChunkX = (origin.getX() + size.getX() - 1) >> 4;
-        int minChunkZ = origin.getZ() >> 4;
-        int maxChunkZ = (origin.getZ() + size.getZ() - 1) >> 4;
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                if (!level.hasChunk(chunkX, chunkZ)) return false;
-            }
-        }
-        StructureTemplate template = loadTemplate(level);
-        if (template == null) return false;
-        StructurePlaceSettings settings = new StructurePlaceSettings()
-                .addProcessor(BlockIgnoreProcessor.AIR)
-                .addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
+    private static void fillContainers(ServerLevel level, BlockPos origin, Vec3i size) {
         List<net.minecraft.world.Container> containers = new ArrayList<>();
-        for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, settings, Blocks.BARREL)) {
-            BlockPos pos = origin.offset(info.pos());
+        for (BlockPos pos : BlockPos.betweenClosed(origin, origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1))) {
             if (level.getBlockState(pos).is(Blocks.BARREL)
-                    && level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) {
-                containers.add(container);
-            }
+                    && level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) containers.add(container);
         }
-        if (containers.isEmpty()) return false;
-
-        Set<net.minecraft.world.Container> diaryContainers = new HashSet<>();
-        for (net.minecraft.world.Container container : containers) {
-            for (int slot = 0; slot < container.getContainerSize(); slot++) {
-                if (isCemeteryDiary(container.getItem(slot))) {
-                    diaryContainers.add(container);
-                    break;
-                }
+        if (!containers.isEmpty()) {
+            net.minecraft.world.Container treasure = containers.get(level.getRandom().nextInt(containers.size()));
+            int rolls = 2 + level.getRandom().nextInt(4);
+            for (int i = 0; i < rolls; i++) {
+                treasure.setItem(level.getRandom().nextInt(treasure.getContainerSize()), randomTreasure(level));
             }
-        }
-        int targetDiaries = Math.min(containers.size(), 2 + level.getRandom().nextInt(3));
-        while (diaryContainers.size() < targetDiaries) {
-            List<ContainerSlot> diarySlots = new ArrayList<>();
-            for (net.minecraft.world.Container container : containers) {
-                if (diaryContainers.contains(container)) continue;
-                List<Integer> emptySlots = new ArrayList<>();
-                boolean hasLoot = false;
-                for (int slot = 0; slot < container.getContainerSize(); slot++) {
-                    ItemStack stack = container.getItem(slot);
-                    if (stack.isEmpty()) emptySlots.add(slot);
-                    else if (!isCemeteryDiary(stack)) hasLoot = true;
-                }
-                if (hasLoot || emptySlots.size() > 1) {
-                    for (int slot : emptySlots) diarySlots.add(new ContainerSlot(container, slot));
-                }
-            }
-            if (diarySlots.isEmpty()) break;
-            ContainerSlot diarySlot = diarySlots.get(level.getRandom().nextInt(diarySlots.size()));
+            net.minecraft.world.Container diaryContainer = containers.size() > 1
+                    ? containers.get((containers.indexOf(treasure) + 1 + level.getRandom().nextInt(containers.size() - 1)) % containers.size())
+                    : treasure;
             ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
-            var diaryTag = new net.minecraft.nbt.CompoundTag();
-            diaryTag.putBoolean("EndboundEmberCemeteryDiary", true);
-            book.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(diaryTag));
             book.set(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(Filterable.passThrough("烈士日记 / Martyr's Diary"),
                     "无名烈士 / Unknown Martyr", 0,
-                    java.util.stream.IntStream.rangeClosed(1, 8)
-                            .mapToObj(page -> Filterable.<Component>passThrough(Component.translatable(
-                                    "book.endbound_ember.martyr_diary.page" + page)))
-                            .toList(), false));
-            diarySlot.container().setItem(diarySlot.slot(), book);
-            diaryContainers.add(diarySlot.container());
+                    List.of(Filterable.passThrough(Component.translatable("book.endbound_ember.martyr_diary.page1")),
+                            Filterable.passThrough(Component.translatable("book.endbound_ember.martyr_diary.page2"))), false));
+            int slot = level.getRandom().nextInt(diaryContainer.getContainerSize());
+            if (diaryContainer == treasure && !treasure.getItem(slot).isEmpty()) {
+                slot = (slot + 1) % diaryContainer.getContainerSize();
+            }
+            diaryContainer.setItem(slot, book);
+            if (treasure instanceof net.minecraft.world.level.block.entity.BlockEntity blockEntity) {
+                blockEntity.setChanged();
+            }
+            if (diaryContainer instanceof net.minecraft.world.level.block.entity.BlockEntity blockEntity) {
+                blockEntity.setChanged();
+            }
         }
-        boolean allContainersHaveLoot = true;
-        for (net.minecraft.world.Container container : containers) {
-            List<Integer> emptySlots = new ArrayList<>();
-            int lootCount = 0;
-            for (int slot = 0; slot < container.getContainerSize(); slot++) {
-                ItemStack stack = container.getItem(slot);
-                if (stack.isEmpty()) emptySlots.add(slot);
-                else if (!isCemeteryDiary(stack)) lootCount++;
-            }
-            int targetLoot = 1 + level.getRandom().nextInt(3);
-            int rolls = Math.min(emptySlots.size(), Math.max(0, targetLoot - lootCount));
-            while (rolls-- > 0) {
-                int slot = emptySlots.remove(level.getRandom().nextInt(emptySlots.size()));
-                container.setItem(slot, randomTreasure(level));
-            }
-            boolean hasLoot = false;
-            for (int slot = 0; slot < container.getContainerSize(); slot++) {
-                if (!container.getItem(slot).isEmpty() && !isCemeteryDiary(container.getItem(slot))) {
-                    hasLoot = true;
-                    break;
-                }
-            }
-            if (!hasLoot) allContainersHaveLoot = false;
-            if (container instanceof net.minecraft.world.level.block.entity.BlockEntity blockEntity) blockEntity.setChanged();
-        }
-        return diaryContainers.size() >= targetDiaries && allContainersHaveLoot;
-    }
-
-    private static boolean isCemeteryDiary(ItemStack stack) {
-        if (!stack.is(Items.WRITTEN_BOOK)) return false;
-        var customData = stack.get(DataComponents.CUSTOM_DATA);
-        return customData != null && customData.copyTag().getBoolean("EndboundEmberCemeteryDiary");
     }
 
     private static StructureTemplate loadTemplate(ServerLevel level) {
@@ -423,6 +344,5 @@ public final class CemeteryEvents {
     private record Candidate(ServerLevel level, ChunkPos chunk) {
         private String key() { return candidateKey(level, chunk.x, chunk.z); }
     }
-    private record ContainerSlot(net.minecraft.world.Container container, int slot) {}
     private record CandleCheck(ServerLevel level, ServerPlayer player, BlockPos pos) {}
 }

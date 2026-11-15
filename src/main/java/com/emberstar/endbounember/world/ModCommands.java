@@ -54,16 +54,6 @@ public final class ModCommands {
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("cemetery")
                                 .executes(context -> checkCemetery(context.getSource()))))
-                .then(Commands.literal("ore")
-                        .requires(source -> source.hasPermission(2))
-                        .then(Commands.argument("mineral", net.minecraft.commands.arguments.ResourceLocationArgument.id())
-                                .executes(context -> queryOreSetting(context.getSource(),
-                                        net.minecraft.commands.arguments.ResourceLocationArgument.getId(context, "mineral").toString()))
-                                .then(Commands.argument("attempts", IntegerArgumentType.integer(0, 64))
-                                        .executes(context -> setOreSetting(context.getSource(),
-                                                net.minecraft.commands.arguments.ResourceLocationArgument.getId(context, "mineral").toString(),
-                                                IntegerArgumentType.getInteger(context, "attempts")))))
-                        .executes(context -> listOreSettings(context.getSource())))
                 .then(Commands.literal("summon")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("camp")
@@ -84,38 +74,6 @@ public final class ModCommands {
                                         .executes(context -> TimeTurbulenceAccess.decide(
                                                 context.getSource().getPlayerOrException(),
                                                 context.getArgument("id", Integer.class), false))))));
-    }
-
-    private static int listOreSettings(CommandSourceStack source) {
-        OreGenerationSettings settings = OreGenerationSettings.get(source.getServer().overworld());
-        for (OreGenerationSettings.Ore ore : OreGenerationSettings.Ore.values()) {
-            source.sendSuccess(() -> Component.literal(ore.key() + ": " + settings.getAttempts(ore)
-                    + " 次额外尝试/区块"), false);
-        }
-        return OreGenerationSettings.Ore.values().length;
-    }
-
-    private static int queryOreSetting(CommandSourceStack source, String key) throws CommandSyntaxException {
-        OreGenerationSettings.Ore ore = parseOre(key);
-        int value = OreGenerationSettings.get(source.getServer().overworld()).getAttempts(ore);
-        source.sendSuccess(() -> Component.literal(ore.key() + "：" + value + " 次额外尝试/区块"), false);
-        return value;
-    }
-
-    private static int setOreSetting(CommandSourceStack source, String key, int attempts) throws CommandSyntaxException {
-        OreGenerationSettings.Ore ore = parseOre(key);
-        OreGenerationSettings.get(source.getServer().overworld()).setAttempts(ore, attempts);
-        source.sendSuccess(() -> Component.literal("已将 " + ore.key() + " 的额外尝试数设为 "
-                + attempts + " 次/新区块。已生成区块不受影响。"), true);
-        return attempts;
-    }
-
-    private static OreGenerationSettings.Ore parseOre(String key) throws CommandSyntaxException {
-        String normalized = key.startsWith("endbound_ember:") ? key.substring("endbound_ember:".length()) : key;
-        OreGenerationSettings.Ore ore = OreGenerationSettings.Ore.byKey(normalized);
-        if (ore == null) throw new SimpleCommandExceptionType(Component.literal(
-                "未知矿物。使用 /endbound_ember ore 查看可调参数。")).create();
-        return ore;
     }
 
     /** 测试用：在指令执行位置直接生成一名愚者村民。 */

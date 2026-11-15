@@ -154,6 +154,8 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // Curios is optional at runtime; it is available here for development and compilation.
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
@@ -206,6 +208,10 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.compilerArgs += [
+            "-AreobfSrgFile=${layout.buildDirectory.file('createSrgToMcp/output.srg').get().asFile.absolutePath}",
+            "-AoutRefMapFile=${layout.buildDirectory.file("generated/refmap/${mod_id}.refmap.json").get().asFile.absolutePath}"
+    ]
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

@@ -37,8 +37,7 @@ public final class CemeterySavedData extends SavedData {
                     net.minecraft.resources.ResourceLocation.parse(entry.getString("Dimension"))),
                     new BlockPos(entry.getInt("VillageX"), entry.getInt("VillageY"), entry.getInt("VillageZ")),
                     new BlockPos(entry.getInt("X"), entry.getInt("Y"), entry.getInt("Z")),
-                    entry.getInt("LootVersion") >= 1 && entry.getBoolean("LootInitialized"),
-                    entry.getBoolean("Awarded"), candles));
+                    entry.getBoolean("LootInitialized"), entry.getBoolean("Awarded"), candles));
         }
         return data;
     }
@@ -56,7 +55,6 @@ public final class CemeterySavedData extends SavedData {
             entry.putInt("Y", cemetery.origin().getY());
             entry.putInt("Z", cemetery.origin().getZ());
             entry.putBoolean("LootInitialized", cemetery.lootInitialized());
-            entry.putInt("LootVersion", 1);
             entry.putBoolean("Awarded", cemetery.awarded());
             ListTag candles = new ListTag();
             for (BlockPos pos : cemetery.candles()) {
