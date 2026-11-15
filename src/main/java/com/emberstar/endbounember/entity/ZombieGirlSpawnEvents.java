@@ -1,5 +1,6 @@
 package com.emberstar.endbounember.entity;
 
+import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.world.ZombieGirlCampSavedData;
 
@@ -108,6 +109,12 @@ public final class ZombieGirlSpawnEvents {
                 type = ModEntities.DROWNED_GIRL.get();
             } else if (type == ModEntities.DROWNED_GIRL.get() && drownedGirls >= MAX_NEARBY / 2) {
                 type = ModEntities.ZOMBIE_GIRL.get();
+            }
+
+            // 数量检查可能切换类型，因此仅对最终选定的丧尸娘限制脚部高度，包含配置上限。
+            if (type == ModEntities.ZOMBIE_GIRL.get()
+                    && surface.getY() > Config.ZOMBIE_GIRL_NATURAL_SPAWN_MAX_Y.get()) {
+                continue;
             }
 
             ZombieGirl entity = type.create(level);

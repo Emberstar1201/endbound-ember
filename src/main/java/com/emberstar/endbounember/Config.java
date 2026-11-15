@@ -77,6 +77,12 @@ public class Config {
             .comment("Experience cost for one disenchantment operation.")
             .defineInRange("disenchantmentExperienceCost", 25, 0, 1000000);
 
+    /** 仅限制玩家附近野外丧尸娘补刷的脚部最高 Y，包含该高度；不影响溺尸娘及其他生成来源。 */
+    public static final ModConfigSpec.IntValue ZOMBIE_GIRL_NATURAL_SPAWN_MAX_Y = BUILDER
+            .comment("仅控制玩家附近野外丧尸娘补刷的脚部最高 Y，包含该高度（默认 100，即允许 Y=100）。",
+                    "不影响溺尸娘、战斗增援、营地、刷怪蛋、命令或转换生成。")
+            .defineInRange("zombieGirlNaturalSpawnMaxY", 100, -64, 319);
+
     /** 加速火把总开关 */
     public static final ModConfigSpec.BooleanValue ACCELERATOR_TORCH_ENABLED = BUILDER
             .comment("Enable the accelerator torch.",
