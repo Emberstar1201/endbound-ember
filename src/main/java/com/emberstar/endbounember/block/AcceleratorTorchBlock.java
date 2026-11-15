@@ -82,7 +82,7 @@ public class AcceleratorTorchBlock extends BaseEntityBlock {
         double y = pos.getY() + 0.75D;
         double z = pos.getZ() + 0.5D;
         level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
-        level.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
+        level.addParticle(EndboundEmber.ACCELERATOR_FLAME.get(), x, y, z, 0.0D, 0.0D, 0.0D);
     }
 
     @Override
