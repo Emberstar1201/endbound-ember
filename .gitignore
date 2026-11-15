@@ -29,6 +29,9 @@ bin/
 ### VS Code ###
 .vscode/
 
+### Local Tools ###
+.tare/
+
 ### Mac OS ###
 .DS_Store
 

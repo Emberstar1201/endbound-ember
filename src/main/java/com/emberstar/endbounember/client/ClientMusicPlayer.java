@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -96,11 +97,18 @@ public final class ClientMusicPlayer {
     }
 
     public static String currentName() {
-        return tracks.isEmpty() ? "" : tracks.get(index).name();
+        return tracks.isEmpty() ? "" : displayName(tracks.get(index));
     }
 
     public static String trackName(int trackIndex) {
-        return trackIndex < 0 || trackIndex >= tracks.size() ? "" : tracks.get(trackIndex).name();
+        return trackIndex < 0 || trackIndex >= tracks.size() ? "" : displayName(tracks.get(trackIndex));
+    }
+
+    private static String displayName(Track track) {
+        if (!"minecraft".equals(track.id().getNamespace())) return track.name();
+        // 每次显示时按当前语言解析，切换语言后立即生效；导入曲目保留原文件名。
+        return Component.translatableWithFallback(
+                "endbound_ember.music_player.track." + track.id().getPath(), track.name()).getString();
     }
 
     public static int currentIndex() { return index; }
