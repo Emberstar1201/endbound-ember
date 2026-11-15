@@ -170,7 +170,7 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         if (elapsed >= type.swapTick() && !pedestal.isRitualSwapped()) {
             pedestal.setRitualSwapped(true);
             if (type == DisplayPedestalBlockEntity.RitualType.HEROBRINE) {
-                // 召唤：五颗下界之星一并消耗，爆炸后 Herobrine 从法阵中心现身
+                // 召唤：中心末影水晶与四角材料一并消耗，爆炸后 Herobrine 从法阵中心现身
                 pedestal.setStoredItem(ItemStack.EMPTY);
                 consumeAltarMaterials(level, pedestal);
                 if (level instanceof ServerLevel serverLevel) {
@@ -424,9 +424,9 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
             tryStartRitual(level, pos, player);
             return ItemInteractionResult.SUCCESS;
         }
-        // 台面放着仪式核心（星尘手绳 / 拂晓附魔书 / 晨曦护符 / 下界之星）：无论手持什么都只尝试启动仪式
+        // 台面放着仪式核心（星尘手绳 / 拂晓附魔书 / 晨曦护符 / 末影水晶）：无论手持什么都只尝试启动仪式
         if (RitualAltar.isCore(stored)) {
-            // 下界之星与晨曦护符在祭坛不完整时允许直接取回，避免被卡在台面上拿不下来
+            // 末影水晶与晨曦护符在祭坛不完整时允许直接取回，避免被卡在台面上拿不下来
             if (!tryStartRitual(level, pos, player) && canTakeBackWhenIncomplete(stored)) {
                 takeBack(level, pos, player, pedestal);
             }
@@ -539,7 +539,8 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
 
     /** 祭坛不完整时仍允许取回的仪式核心物品。 */
     private static boolean canTakeBackWhenIncomplete(ItemStack stored) {
-        return stored.is(Items.NETHER_STAR) || stored.is(EndboundEmber.DAWN_AMULET.get())
+        return stored.is(Items.NETHER_STAR) || stored.is(Items.END_CRYSTAL)
+                || stored.is(EndboundEmber.DAWN_AMULET.get())
                 || stored.is(EndboundEmber.ANAHITA_FIRSTLIGHT_LIDDELL.get());
     }
 

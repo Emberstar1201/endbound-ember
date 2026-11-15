@@ -37,6 +37,10 @@ public final class ModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> TIME_STOP =
             MOB_EFFECTS.register("time_stop", () -> new TimeMarker(0x6E7BFF));
 
+    /** 墓园范围内的安宁状态 */
+    public static final DeferredHolder<MobEffect, MobEffect> CALM =
+            MOB_EFFECTS.register("calm", () -> new TimeMarker(0x9BBD8A));
+
     private ModEffects() {
     }
 

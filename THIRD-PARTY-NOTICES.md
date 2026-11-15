@@ -4,6 +4,60 @@
 
 ---
 
+## Bridging Mod
+
+- 项目名称：Bridging Mod
+- 作者/维护者：Will Scully（CG360；当前官方仓库由 squeeglii 维护）及 Bridging Mod 贡献者
+- 项目主页：<https://modrinth.com/mod/bridging-mod>
+- 源码仓库：<https://github.com/squeeglii/BridgingMod>
+- 使用分支：`ver/1.21.1`（Mod 版本 2.7.0）
+- 许可证：MIT License，`Copyright (c) 2023 Will Scully`
+
+### 本项目中的使用范围
+
+本项目的基岩式空中走搭功能移植并改编自 Bridging Mod 2.7.0（`ver/1.21.1` 分支）的客户端放置辅助实现，主要包括：
+
+- 沿玩家视线方向按体素路径逐格查找可放置位置；
+- 依据视线方向筛选可依附的方块面，并校验支撑方块是否为可依附的固体；
+- 通过原版方块使用流程（`MultiPlayerGameMode#useItemOn`）完成放置。
+
+移植过程中没有引入 Bridging Mod 的渲染提示、准星指示、Mixin 注入、配置界面以及 Dank Storage、Bank Storage、Sable 等兼容模块；这些部分在本项目中未使用。相关代码已按 MIT 要求保留原始版权声明，并经过适配与修改。
+
+相关实现见：
+
+- `src/main/java/com/emberstar/endbounember/client/BridgeAndWallJumpClient.java`
+- `src/main/java/com/emberstar/endbounember/Config.java`
+
+本项目整体以 GPLv3 发布，MIT 许可证与 GPLv3 兼容。
+
+### MIT 许可证全文
+
+```text
+MIT License
+
+Copyright (c) 2023 Will Scully
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
 ## Halo Mod
 
 - 项目名称：Halo Mod（CurseForge 名称：Halo Customed）

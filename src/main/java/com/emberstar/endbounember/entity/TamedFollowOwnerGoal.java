@@ -64,10 +64,7 @@ public final class TamedFollowOwnerGoal extends Goal {
     }
 
     private boolean isSafe(BlockPos feet) {
-        BlockPos below = feet.below();
-        return mob.level().getBlockState(below).isSolid()
-                && mob.level().getFluidState(feet).isEmpty()
-                && mob.level().getFluidState(feet.above()).isEmpty()
+        return ZombieGirl.isSafeGroundDestination(feet, mob.level())
                 && mob.level().noCollision(mob, new AABB(feet).move(0.5D, 0.0D, 0.5D));
     }
 

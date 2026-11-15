@@ -1,0 +1,33 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.minecraft.efficiency"
+  },
+  "effects": {
+    "minecraft:attributes": [
+      {
+        "amount": {
+          "type": "minecraft:levels_squared",
+          "added": 1.0
+        },
+        "attribute": "minecraft:player.mining_efficiency",
+        "id": "minecraft:enchantment.efficiency",
+        "operation": "add_value"
+      }
+    ]
+  },
+  "max_cost": {
+    "base": 21.0,
+    "per_level_above_first": 6.0
+  },
+  "max_level": 12,
+  "min_cost": {
+    "base": 1.0,
+    "per_level_above_first": 2.5
+  },
+  "slots": [
+    "mainhand"
+  ],
+  "supported_items": "#minecraft:enchantable/mining",
+  "weight": 10
+}

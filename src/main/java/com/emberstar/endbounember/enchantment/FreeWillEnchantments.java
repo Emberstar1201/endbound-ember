@@ -26,6 +26,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -47,8 +48,14 @@ public final class FreeWillEnchantments {
     /** 星火不灭：每次攻击追加目标最大生命值的虚空伤害。 */
     public static final ResourceKey<Enchantment> ETERNAL_SPARK = key("eternal_spark");
 
-    /** 停滞穿透：削减 Herobrine 的受击无敌帧，任意武器可附 */
+    /** 停滞穿透：命中时直接削弱任意生物的受击无敌帧，任意武器可附 */
     public static final ResourceKey<Enchantment> STAGNATION_PIERCE = key("stagnation_pierce");
+
+    /** 停滞穿透：每级把目标无敌帧压低的比率。 */
+    private static final float STAGNATION_INVULN_REDUCTION_PER_LEVEL = 0.2F;
+    /** 停滞穿透：无敌帧基准值（原版默认 20 tick）与下限（tick）。 */
+    private static final int BASE_INVULNERABLE_TICKS = 20;
+    private static final int MIN_INVULNERABLE_TICKS = 2;
 
     /** 蓝火剑气使用的伤害类型（已在 bypasses_armor 标签中，无视护甲）。 */
     public static final ResourceKey<DamageType> BLUE_FLAME = ResourceKey.create(Registries.DAMAGE_TYPE,
@@ -136,6 +143,8 @@ public final class FreeWillEnchantments {
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
 
+        applyStagnationPierce(event);
+
         if (event.getEntity() instanceof ServerPlayer victim) {
             handleInstantKillImmunity(event, victim);
         }
@@ -151,6 +160,24 @@ public final class FreeWillEnchantments {
         if (!(weapon.getItem() instanceof SwordOfTheFreeWillItem)) return;
 
         applyHopeBloom(event, attacker, weapon);
+    }
+
+    /** 停滞穿透：命中时直接削弱目标的无敌帧，任意生物通用。 */
+    private static void applyStagnationPierce(LivingIncomingDamageEvent event) {
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+
+        int level = EnchantmentHelper.getEnchantmentLevel(
+                attacker.level().holderLookup(Registries.ENCHANTMENT).getOrThrow(STAGNATION_PIERCE),
+                attacker);
+        if (level <= 0) return;
+
+        int reduced = Math.max(MIN_INVULNERABLE_TICKS, Math.round(
+                BASE_INVULNERABLE_TICKS * (1.0F - STAGNATION_INVULN_REDUCTION_PER_LEVEL * level)));
+        // 本次命中后的无敌帧直接缩短
+        event.setInvulnerabilityTicks(reduced);
+        // 目标身上残留的无敌帧同样压低，让连击立刻吃满伤害
+        LivingEntity target = event.getEntity();
+        if (target.invulnerableTime > reduced) target.invulnerableTime = reduced;
     }
 
     /** 希望之花：免疫一次即死伤害，冷却 15 分钟。 */

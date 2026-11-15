@@ -1,0 +1,38 @@
+{
+  "name": "Dawn Armor",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_chestplate",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_chestplate",
+      "title": "Dawn Armor",
+      "text": "§lAcquisition: §r Smith at a Smithing Table with a Dawn Template + the corresponding iron armor piece + an iron ingot. Each of the four pieces is forged separately.$(br)The Dawn Template drops randomly from loot chests (see its entry for details).$(br2)§lAttributes: §r Significantly higher armor value, armor toughness, and knockback resistance than iron. Each piece comes pre-enchanted with all protection variants and Durability Boost II, with a durability cap of 250.$(br2)§lLayout: §r$(br)Template slot: Dawn Template$(br)Base slot: Iron Helmet / Iron Chestplate / Iron Leggings / Iron Boots$(br)Addition slot: Iron Ingot"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_helmet",
+      "title": "Dawn Helmet",
+      "text": "Requires: Dawn Template + Iron Helmet + Iron Ingot. Armor 3, pre-enchanted with all protection variants and Durability Boost II."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_chestplate",
+      "title": "Dawn Chestplate",
+      "text": "Requires: Dawn Template + Iron Chestplate + Iron Ingot. Armor 10, pre-enchanted with all protection variants and Durability Boost II."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_leggings",
+      "title": "Dawn Leggings",
+      "text": "Requires: Dawn Template + Iron Leggings + Iron Ingot. Armor 8, pre-enchanted with all protection variants and Durability Boost II."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_boots",
+      "title": "Dawn Boots",
+      "text": "Requires: Dawn Template + Iron Boots + Iron Ingot. Armor 4, pre-enchanted with all protection variants and Durability Boost II."
+    }
+  ]
+}

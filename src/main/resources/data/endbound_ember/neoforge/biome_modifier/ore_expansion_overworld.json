@@ -1,0 +1,15 @@
+{
+  "type": "endbound_ember:ore_expansion",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "endbound_ember:extra_coal",
+    "endbound_ember:extra_iron",
+    "endbound_ember:extra_copper",
+    "endbound_ember:extra_gold",
+    "endbound_ember:extra_redstone",
+    "endbound_ember:extra_lapis",
+    "endbound_ember:extra_diamond",
+    "endbound_ember:shallow_diamond"
+  ],
+  "step": "underground_ores"
+}

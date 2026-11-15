@@ -1,0 +1,38 @@
+{
+  "name": "晨曦盔甲",
+  "category": "endbound_ember:items",
+  "icon": "endbound_ember:dawn_chestplate",
+  "sortnum": 11,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_chestplate",
+      "title": "晨曦盔甲",
+      "text": "§l获取方式：§r 在锻造台上以「晨曦模板 + 对应铁甲 + 铁锭」锻造。四件各需单独锻造。$(br)晨曦模板可在战利品箱中随机开出（详见模板条目）。$(br2)§l属性：§r 护甲值、盔甲韧性与击退抗性均显著高于铁套；锻造产出自带全套保护类附魔与耐久强化附魔，耐久上限 250。$(br2)§l摆放：§r$(br)模板槽：晨曦模板$(br)底材槽：铁头盔 / 铁胸甲 / 铁护腿 / 铁靴子$(br)添加物槽：铁锭"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_helmet",
+      "title": "晨曦头盔",
+      "text": "材料：晨曦模板 + 铁头盔 + 铁锭。护甲 3，锻造产出自带全套保护与耐久强化 II。"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_chestplate",
+      "title": "晨曦胸甲",
+      "text": "材料：晨曦模板 + 铁胸甲 + 铁锭。护甲 10，锻造产出自带全套保护与耐久强化 II。"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_leggings",
+      "title": "晨曦护腿",
+      "text": "材料：晨曦模板 + 铁护腿 + 铁锭。护甲 8，锻造产出自带全套保护与耐久强化 II。"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_boots",
+      "title": "晨曦靴子",
+      "text": "材料：晨曦模板 + 铁靴子 + 铁锭。护甲 4，锻造产出自带全套保护与耐久强化 II。"
+    }
+  ]
+}

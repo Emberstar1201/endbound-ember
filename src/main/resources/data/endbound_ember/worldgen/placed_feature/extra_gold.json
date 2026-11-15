@@ -1,0 +1,9 @@
+{
+  "feature": "minecraft:ore_gold",
+  "placement": [
+    { "type": "endbound_ember:dynamic_ore_count", "ore": "endbound_ember:gold" },
+    { "type": "minecraft:in_square" },
+    { "type": "minecraft:height_range", "height": { "type": "minecraft:trapezoid", "min_inclusive": { "absolute": -48 }, "max_inclusive": { "absolute": 32 } } },
+    { "type": "minecraft:biome" }
+  ]
+}

@@ -66,10 +66,6 @@ public class SwordOfTheFreeWillItem extends Item {
     /** 上一次挥出剑气的时间点，用于同一次横扫命中多个目标时只挥出一道剑气。 */
     private static final String LAST_QI_TICK_TAG = "EndboundEmberLastQiTick";
 
-    private static final ResourceLocation ATTACK_DAMAGE_ID =
-            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_attack_damage");
-    private static final ResourceLocation ATTACK_SPEED_ID =
-            ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_attack_speed");
     private static final ResourceLocation ARMOR_ID =
             ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "free_will_armor");
     private static final ResourceLocation ARMOR_TOUGHNESS_ID =
@@ -96,10 +92,12 @@ public class SwordOfTheFreeWillItem extends Item {
     /** 攻击伤害 / 攻速 / 护甲 / 盔甲韧性均为相对玩家基础值的偏移量，仅在数值非零时写入。 */
     public static ItemAttributeModifiers attributes(double attackDamageBonus, double attackSpeedBonus,
             double armorBonus, double armorToughnessBonus) {
+        // 使用原版的 base_attack_damage / base_attack_speed 标识，
+        // 这样悬停面板显示的是加上玩家基础值后的总伤害与总攻速，而不是“+19”这类偏移量。
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder()
-                .add(Attributes.ATTACK_DAMAGE, modifier(ATTACK_DAMAGE_ID, attackDamageBonus),
+                .add(Attributes.ATTACK_DAMAGE, modifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamageBonus),
                         EquipmentSlotGroup.MAINHAND)
-                .add(Attributes.ATTACK_SPEED, modifier(ATTACK_SPEED_ID, attackSpeedBonus),
+                .add(Attributes.ATTACK_SPEED, modifier(Item.BASE_ATTACK_SPEED_ID, attackSpeedBonus),
                         EquipmentSlotGroup.MAINHAND);
         if (armorBonus != 0.0D) {
             builder.add(Attributes.ARMOR, modifier(ARMOR_ID, armorBonus), EquipmentSlotGroup.MAINHAND);
@@ -108,7 +106,7 @@ public class SwordOfTheFreeWillItem extends Item {
             builder.add(Attributes.ARMOR_TOUGHNESS, modifier(ARMOR_TOUGHNESS_ID, armorToughnessBonus),
                     EquipmentSlotGroup.MAINHAND);
         }
-        return builder.build().withTooltip(false);
+        return builder.build().withTooltip(true);
     }
 
     private static AttributeModifier modifier(ResourceLocation id, double amount) {
@@ -119,19 +117,6 @@ public class SwordOfTheFreeWillItem extends Item {
     public Component getName(ItemStack stack) {
         return Component.translatable(getDescriptionId(stack))
                 .withStyle(style -> style.withColor(this.enhanced ? ENHANCED_COLOR : BASE_COLOR));
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip,
-            TooltipFlag flag) {
-        tooltip.add(Component.translatable(this.enhanced
-                ? "item.endbound_ember.sword_of_the_free_will_enhanced.attack_speed"
-                : "item.endbound_ember.sword_of_the_free_will.attack_speed"));
-        // 拂晓成长数值由 DawnEnchantment 统一追加。
-        if (this.enhanced) {
-            tooltip.add(Component.translatable("item.endbound_ember.sword_of_the_free_will_enhanced.human_will")
-                    .withStyle(style -> style.withColor(ENHANCED_COLOR)));
-        }
     }
 
     /**

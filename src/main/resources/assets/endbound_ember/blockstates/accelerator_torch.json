@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "endbound_ember:block/accelerator_torch"
+    },
+    "facing=north": {
+      "model": "endbound_ember:block/accelerator_torch_wall",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "endbound_ember:block/accelerator_torch_wall",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "endbound_ember:block/accelerator_torch_wall",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "endbound_ember:block/accelerator_torch_wall"
+    }
+  }
+}

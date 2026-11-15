@@ -1,11 +1,21 @@
 # Endbound Ember
 
 <p align="center">
+  <img src="src/main/resources/logo_mod.png" alt="Endbound Ember Logo" width="100%">
+</p>
+
+<p align="center">
   <a href="README.md"><img src="https://img.shields.io/badge/%E4%B8%AD%E6%96%87%E7%89%88-%E5%88%87%E6%8D%A2-2ea44f?style=for-the-badge" alt="中文版"></a>
   <a href="README_EN.md"><img src="https://img.shields.io/badge/English-Current-0969da?style=for-the-badge" alt="English"></a>
 </p>
 
-Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an official remake of Enchant-expansion.
+<p align="center">
+  <img src="src/main/resources/icon_mod.png" alt="Endbound Ember Mod Icon" width="128">
+</p>
+
+Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the official remake of Enchant-expansion.
+
+**Current version: 1.2.1 beta-2.5 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
 
 ## ⚠️ Special Notice
 
@@ -19,6 +29,44 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 
 > **Multiplayer server warning:** This mod changes and adds vanilla mechanics, including movement, block placement, combat, enchantments and trading. Server anti-cheat systems may flag these changes and issue warnings, kicks or bans. Members and assistant admins should check the server rules and test cautiously only in an environment where the mod is permitted. The server staff's rules take precedence.
 
+### 1.2.1 beta-2.5 Changelog
+
+#### Bedrock Bridging Restored
+
+- Restores Bedrock-style midair bridging. The `bedrockBridgingEnabled` common-config option is enabled by default and can be turned off.
+- While holding a block in the main hand and pressing the vanilla use key, if the crosshair is not targeting a block, the game walks the block positions along the view direction, finds an attachable block face, and places the held block through the vanilla placement path.
+- A short cooldown follows each successful attempt to prevent one held input from consuming blocks continuously. Normal block survival and item-consumption rules still apply.
+- Ported and adapted from Bridging Mod 2.7.0 (branch `ver/1.21.1`), used under the MIT License. Original copyright: `Copyright (c) 2023 Will Scully`. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the source, scope of changes, and full license text.
+
+#### Accelerator Torch
+
+- Adds a crafting recipe. The common config can enable or disable the torch and adjust its effect radius and speed multiplier.
+- Can be placed upright on the ground or mounted on any of the four horizontal walls. It is removed when its support is broken, following torch behavior.
+- Uses a dedicated flame particle, so vanilla fire is unaffected. Item, block, and particle textures can be edited independently.
+
+#### Ironclad Frame Improvements
+
+- Completing the “Last Stand” advancement unlocks the upgrade and grants 10,000 experience. The ability can store up to three charges and restores one charge every 5 seconds.
+- Post-dash invulnerability is extended to 20 ticks. An airborne release buffer reduces the abrupt loss of horizontal control at the end of a dash.
+- Dash distance is increased to 16 blocks while flying in Creative mode; other states retain the normal dash distance.
+
+#### Enchantment and Combat Adjustments
+
+- Dawn uses non-linear damage scaling to reduce runaway high-level damage and one-hit kills.
+- Stasis Pierce reduces hurt resistance for any living entity rather than only Herobrine.
+- Up to five Undead Pillars can exist at once and are resummoned over the course of the fight. The locator particle is less persistent to reduce visual clutter.
+- The real Herobrine glows during the clone phase, and the Myriad Lord no longer steals Dawn armor.
+- The Herobrine altar no longer blocks summoning based on structure or material checks; interacting with its altar core can summon the boss.
+
+#### Tool Classes and Silk Touch
+
+- Pedestals are assigned to pickaxe or axe mining categories by material: stone, brick, ore, snow brick, ice brick, and concrete variants use pickaxes; wood, bamboo, and hyphae variants use axes.
+- Glass slabs, stairs, vertical slabs, and panes require Silk Touch to drop themselves. Non-glass wood and stone vertical slabs retain their normal axe or pickaxe category.
+
+#### Other Mechanics
+
+- Ironclad Frame has a longer dash while flying in Creative mode. Existing configurable features such as zoom, moving light, sword blocking, enchanting-table changes, and villager trading remain available.
+
 ### Current Additional Mechanics
 
 - **Enchanting table improvements**: improved enchantment candidates with previews, plus a configurable maximum number of enchantments per item.
@@ -28,12 +76,12 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge, and an 
 - **Sword blocking**: right-click blocking, damage reduction, perfect parry bar reset, and deflection of incoming arrows.
 - **Movement mechanics**: momentum glide, bunny hop, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
 - **Zoom and moving light**: hold C to zoom (rebindable); light-emitting blocks provide moving light when held.
-- **Built-in Flywheel Dash**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing.
+- **Built-in Ironclad Frame**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing. Hitting mobs deals kinetic impact, and the dash leaves residual momentum plus a Kinetic Release window.
 - **Mob and world additions**: girls assist in defense, and the Time Turbulence biome is added.
 
-## 1.2.0
+## 1.2.0 (Historical)
 
-> This release focuses on quality-of-life and mechanic polish: enchantment compatibility, villager trading, anvil improvements, plus sword blocking, movement feel, zoom and moving light. All of the following mechanics are **enabled by default** and can each be disabled in the config file.
+> This historical release focused on quality-of-life and mechanic polish: enchantment compatibility, villager trading, anvil improvements, plus sword blocking, movement feel, zoom and moving light. All of the following mechanics are **enabled by default** and can each be disabled in the config file.
 
 ### Enchantment Compatibility
 
@@ -280,6 +328,8 @@ Minecraft, NeoForge and their related assets belong to their respective rights h
 The disenchantment table's behavior and interface layout follow **Dis-Enchanting-Table** (Cursee Development, Minecraft 1.21.1 branch, Unlicense), and use its GUI background, short-table top texture and side texture. See [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md) for details.
 
 The rendering approach and physical behavior of the Stardust Halo are based on **Halo Mod** (by Azusa_Ke, MIT License, <https://github.com/AzusaKe/Halo>). As required by the MIT License, the original copyright notice and full license text are in [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md).
+
+The placement-assist logic for Bedrock-style bridging is ported and adapted from **Bridging Mod** (by Will Scully / CG360, MIT License, <https://github.com/squeeglii/BridgingMod>, version 2.7.0 on the `ver/1.21.1` branch). As required by the MIT License, the original copyright notice and full license text are in [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md).
 
 <span style="color:red">**⚠️ WARNING (Disclaimer): The Zombie Girl's hurt sound is EXTREMELY embarrassing. Do NOT play it out loud in public! If you really want to play, please wear headphones!**</span>
 

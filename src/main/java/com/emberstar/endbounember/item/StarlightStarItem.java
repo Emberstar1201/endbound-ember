@@ -15,14 +15,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 星辉之星：夜幕降临后获得星光庇护，并把击杀经验翻倍。
+ * 星辉之星：身处光照低于 5 的环境时获得星光庇护，并把击杀经验翻倍。
  */
 public class StarlightStarItem extends Item {
     private static final int COLOR = 0xFFE59A;
@@ -55,7 +54,9 @@ public class StarlightStarItem extends Item {
     public static class Events {
         private static final ResourceLocation NIGHT_SPEED_ID =
                 ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "starlight_star_night_speed");
-        /** 夜间移速加成：最终移速 ×1.2。 */
+        /** 生效所需的光照上限：光照严格小于该值即触发。 */
+        private static final int LIGHT_THRESHOLD = 5;
+        /** 低光移速加成：最终移速 ×1.2。 */
         private static final double NIGHT_SPEED_BONUS = 0.20D;
         private static final int NIGHT_VISION_TICKS = 300;
         private static final int NIGHT_VISION_REFRESH = 220;
@@ -65,7 +66,7 @@ public class StarlightStarItem extends Item {
             Player player = event.getEntity();
             if (player.level().isClientSide) return;
 
-            boolean active = isNight(player.level()) && hasStarlightStar(player);
+            boolean active = isDark(player) && hasStarlightStar(player);
             updateNightSpeed(player, active);
             if (!active) return;
 
@@ -101,10 +102,9 @@ public class StarlightStarItem extends Item {
             }
         }
 
-        private static boolean isNight(Level level) {
-            if (level.dimensionType().hasFixedTime()) return false;
-            long time = level.getDayTime() % 24000L;
-            return time >= 13000L && time < 23000L;
+        /** 以玩家所在位置的实际光照（含天光与方块光）判定，低于阈值即生效。 */
+        private static boolean isDark(Player player) {
+            return player.level().getMaxLocalRawBrightness(player.blockPosition()) < LIGHT_THRESHOLD;
         }
 
         private static boolean hasStarlightStar(Player player) {

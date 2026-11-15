@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
   "ingredient": {"item": "minecraft:cracked_stone_bricks"},
-  "result": "endbound_ember:cracked_stone_brick_vertical_slab",
-  "count": 2
+  "result": {
+    "id": "endbound_ember:cracked_stone_brick_vertical_slab",
+    "count": 2
+  }
 }

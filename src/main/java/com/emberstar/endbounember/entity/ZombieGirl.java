@@ -34,6 +34,11 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
@@ -421,13 +426,90 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         return nearest != null && nearest.isAlive() ? nearest : null;
     }
 
-    /** 使用与村民相同的可开门地面导航，并由原版 OpenDoorGoal 在寻路经过门时开门。 */
+    /** 使用支持危险格与深坑约束的地面寻路，并保留原版开门能力。 */
     @Override
     protected PathNavigation createNavigation(Level level) {
-        GroundPathNavigation navigation = new GroundPathNavigation(this, level);
+        GroundPathNavigation navigation = new GroundPathNavigation(this, level) {
+            @Override
+            protected PathFinder createPathFinder(int maxVisitedNodes) {
+                this.nodeEvaluator = new SafeWalkNodeEvaluator();
+                this.nodeEvaluator.setCanPassDoors(true);
+                ZombieGirl.this.setPathfindingMalus(PathType.LAVA, -1.0F);
+                ZombieGirl.this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+                ZombieGirl.this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
+                ZombieGirl.this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
+                ZombieGirl.this.setPathfindingMalus(PathType.DANGER_OTHER, -1.0F);
+                return new PathFinder(this.nodeEvaluator, maxVisitedNodes);
+            }
+        };
         navigation.setCanOpenDoors(true);
         navigation.setCanPassDoors(true);
         return navigation;
+    }
+
+    /** 地面 evaluator：危险路径类型不可进入，OPEN 下探仅允许一格落差。 */
+    private static final class SafeWalkNodeEvaluator extends WalkNodeEvaluator {
+        private boolean dangerousStart;
+
+        @Override
+        protected Node getStartNode(BlockPos pos) {
+            Node start = super.getStartNode(pos);
+            this.dangerousStart = start.costMalus < 0.0F;
+            return start;
+        }
+
+        @Override
+        public PathType getPathType(net.minecraft.world.level.pathfinder.PathfindingContext context, int x, int y, int z) {
+            BlockPos pos = new BlockPos(x, y, z);
+            BlockState state = context.level().getBlockState(pos);
+            if (state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) || state.is(Blocks.LAVA)) {
+                return PathType.LAVA;
+            }
+            if (state.is(BlockTags.FIRE) || state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.CAMPFIRE)
+                    || state.is(Blocks.SOUL_CAMPFIRE) || state.is(Blocks.LAVA_CAULDRON)) {
+                return PathType.DAMAGE_FIRE;
+            }
+            if (state.is(Blocks.CACTUS)) return PathType.DAMAGE_OTHER;
+            return super.getPathType(context, x, y, z);
+        }
+
+        @Override
+        public int getNeighbors(Node[] outputArray, Node node) {
+            int count = super.getNeighbors(outputArray, node);
+            if (!this.dangerousStart) return count;
+            int safeCount = 0;
+            for (int i = 0; i < count; i++) {
+                if (outputArray[i].costMalus >= 0.0F) outputArray[safeCount++] = outputArray[i];
+            }
+            return safeCount;
+        }
+
+        @Override
+        protected Node findAcceptedNode(int x, int y, int z, int verticalDeltaLimit,
+                double nodeFloorLevel, net.minecraft.core.Direction direction, PathType pathType) {
+            Node node = super.findAcceptedNode(x, y, z, verticalDeltaLimit, nodeFloorLevel, direction, pathType);
+            // 原版会把多格 OPEN 坑洞折叠为其底部 WALKABLE 节点，发生在通用 malus 判断之后。
+            // 只过滤这一类落差，不影响正常一格下台阶和 evaluator 对楼梯的 WALKABLE 识别。
+            if (node != null && node.y < y - 1
+                    && this.getPathType(this.currentContext, node.x, node.y, node.z) == PathType.WALKABLE
+                    && this.getPathType(this.currentContext, x, y - 1, z) == PathType.OPEN) {
+                return null;
+            }
+            return node;
+        }
+    }
+
+    /** 集中判断地面移动目标：脚部空间及其上方均不能有危险，且下方必须存在实体支撑面。 */
+    public static boolean isSafeGroundDestination(BlockPos feet, Level level) {
+        if (isDangerous(feet, level) || isDangerous(feet.above(), level) || isDangerous(feet.below(), level)) {
+            return false;
+        }
+        if (!level.getFluidState(feet).isEmpty() || !level.getFluidState(feet.above()).isEmpty()) return false;
+        BlockPos supportPos = feet.below();
+        BlockState support = level.getBlockState(supportPos);
+        if (!support.blocksMotion()) return false;
+        VoxelShape shape = support.getCollisionShape(level, supportPos);
+        return !shape.isEmpty() && shape.max(net.minecraft.core.Direction.Axis.Y) > 0.0D;
     }
 
     /** 睡眠期间保持原版睡姿和床头位置；起床条件仍完全交给 handleBedRest 的原有判断。 */
@@ -815,21 +897,25 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
 
     private static boolean isDangerous(BlockPos pos, net.minecraft.world.level.Level level) {
         var state = level.getBlockState(pos);
-        return state.is(Blocks.LAVA) || state.is(Blocks.FIRE) || state.is(Blocks.SOUL_FIRE)
-                || state.is(Blocks.CACTUS) || state.is(BlockTags.FIRE);
+        return state.is(Blocks.LAVA) || state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA)
+                || state.is(Blocks.FIRE) || state.is(Blocks.SOUL_FIRE) || state.is(BlockTags.FIRE)
+                || state.is(Blocks.CACTUS) || state.is(Blocks.MAGMA_BLOCK)
+                || state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE);
     }
 
-    private static final class SafeRandomStrollGoal extends net.minecraft.world.entity.ai.goal.RandomStrollGoal {
+    protected static final class SafeRandomStrollGoal extends net.minecraft.world.entity.ai.goal.RandomStrollGoal {
         SafeRandomStrollGoal(ZombieGirl mob, double speed) { super(mob, speed); }
 
         @Override
-        public boolean canUse() {
-            return super.canUse() && !isDangerous(mob.blockPosition(), mob.level());
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return super.canContinueToUse() && !isDangerous(mob.blockPosition(), mob.level());
+        @Nullable
+        protected Vec3 getPosition() {
+            for (int attempt = 0; attempt < 8; attempt++) {
+                Vec3 candidate = super.getPosition();
+                if (candidate != null && isSafeGroundDestination(BlockPos.containing(candidate), mob.level())) {
+                    return candidate;
+                }
+            }
+            return null;
         }
     }
 
@@ -854,7 +940,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
                 double x = mob.getX() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
                 double z = mob.getZ() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
                 BlockPos pos = BlockPos.containing(x, mob.getY(), z);
-                if (!isDangerous(pos, mob.level()) && !isDangerous(pos.below(), mob.level())
+                if (isSafeGroundDestination(pos, mob.level())
                         && mob.getNavigation().moveTo(x, pos.getY(), z, 1.0D)) return;
             }
         }
@@ -885,7 +971,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
             if (away.lengthSqr() < 0.01D) away = new Vec3(1.0D, 0.0D, 0.0D);
             away = away.normalize().scale(10.0D);
             BlockPos destination = BlockPos.containing(mob.getX() + away.x, mob.getY(), mob.getZ() + away.z);
-            if (!isDangerous(destination, mob.level()) && !isDangerous(destination.below(), mob.level())) {
+            if (isSafeGroundDestination(destination, mob.level())) {
                 mob.getNavigation().moveTo(destination.getX() + 0.5D, destination.getY(), destination.getZ() + 0.5D, 1.35D);
             }
             mob.getLookControl().setLookAt(attacker, 30.0F, 30.0F);

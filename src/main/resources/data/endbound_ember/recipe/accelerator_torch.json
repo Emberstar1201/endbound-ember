@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "G",
+    "T",
+    "R"
+  ],
+  "key": {
+    "G": {"item": "minecraft:glowstone"},
+    "T": {"item": "minecraft:torch"},
+    "R": {"item": "minecraft:redstone"}
+  },
+  "result": {
+    "id": "endbound_ember:accelerator_torch",
+    "count": 1
+  }
+}

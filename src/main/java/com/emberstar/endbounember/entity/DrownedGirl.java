@@ -26,7 +26,7 @@ public class DrownedGirl extends ZombieGirl {
         super(entityType, level);
         // 无敌人时四处游动或漫步，避免站在原地不动
         this.goalSelector.addGoal(5, new RandomSwimmingGoal(this, 1.0D, 20));
-        this.goalSelector.addGoal(6, new net.minecraft.world.entity.ai.goal.RandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new SafeRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new WildLandWanderGoal(this));
         // 优先寻找岸边；上岸后不再被水下游泳目标抢回水中。
         this.goalSelector.addGoal(4, new SurfaceWaterGoal(this));
@@ -59,8 +59,7 @@ public class DrownedGirl extends ZombieGirl {
                 double x = mob.getX() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
                 double z = mob.getZ() + (mob.getRandom().nextDouble() - 0.5D) * 16.0D;
                 BlockPos pos = BlockPos.containing(x, mob.getY(), z);
-                if (mob.level().getFluidState(pos).isEmpty()
-                        && mob.level().getBlockState(pos.below()).blocksMotion()
+                if (isSafeGroundDestination(pos, mob.level())
                         && mob.getNavigation().moveTo(x, pos.getY(), z, 1.0D)) return;
             }
         }
@@ -173,9 +172,7 @@ public class DrownedGirl extends ZombieGirl {
             BlockPos best = null;
             double bestDistance = Double.MAX_VALUE;
             for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-8, -1, -8), origin.offset(8, 2, 8))) {
-                if (!mob.level().getFluidState(pos).isEmpty()) continue;
-                if (!mob.level().getFluidState(pos.below()).isEmpty()) continue;
-                if (!mob.level().getBlockState(pos.below()).blocksMotion()) continue;
+                if (!isSafeGroundDestination(pos, mob.level())) continue;
                 if (!mob.level().getBlockState(pos).getCollisionShape(mob.level(), pos).isEmpty()) continue;
                 double distance = pos.distSqr(origin);
                 if (distance < bestDistance) {

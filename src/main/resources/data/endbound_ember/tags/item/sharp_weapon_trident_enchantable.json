@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#minecraft:enchantable/sharp_weapon",
-    "#minecraft:enchantable/trident"
+    "#minecraft:enchantable/trident",
+    "#minecraft:pickaxes"
   ]
 }

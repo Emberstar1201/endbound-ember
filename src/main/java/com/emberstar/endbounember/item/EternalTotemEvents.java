@@ -3,10 +3,10 @@ package com.emberstar.endbounember.item;
 import com.emberstar.endbounember.EndboundEmber;
 
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,27 +34,27 @@ public final class EternalTotemEvents {
             return;
         }
         // 虚空与 /kill 一路的伤害不可抵挡，与原版图腾一致
-        if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            return;
-        }
+        if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
         for (InteractionHand hand : InteractionHand.values()) {
             ItemStack stack = player.getItemInHand(hand);
-            if (!stack.is(EndboundEmber.ETERNAL_TOTEM.get())) {
-                continue;
+            if (stack.is(EndboundEmber.ETERNAL_TOTEM.get())) {
+                activateEternalTotem(event, player, stack,
+                        hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                return;
             }
-            // 取消死亡、回满生命，再挂上四重防护增益
-            event.setCanceled(true);
-            player.setHealth(player.getMaxHealth());
-            player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, EFFECT_DURATION, 3));
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, EFFECT_DURATION, 2));
-            player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, EFFECT_DURATION, 0));
-            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, EFFECT_DURATION, 4));
-            // 消耗 1 点耐久，耗尽时由 hurtAndBreak 播放碎裂音效并移除物品
-            stack.hurtAndBreak(1, player,
-                    hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-            // 复用原版 35 号实体事件：客户端播放图腾音效与灵魂粒子
-            player.level().broadcastEntityEvent(player, (byte) 35);
-            return;
         }
     }
+
+    private static void activateEternalTotem(LivingDeathEvent event, Player player, ItemStack stack,
+            EquipmentSlot slot) {
+        event.setCanceled(true);
+        player.setHealth(player.getMaxHealth());
+        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, EFFECT_DURATION, 3));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, EFFECT_DURATION, 2));
+        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, EFFECT_DURATION, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, EFFECT_DURATION, 4));
+        stack.hurtAndBreak(1, player, slot);
+        player.level().broadcastEntityEvent(player, (byte) 35);
+    }
+
 }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "endbound_ember:civilian_ration"
+    }
+  },
+  "result": {
+    "id": "endbound_ember:military_ration",
+    "count": 1
+  }
+}

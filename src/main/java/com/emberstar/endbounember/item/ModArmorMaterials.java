@@ -43,6 +43,23 @@ public final class ModArmorMaterials {
                     0.0F,
                     0.0F));
 
+    public static final Holder<ArmorMaterial> DAWN = ARMOR_MATERIALS.register(
+            "dawn", () -> new ArmorMaterial(
+                    Map.of(
+                            ArmorItem.Type.HELMET, 3,
+                            ArmorItem.Type.CHESTPLATE, 10,
+                            ArmorItem.Type.LEGGINGS, 8,
+                            ArmorItem.Type.BOOTS, 4),
+                    250,
+                    SoundEvents.ARMOR_EQUIP_IRON,
+                    () -> Ingredient.of(net.minecraft.world.item.Items.IRON_INGOT),
+                    List.of(
+                            new ArmorMaterial.Layer(
+                                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                                            EndboundEmber.MODID, "dawn"))),
+                    6.25F,
+                    0.25F));
+
     private ModArmorMaterials() {
     }
 }

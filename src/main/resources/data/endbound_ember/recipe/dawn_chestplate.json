@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "endbound_ember:dawn_template"
+  },
+  "base": {
+    "item": "minecraft:iron_chestplate"
+  },
+  "addition": {
+    "item": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "endbound_ember:dawn_chestplate",
+    "count": 1,
+    "components": {
+      "minecraft:enchantments": {
+        "levels": {
+          "minecraft:protection": 3,
+          "minecraft:fire_protection": 3,
+          "minecraft:projectile_protection": 3,
+          "minecraft:blast_protection": 3,
+          "endbound_ember:durability_boost": 2
+        },
+        "show_in_tooltip": true
+      }
+    }
+  }
+}

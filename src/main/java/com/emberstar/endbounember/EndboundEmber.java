@@ -73,6 +73,8 @@ import net.neoforged.neoforge.common.SimpleTier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
@@ -116,6 +118,8 @@ public class EndboundEmber {
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "endbound_ember" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, MODID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLE_TYPES =
+            DeferredRegister.create(Registries.PARTICLE_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS =
             DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
@@ -134,6 +138,7 @@ public class EndboundEmber {
                             .mapColor(MapColor.STONE)
                             // 徒手挖掘约 10 秒（无工具需求时破坏速度按 hardness × 30 tick 计算）
                             .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
+                            .requiresCorrectToolForDrops()
                             .noOcclusion()
                             // 使用完整方块的遮挡形状，避免空手/持物右键时被判定为「可穿过」而不触发交互
                             .isViewBlocking((state, level, pos) -> true)
@@ -170,6 +175,30 @@ public class EndboundEmber {
             DISENCHANTMENT_TABLE_BLOCK_ENTITY = BLOCK_ENTITIES.register("disenchantment_table",
                     () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
                             .of(com.emberstar.endbounember.block.DisenchantmentTableBlockEntity::new, DISENCHANTMENT_TABLE.get()).build(null));
+
+    /** 加速火把：持续加速半径内方块的随机刻与方块实体 */
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> ACCELERATOR_FLAME =
+            PARTICLE_TYPES.register("accelerator_flame", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+
+    public static final DeferredHolder<Block, com.emberstar.endbounember.block.AcceleratorTorchBlock> ACCELERATOR_TORCH =
+            BLOCKS.registerBlock("accelerator_torch",
+                    com.emberstar.endbounember.block.AcceleratorTorchBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_YELLOW)
+                            .lightLevel(state -> 15)
+                            .sound(SoundType.WOOD)
+                            .instabreak()
+                            .noCollission()
+                            .pushReaction(PushReaction.DESTROY));
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> ACCELERATOR_TORCH_ITEM =
+            ITEMS.registerSimpleBlockItem("accelerator_torch", ACCELERATOR_TORCH);
+    public static final DeferredHolder<net.minecraft.world.level.block.entity.BlockEntityType<?>,
+            net.minecraft.world.level.block.entity.BlockEntityType<com.emberstar.endbounember.block.AcceleratorTorchBlockEntity>>
+            ACCELERATOR_TORCH_BLOCK_ENTITY = BLOCK_ENTITIES.register("accelerator_torch",
+                    () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder
+                            .of(com.emberstar.endbounember.block.AcceleratorTorchBlockEntity::new,
+                                    ACCELERATOR_TORCH.get())
+                            .build(null));
 
     /** 亡者之柱：Herobrine 第二阶段召出的黑曜石柱，平摊本体伤害并有独立血条 */
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.DoomPillarBlock> DOOM_PILLAR =
@@ -1054,6 +1083,19 @@ public class EndboundEmber {
     public static final DeferredItem<ArmorItem> COPPER_BOOTS = ITEMS.register("copper_boots",
             () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.BOOTS, new Item.Properties().durability(143)));
 
+    public static final DeferredItem<ArmorItem> DAWN_HELMET = ITEMS.register("dawn_helmet",
+            () -> new ArmorItem(ModArmorMaterials.DAWN, ArmorItem.Type.HELMET,
+                    new Item.Properties().durability(2500).fireResistant()));
+    public static final DeferredItem<ArmorItem> DAWN_CHESTPLATE = ITEMS.register("dawn_chestplate",
+            () -> new ArmorItem(ModArmorMaterials.DAWN, ArmorItem.Type.CHESTPLATE,
+                    new Item.Properties().durability(2500).fireResistant()));
+    public static final DeferredItem<ArmorItem> DAWN_LEGGINGS = ITEMS.register("dawn_leggings",
+            () -> new ArmorItem(ModArmorMaterials.DAWN, ArmorItem.Type.LEGGINGS,
+                    new Item.Properties().durability(2500).fireResistant()));
+    public static final DeferredItem<ArmorItem> DAWN_BOOTS = ITEMS.register("dawn_boots",
+            () -> new ArmorItem(ModArmorMaterials.DAWN, ArmorItem.Type.BOOTS,
+                    new Item.Properties().durability(2500).fireResistant()));
+
     public static final DeferredItem<Item> LIFE_STAR = ITEMS.register("life_star",
             () -> new LifeStarItem(new Item.Properties().stacksTo(1)));
 
@@ -1141,6 +1183,7 @@ public class EndboundEmber {
                             BlockBehaviour.Properties.of()
                                     .mapColor(MapColor.STONE)
                                     .strength(6.7F, DISPLAY_PEDESTAL_BLAST_RESISTANCE)
+                                    .requiresCorrectToolForDrops()
                                     .noOcclusion()
                                     .isViewBlocking((state, level, pos) -> true)
                                     .isSuffocating((state, level, pos) -> false));
@@ -1221,8 +1264,18 @@ public class EndboundEmber {
 
     public static final DeferredItem<Item> VOID_EMBERSTAR = ITEMS.registerSimpleItem("void_emberstar");
 
-    public static final DeferredItem<Item> CIVILIAN_RATION = ITEMS.registerSimpleItem("civilian_ration");
-    public static final DeferredItem<Item> MILITARY_RATION = ITEMS.registerSimpleItem("military_ration");
+    public static final DeferredItem<Item> CIVILIAN_RATION = ITEMS.register("civilian_ration",
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(10)
+                    .saturationModifier(0.525F)
+                    .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 2400, 1), 1.0F)
+                    .build())));
+    public static final DeferredItem<Item> MILITARY_RATION = ITEMS.register("military_ration",
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(20)
+                    .saturationModifier(0.5F)
+                    .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 2400, 3), 1.0F)
+                    .build())));
     // 面粉不可食用；炒面 1 点饥饿值 / 1 点饱和度；湿炒面 2 点饥饿值 / 1.5 点饱和度
     public static final DeferredItem<Item> FLOUR = ITEMS.registerSimpleItem("flour");
     public static final DeferredItem<com.emberstar.endbounember.item.DryFriedFlourItem> DRY_FRIED_FLOUR = ITEMS.register("dry_fried_flour",
@@ -1256,6 +1309,10 @@ public class EndboundEmber {
                         output.accept(COPPER_CHESTPLATE.get());
                         output.accept(COPPER_LEGGINGS.get());
                         output.accept(COPPER_BOOTS.get());
+                        output.accept(DAWN_HELMET.get());
+                        output.accept(DAWN_CHESTPLATE.get());
+                        output.accept(DAWN_LEGGINGS.get());
+                        output.accept(DAWN_BOOTS.get());
                         output.accept(LIFE_STAR.get());
                         output.accept(END_STAR.get());
                         output.accept(OCEAN_STAR.get());
@@ -1521,6 +1578,9 @@ public class EndboundEmber {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreativeTabContents);
+        // 原版矿脉扩张：注册受配置控制的生物群系修改器
+        modEventBus.addListener(com.emberstar.endbounember.world.OreVeinExpansion::register);
+        modEventBus.addListener(com.emberstar.endbounember.world.DynamicOreCountPlacement::register);
         modEventBus.addListener(com.emberstar.endbounember.network.GirlInteractionPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DawnSkillPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DawnEnergyPayload::register);
@@ -1533,6 +1593,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldAttackPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.BossMusicLengthPayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -1541,6 +1602,7 @@ public class EndboundEmber {
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         SOUND_EVENTS.register(modEventBus);
+        PARTICLE_TYPES.register(modEventBus);
         MENU_TYPES.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
@@ -1572,6 +1634,7 @@ public class EndboundEmber {
             event.accept(COPPER_AXE.get());
             event.accept(COPPER_SHOVEL.get());
             event.accept(COPPER_HOE.get());
+            event.accept(ACCELERATOR_TORCH_ITEM.get());
         }
 
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
