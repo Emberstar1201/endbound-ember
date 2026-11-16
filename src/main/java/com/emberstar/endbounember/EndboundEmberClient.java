@@ -57,6 +57,8 @@ public class EndboundEmberClient {
     @SubscribeEvent
     static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(EndboundEmber.ACCELERATOR_FLAME.get(), FlameParticle.Provider::new);
+        event.registerSpriteSet(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(), FlameParticle.Provider::new);
+        event.registerSpriteSet(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(), FlameParticle.Provider::new);
     }
 
     @SubscribeEvent

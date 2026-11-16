@@ -60,10 +60,6 @@ public class Config {
                     "Items from the sophisticatedbackpacks mod are always protected.")
             .defineListAllowEmpty("herobrinePlunderProtected", List.of(), () -> "", Config::validateItemName);
 
-    /** 祛魔台配置，与 Cursee-Development 1.21.1 默认值保持一致。 */
-    public static final ModConfigSpec.BooleanValue DISENCHANTMENT_AUTOMATIC = BUILDER
-            .comment("Allow automatic disenchanting by machines.")
-            .define("disenchantmentAutomatic", false);
     public static final ModConfigSpec.BooleanValue DISENCHANTMENT_RESETS_REPAIR_COST = BUILDER
             .comment("Reset an item's anvil repair cost after disenchanting.")
             .define("disenchantmentResetsRepairCost", true);
@@ -152,6 +148,11 @@ public class Config {
             .comment("玩家移动机制总开关，关闭后惯性滑行、落地连跳与空中控制增强全部失效。")
             .define("movementTweaksEnabled", true);
 
+    /** 风踏涟漪：全局内置的陆地与水面移动能力。 */
+    public static final ModConfigSpec.BooleanValue WIND_RIPPLE_ENABLED = BUILDER
+            .comment("开启内置的陆地与水面移动加速。")
+            .define("windRippleEnabled", true);
+
     /** 惯性滑行：松开方向键或落地后保留水平速度，缓慢减速。 */
     public static final ModConfigSpec.BooleanValue MOVEMENT_MOMENTUM_GLIDE = BUILDER
             .comment("惯性滑行：疾跑中松开方向键或跳跃落地后，保留水平速度继续滑行并缓慢减速。")
@@ -161,6 +162,15 @@ public class Config {
     public static final ModConfigSpec.BooleanValue MOVEMENT_BUNNY_HOP = BUILDER
             .comment("落地连跳：滞空下落且即将接触地面时按下跳跃键，可立刻再次起跳并保留大部分水平速度。")
             .define("movementBunnyHop", true);
+
+    /** 多段跳：落地后重置空中追加跳次数。 */
+    public static final ModConfigSpec.BooleanValue MULTI_JUMP_ENABLED = BUILDER
+            .comment("多段跳：允许玩家在空中按跳跃键追加起跳。")
+            .define("multiJumpEnabled", true);
+
+    public static final ModConfigSpec.IntValue MULTI_JUMP_EXTRA_JUMPS = BUILDER
+            .comment("多段跳追加次数：地面起跳后允许追加的空中跳跃次数（0至5次）。")
+            .defineInRange("multiJumpExtraJumps", 2, 0, 5);
 
     /** 空中控制增强：空中方向输入转向更顺滑。 */
     public static final ModConfigSpec.BooleanValue MOVEMENT_AIR_CONTROL = BUILDER
@@ -187,9 +197,9 @@ public class Config {
             .comment("剑右键格挡：手持剑按住右键进入格挡姿态，正面受到的伤害减半。")
             .define("swordBlockingEnabled", true);
 
-    /** 钢筋铁骨：内置能力，默认按 R 朝准心突进；5 秒恢复 1 层，完成「绝处逢生」后上限提升到 3 层。 */
+    /** 钢筋铁骨：默认按 R 朝准心突进；每 5 秒恢复 1 层，完成「绝处逢生」后上限提升到 8 层。 */
     public static final ModConfigSpec.BooleanValue FLYWHEEL_DASH_ENABLED = BUILDER
-            .comment("钢筋铁骨：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物，冲刺结束保留余速并开启动能释放窗口。每 5 秒恢复一层充能，完成成就「绝处逢生」后可连续使用三次。")
+            .comment("钢筋铁骨：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物；陆地冲刺 15 格，空中冲刺 30 格。每 5 秒恢复一层充能，未完成成就「绝处逢生」时最多连续使用三次，完成后最多八次。")
             .define("flywheelDashEnabled", true);
 
     /** 更好的村民交易总开关。 */

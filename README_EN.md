@@ -15,7 +15,7 @@
 
 Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the official remake of Enchant-expansion.
 
-**Current version: 1.2.1 beta-2.5 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
+**Current version: 1.2.1 beta-2.6 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
 
 ## ⚠️ Special Notice
 
@@ -28,6 +28,28 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 <span style="color:orange">**😴 Why is it like this?** Because I'm too lazy to install a pile of extra mods, so I bundled every mechanic I wanted into this one. 🧩</span>
 
 > **Multiplayer server warning:** This mod changes and adds vanilla mechanics, including movement, block placement, combat, enchantments and trading. Server anti-cheat systems may flag these changes and issue warnings, kicks or bans. Members and assistant admins should check the server rules and test cautiously only in an environment where the mod is permitted. The server staff's rules take precedence.
+
+### 1.2.1 beta-2.6 Changelog
+
+#### Wind Ripple Made Innate
+
+- Removes the Wind Ripple enchantment and its enchanted-book sources. The land and water movement bonus is now a global built-in feature controlled by `windRippleEnabled` (enabled by default).
+- Speed values match the former enchantment; turning the option off restores vanilla speed exactly.
+
+#### Multi-Jump Polish
+
+- Air-jump charges are now authoritative on the server. Each request carries an increasing sequence number so a late confirmation cannot overwrite a newer prediction, fixing both eaten and extra jumps during rapid input.
+- Charges refill on landing, respawn and dimension changes; duplicate or same-tick requests are ignored.
+- Air jumps no longer clear fall distance, so a jump from a greater height still deals fall damage.
+- Successful air jumps broadcast cloud particles and a sweep sound from the server; the client prediction stays silent.
+- While multi-jump is enabled it takes precedence over bunny-hop so the two mechanics never compete for the same input; eligibility checks and jump power now live in one shared rule set.
+
+#### Other Fixes
+
+- Adds `zombieGirlNaturalSpawnMaxY` (default 100) to limit natural zombie-girl spawns, keeping them out of high-altitude farms.
+- Guide book entries in all four languages no longer list Wind Ripple as an enchantment conflicting with Depth Strider.
+- Fixes the ignored local-tool directory pattern in `.gitignore`.
+- Renders the black-hole sphere with a standard translucent entity material for shader compatibility and adds its display name, "Black Hole".
 
 ### 1.2.1 beta-2.5 Changelog
 
@@ -74,7 +96,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 - **Villager trading**: permanent discounts, rare Fool villagers, automatic and faster restocking, and profession reset changes.
 - **Anvil improvements**: free renaming, no too-expensive limit, and reduced anvil damage.
 - **Sword blocking**: right-click blocking, damage reduction, perfect parry bar reset, and deflection of incoming arrows.
-- **Movement mechanics**: momentum glide, bunny hop, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
+- **Movement mechanics**: Wind Ripple (innate land and water speed), momentum glide, bunny hop, multi-jump, better air control, Bedrock-style midair bridging, and wall jump. The new mechanics have separate config switches; the wall-jump key is rebindable.
 - **Zoom and moving light**: hold C to zoom (rebindable); light-emitting blocks provide moving light when held.
 - **Built-in Ironclad Frame**: dash on R by default (rebindable), with a 5-second cooldown and immunity while dashing. Hitting mobs deals kinetic impact, and the dash leaves residual momentum plus a Kinetic Release window.
 - **Mob and world additions**: girls assist in defense, and the Time Turbulence biome is added.

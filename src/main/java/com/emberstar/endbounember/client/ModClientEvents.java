@@ -73,6 +73,7 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
         event.registerEntityRenderer(ModEntities.NETHER_METEOR.get(), NetherMeteorRenderer::new);
+        event.registerEntityRenderer(ModEntities.STARDUST_BLACK_HOLE.get(), StardustBlackHoleRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.DISPLAY_PEDESTAL_BLOCK_ENTITY.get(),
                 DisplayPedestalRenderer::new);
         event.registerBlockEntityRenderer(EndboundEmber.MIXED_VERTICAL_SLAB_BLOCK_ENTITY.get(),

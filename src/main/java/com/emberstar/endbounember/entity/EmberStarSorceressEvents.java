@@ -6,7 +6,6 @@ import com.emberstar.endbounember.enchantment.DurabilityBoostEnchantment;
 import com.emberstar.endbounember.enchantment.ElegantCatwalkEnchantment;
 import com.emberstar.endbounember.enchantment.FallingStarGuidanceEnchantment;
 import com.emberstar.endbounember.enchantment.LightweightEnchantment;
-import com.emberstar.endbounember.enchantment.WindRippleEnchantment;
 import com.emberstar.endbounember.world.ModAdvancements;
 import com.emberstar.endbounember.world.TimeTurbulenceLevels;
 import net.minecraft.core.BlockPos;
@@ -115,7 +114,6 @@ public final class EmberStarSorceressEvents {
             Map.entry(CraftsmanshipEnchantment.KEY, 1),
             Map.entry(FallingStarGuidanceEnchantment.KEY, 3),
             Map.entry(LightweightEnchantment.KEY, 3),
-            Map.entry(WindRippleEnchantment.KEY, 1),
             Map.entry(ElegantCatwalkEnchantment.KEY, 1));
 
     private EmberStarSorceressEvents() {

@@ -9,7 +9,6 @@ import com.emberstar.endbounember.enchantment.FreeWillEnchantments;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -214,7 +213,7 @@ public class SwordOfTheFreeWillItem extends Item {
                 player.displayClientMessage(
                         Component.translatable("endbound_ember.eternal_spark.saved"), true);
                 if (player.level() instanceof ServerLevel level) {
-                    level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                    FreeWillEnchantments.spawnEmberFlame(level,
                             player.getX(), player.getY(0.8D), player.getZ(), 40, 0.6D, 0.8D, 0.6D, 0.08D);
                     level.playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT,
                             SoundSource.PLAYERS, 1.2F, 0.6F);

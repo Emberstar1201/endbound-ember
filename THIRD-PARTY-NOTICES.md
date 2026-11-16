@@ -120,6 +120,49 @@ SOFTWARE.
 
 ---
 
+## Avaritia Reborn（无尽贪婪重生）
+
+- 项目名称：Avaritia Reborn
+- 作者/版权持有人：IAFEnvoy 与 RainimatorModDev
+- 项目主页：<https://www.curseforge.com/minecraft/mc-mods/avaritiareborn>
+- 源码仓库：<https://github.com/IAFEnvoy/AvaritiaReborn>
+- 参考版本：Minecraft 1.20.1 项目代码
+- 许可证：MIT License，`Copyright (c) 2022 IAFEnvoy&RainimatorModDev`
+
+### 本项目中的使用范围
+
+本项目星尘黑洞实体的实现参考并使用了 Avaritia Reborn 中黑洞相关代码。相关实现位于：
+
+- `src/main/java/com/emberstar/endbounember/entity/StardustBlackHoleEntity.java`
+
+本项目的改动与适配不影响上游代码所适用的 MIT 许可证；上游版权声明及以下许可证文本随本声明保留。
+
+### MIT 许可证全文
+
+```text
+MIT License
+Copyright (c) 2022 IAFEnvoy&RainimatorModDev
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
 ## Yes Steve Model（YSM）
 
 - 项目名称：Yes Steve Model

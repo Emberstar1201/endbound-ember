@@ -23,7 +23,6 @@ import com.emberstar.endbounember.enchantment.QianpoQingMingSwordEnchantment;
 import com.emberstar.endbounember.enchantment.ShockwaveEnchantment;
 import com.emberstar.endbounember.enchantment.SkywardSlamEnchantment;
 import com.emberstar.endbounember.enchantment.SpringHarvestEnchantment;
-import com.emberstar.endbounember.enchantment.WindRippleEnchantment;
 import com.emberstar.endbounember.entity.ModEntities;
 import com.emberstar.endbounember.item.EndStarItem;
 import com.emberstar.endbounember.item.HomeBellItem;
@@ -179,6 +178,12 @@ public class EndboundEmber {
     /** 加速火把：持续加速半径内方块的随机刻与方块实体 */
     public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> ACCELERATOR_FLAME =
             PARTICLE_TYPES.register("accelerator_flame", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+
+    /** 星火剑气：两枚自定义火焰粒子同时出现 */
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_YHE_TORCH_0 =
+            PARTICLE_TYPES.register("flame_of_yhe_torch_0", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_YHE_TORCH_1 =
+            PARTICLE_TYPES.register("flame_of_yhe_torch_1", () -> new net.minecraft.core.particles.SimpleParticleType(false));
 
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.AcceleratorTorchBlock> ACCELERATOR_TORCH =
             BLOCKS.registerBlock("accelerator_torch",
@@ -1521,8 +1526,6 @@ public class EndboundEmber {
                                             LightweightEnchantment.KEY, level));
                                 }
                                 output.accept(createEnchantedBook(parameters.holders(),
-                                        WindRippleEnchantment.KEY, 1));
-                                output.accept(createEnchantedBook(parameters.holders(),
                                         ElegantCatwalkEnchantment.KEY, 1));
                                 for (int level = 1; level <= 2; level++) {
                                     output.accept(createEnchantedBook(parameters.holders(),
@@ -1591,6 +1594,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.SwordParryPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.MultiJumpPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldAttackPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.BossMusicLengthPayload::register);

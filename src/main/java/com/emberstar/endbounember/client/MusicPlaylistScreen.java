@@ -61,8 +61,7 @@ public class MusicPlaylistScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("endbound_ember.music_player.import"), b -> ClientMusicPack.openFolder())
                 .bounds(x, controlsY + 25, actionWidth, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("endbound_ember.music_player.refresh"), b -> {
-            ClientMusicPlayer.refresh();
-            rebuild();
+            ClientMusicPlayer.refreshResources();
         }).bounds(x + actionWidth + actionGap, controlsY + 25, actionWidth, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(x + (actionWidth + actionGap) * 2, controlsY + 25, actionWidth, 20).build());

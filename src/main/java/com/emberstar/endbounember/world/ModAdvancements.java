@@ -35,7 +35,7 @@ public final class ModAdvancements {
     public static final String VISITOR_OF_THE_FOURTH_DIMENSION = "visitor_of_the_fourth_dimension";
     /** 「不被世界承认的少女」：注视一只自然刷新的星尘魔女。 */
     public static final String UNRECOGNIZED_GIRL = "unrecognized_girl";
-    /** 「回家了!」：点亮一座墓园的全部蜡烛。 */
+    /** 「回家了!」：在墓园内安静停留一段时间。 */
     public static final String HOME_AGAIN = "home_again";
     /** 「绝处逢生」：BOSS 残血时用钢筋铁骨的冲击伤害终结它。 */
     public static final String LAST_STAND = "last_stand";

@@ -6,12 +6,8 @@ import com.emberstar.endbounember.enchantment.DawnEnchantment;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -459,42 +455,5 @@ public final class RitualAltar {
             }
         }
         return false;
-    }
-
-    /** 把第一处失败点提示到动作栏，并在该坐标播报粒子。 */
-    public static void report(Player player, Level level, Result result) {
-        if (result.issues().isEmpty()) {
-            player.displayClientMessage(Component.translatable(
-                    "block.endbound_ember.display_pedestal.altar_incomplete"), true);
-            return;
-        }
-        Issue issue = result.issues().get(0);
-        BlockPos pos = issue.pos();
-        Component expected = Component.translatable(issue.expectedKey());
-        Component message = switch (issue.kind()) {
-            case MISSING_PEDESTAL, BAD_STRUCTURE_BLOCK -> Component.translatable(
-                    "block.endbound_ember.display_pedestal.issue_missing_pedestal",
-                    pos.getX(), pos.getY(), pos.getZ());
-            case OFFSET_PEDESTAL -> {
-                BlockPos correct = issue.correctPos() != null ? issue.correctPos() : pos;
-                yield Component.translatable(
-                        "block.endbound_ember.display_pedestal.issue_offset_pedestal",
-                        pos.getX(), pos.getY(), pos.getZ(),
-                        correct.getX(), correct.getY(), correct.getZ());
-            }
-            case WRONG_ITEM -> Component.translatable(
-                    "block.endbound_ember.display_pedestal.issue_wrong_item",
-                    pos.getX(), pos.getY(), pos.getZ(), expected);
-            case BAD_BASE -> Component.translatable(
-                    "block.endbound_ember.display_pedestal.issue_bad_base",
-                    pos.getX(), pos.getY(), pos.getZ(), expected);
-        };
-        player.displayClientMessage(message, true);
-        EndboundEmber.LOGGER.warn("[祭坛] 结构不完整：{} @ {}", issue.kind(), pos);
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.END_ROD,
-                    pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D,
-                    10, 0.15D, 0.15D, 0.15D, 0.01D);
-        }
     }
 }

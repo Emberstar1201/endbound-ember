@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:depth_strider",
-    "endbound_ember:wind_ripple"
+    "minecraft:depth_strider"
   ]
 }

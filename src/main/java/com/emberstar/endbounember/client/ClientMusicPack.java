@@ -64,7 +64,7 @@ public final class ClientMusicPack {
         }
     }
 
-    private static void refreshPack() {
+    public static boolean refreshPack() {
         List<Path> tracks;
         try {
             Files.createDirectories(ROOT);
@@ -79,7 +79,9 @@ public final class ClientMusicPack {
                 Path target = PACK.resolve("assets").resolve(NAMESPACE).resolve("sounds").resolve("music")
                         .resolve(name + ".ogg");
                 Files.copy(tracks.get(i), target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                sounds.append("  \"").append(name).append("\":{\"sounds\":[\"music/").append(name).append("\"]}");
+                // 声音文件名必须显式带命名空间，否则声音系统会默认到 minecraft 下查找。
+                sounds.append("  \"").append(name).append("\":{\"sounds\":[{\"name\":\"")
+                        .append(NAMESPACE).append(":music/").append(name).append("\",\"stream\":true}]}");
                 sounds.append(i + 1 == tracks.size() ? "\n" : ",\n");
             }
             sounds.append("}\n");
@@ -94,8 +96,10 @@ public final class ClientMusicPack {
             }
             Files.writeString(PACK.resolve("assets").resolve(NAMESPACE).resolve("sounds.json"), sounds,
                     StandardCharsets.UTF_8);
+            return true;
         } catch (IOException e) {
             EndboundEmber.LOGGER.warn("[音乐播放器] 更新客户端音乐资源包失败", e);
+            return false;
         }
     }
 

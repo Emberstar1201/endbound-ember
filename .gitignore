@@ -30,7 +30,7 @@ bin/
 .vscode/
 
 ### Local Tools ###
-.tare/
+.trae/
 
 ### Mac OS ###
 .DS_Store

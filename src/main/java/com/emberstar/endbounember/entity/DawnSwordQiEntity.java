@@ -1,7 +1,7 @@
 package com.emberstar.endbounember.entity;
 
+import com.emberstar.endbounember.EndboundEmber;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -124,10 +124,13 @@ public class DawnSwordQiEntity extends Projectile {
                 .add(right.scale(rightOffset))
                 .add(up.scale(upOffset));
         if (soulFire) {
-            // 人权剑剑气：灵魂火粒子，双粒叠加保证月牙轮廓清晰
-            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+            // 星火剑气：两枚自定义火焰粒子同时出现
+            level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(),
                     particlePosition.x, particlePosition.y, particlePosition.z,
-                    2, 0.03D, 0.03D, 0.03D, 0.01D);
+                    1, 0.03D, 0.03D, 0.03D, 0.01D);
+            level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(),
+                    particlePosition.x, particlePosition.y, particlePosition.z,
+                    1, 0.03D, 0.03D, 0.03D, 0.01D);
             return;
         }
         level.sendParticles(new DustParticleOptions(QI_COLOR, scale),

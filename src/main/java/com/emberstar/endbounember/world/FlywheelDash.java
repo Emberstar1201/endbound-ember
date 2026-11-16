@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * 钢筋铁骨（原「飞轮效应」）：内置能力，默认按键 R（可在按键绑定中修改）。
  * 朝准心方向高速突进，期间免疫伤害并可穿过生物；撞墙会提前停下。
  * 强化点：扫掠命中、动能余速、动能冲击、动能释放。
- * 充能上限 3 层（需完成「绝处逢生」解锁，未解锁时为 1 层），每 5 秒恢复 1 层。
+ * 充能上限 8 层（需完成「绝处逢生」解锁，未解锁时为 3 层），每 5 秒恢复 1 层。
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class FlywheelDash {
@@ -46,14 +46,14 @@ public final class FlywheelDash {
     private static final String TAG_CHARGES = "charges";
     private static final String TAG_RECHARGE_START = "rechargeStart";
 
-    /** 冲刺距离（格）。 */
-    private static final double DASH_DISTANCE = 8.0D;
-    /** 创造模式飞行时的冲刺距离（格）。 */
-    private static final double CREATIVE_FLYING_DASH_DISTANCE = 16.0D;
-    /** 完成「绝处逢生」后的充能上限：可连续使用三次。 */
-    private static final int MAX_CHARGES = 3;
-    /** 未完成「绝处逢生」时的充能上限：单次使用。 */
-    private static final int BASE_CHARGES = 1;
+    /** 陆地冲刺距离（格）。 */
+    private static final double DASH_DISTANCE = 15.0D;
+    /** 空中冲刺距离（格）。 */
+    private static final double AIR_DASH_DISTANCE = 30.0D;
+    /** 完成「绝处逢生」后的充能上限：可连续使用八次。 */
+    private static final int MAX_CHARGES = 8;
+    /** 未完成「绝处逢生」时的充能上限：可连续使用三次。 */
+    private static final int BASE_CHARGES = 3;
     /** 每 5 秒恢复 1 层充能。 */
     private static final int CHARGE_RECHARGE_TICKS = 100;
     /** 「绝处逢生」：BOSS 血量占比不高于该值时被冲击终结才算达成。 */
@@ -142,14 +142,17 @@ public final class FlywheelDash {
         setChargeCount(player, charges - 1);
 
         Vec3 direction = dashDirection(player);
-        double dashDistance = player.isCreative() && player.getAbilities().flying
-                ? CREATIVE_FLYING_DASH_DISTANCE
-                : DASH_DISTANCE;
+        double dashDistance = player.onGround() ? DASH_DISTANCE : AIR_DASH_DISTANCE;
         int totalTicks = Math.max(MIN_DASH_TICKS,
                 (int) Math.ceil(dashDistance / DASH_SPEED));
 
         DashState state = new DashState(direction, totalTicks, player.isInvulnerable());
         DASHING.put(player.getUUID(), state);
+
+        if (com.emberstar.endbounember.item.StardustWitchHaloEvents.wearingStardustHalo(player)
+                && player.serverLevel().random.nextBoolean()) {
+            com.emberstar.endbounember.entity.StardustBlackHoleEntity.spawnAt(player);
+        }
 
         applyMotion(player, direction.scale(DASH_SPEED));
         spawnBurstParticles(player.serverLevel(), player);
@@ -215,9 +218,6 @@ public final class FlywheelDash {
 
         if (isInsideWall(player)) {
             player.setDeltaMovement(Vec3.ZERO);
-            player.setInvulnerable(false);
-            player.hurt(player.damageSources().generic(), 1.0F);
-            player.setInvulnerable(true);
             beginEnding(player, state, false);
             return;
         }
@@ -471,7 +471,7 @@ public final class FlywheelDash {
                     true);
         } else {
             player.displayClientMessage(
-                    Component.translatable("endbound_ember.flywheel_effect.charge", after, MAX_CHARGES)
+                    Component.translatable("endbound_ember.flywheel_effect.charge", after, max)
                             .withStyle(ChatFormatting.AQUA),
                     true);
         }

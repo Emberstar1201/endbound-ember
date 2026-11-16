@@ -14,10 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.server.network.Filterable;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.tags.BiomeTags;
 import net.neoforged.neoforge.common.Tags;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -26,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -44,13 +42,15 @@ import net.minecraft.server.packs.resources.Resource;
 public final class CemeteryEvents {
     private static final ResourceLocation STRUCTURE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "cemetery");
     private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "structures/cemetery.nbt");
-    private static final int SPACING = 16;
+    private static final int SPACING = 30;
     private static final Queue<Candidate> PENDING = new ArrayDeque<>();
     private static final Set<String> ATTEMPTED = new HashSet<>();
     private static final Set<String> QUEUED = new HashSet<>();
     private static final java.util.Map<String, Integer> RETRIES = new java.util.HashMap<>();
-    private static final Queue<CandleCheck> CANDLE_CHECKS = new ArrayDeque<>();
     private static final String EFFECT_TAG = "EndboundEmberCemeteryEffect";
+    private static final String DWELL_TAG = "EndboundEmberCemeteryDwell";
+    /** 需要在墓园内安静停留的时间：60 秒。 */
+    private static final int REQUIRED_DWELL_TICKS = 20 * 60;
 
     private CemeteryEvents() {}
 
@@ -125,11 +125,6 @@ public final class CemeteryEvents {
             }
         }
         PENDING.addAll(retry);
-        int candleChecks = CANDLE_CHECKS.size();
-        while (candleChecks-- > 0) {
-            CandleCheck candleCheck = CANDLE_CHECKS.poll();
-            if (candleCheck != null) checkCandles(candleCheck.level(), candleCheck.player(), candleCheck.pos());
-        }
     }
 
     private static boolean tryCandidate(Candidate candidate) {
@@ -273,55 +268,58 @@ public final class CemeteryEvents {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (player.tickCount % 20 != 0) return;
-        boolean inside = false;
-        if (player.serverLevel().dimension() == ServerLevel.OVERWORLD) {
-            for (CemeterySavedData.Cemetery cemetery : CemeterySavedData.get(player.serverLevel()).cemeteries()) {
-                if (cemetery.contains(player.blockPosition())) { inside = true; break; }
-            }
-        }
-        if (inside) {
+        CemeterySavedData.Cemetery inside = cemeteryAt(player);
+        if (inside != null) {
             player.getPersistentData().putBoolean(EFFECT_TAG, true);
             player.addEffect(new MobEffectInstance(ModEffects.CALM, 40, 0, true, true));
             if (player.getFoodData().getFoodLevel() < 20) player.getFoodData().setFoodLevel(player.getFoodData().getFoodLevel() + 1);
             if (player.getFoodData().getSaturationLevel() < 20.0F) player.getFoodData().setSaturation(player.getFoodData().getSaturationLevel() + 1.0F);
             if (player.getHealth() < player.getMaxHealth()) player.heal(1.0F);
-        } else if (player.getPersistentData().getBoolean(EFFECT_TAG)) {
-            player.removeEffect(ModEffects.CALM);
-            player.getPersistentData().remove(EFFECT_TAG);
+            if (!inside.awarded()) dwell(player, inside);
+        } else {
+            if (player.getPersistentData().getBoolean(EFFECT_TAG)) {
+                player.removeEffect(ModEffects.CALM);
+                player.getPersistentData().remove(EFFECT_TAG);
+            }
+            player.getPersistentData().remove(DWELL_TAG);
         }
+    }
+
+    private static CemeterySavedData.Cemetery cemeteryAt(ServerPlayer player) {
+        if (player.serverLevel().dimension() != ServerLevel.OVERWORLD) return null;
+        for (CemeterySavedData.Cemetery cemetery : CemeterySavedData.get(player.serverLevel()).cemeteries()) {
+            if (cemetery.contains(player.blockPosition())) return cemetery;
+        }
+        return null;
+    }
+
+    /** 累计停留时间；离开墓园或破坏墓园方块会重置。 */
+    private static void dwell(ServerPlayer player, CemeterySavedData.Cemetery cemetery) {
+        int ticks = player.getPersistentData().getInt(DWELL_TAG) + 20;
+        if (ticks < REQUIRED_DWELL_TICKS) {
+            player.getPersistentData().putInt(DWELL_TAG, ticks);
+            player.displayClientMessage(Component.translatable("message.endbound_ember.cemetery_dwell",
+                    ticks * 100 / REQUIRED_DWELL_TICKS), true);
+            return;
+        }
+        player.getPersistentData().remove(DWELL_TAG);
+        CemeterySavedData data = CemeterySavedData.get(player.serverLevel());
+        data.cemeteries().set(data.cemeteries().indexOf(cemetery), cemetery.withAwarded());
+        data.changed();
+        ModAdvancements.award(player, ModAdvancements.HOME_AGAIN);
     }
 
     @SubscribeEvent
-    public static void onCandleLit(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getHand() != InteractionHand.MAIN_HAND
-                || !(event.getEntity() instanceof ServerPlayer player) || event.getItemStack().isEmpty()
-                || !event.getItemStack().is(Items.FLINT_AND_STEEL)) return;
+    public static void onBreakBlock(BlockEvent.BreakEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
         ServerLevel level = player.serverLevel();
         if (level.dimension() != ServerLevel.OVERWORLD) return;
         BlockPos pos = event.getPos();
-        if (!level.getBlockState(pos).hasProperty(CandleBlock.LIT) || level.getBlockState(pos).getValue(CandleBlock.LIT)) return;
-        boolean targetCandle = CemeterySavedData.get(level).cemeteries().stream()
-                .anyMatch(cemetery -> cemetery.candles().contains(pos));
-        if (!targetCandle) return;
-        CANDLE_CHECKS.add(new CandleCheck(level, player, pos.immutable()));
-    }
-
-    private static void checkCandles(ServerLevel level, ServerPlayer player, BlockPos litPos) {
-        CemeterySavedData data = CemeterySavedData.get(level);
-        for (CemeterySavedData.Cemetery cemetery : data.cemeteries()) {
-            if (cemetery.awarded() || !cemetery.candles().contains(litPos)) continue;
-            boolean allLit = cemetery.candles().size() == 124;
-            for (BlockPos candle : cemetery.candles()) {
-                if (!level.hasChunkAt(candle) || !level.getBlockState(candle).hasProperty(CandleBlock.LIT)
-                        || !level.getBlockState(candle).getValue(CandleBlock.LIT)) { allLit = false; break; }
-            }
-            if (allLit) {
-                data.cemeteries().set(data.cemeteries().indexOf(cemetery), cemetery.withAwarded());
-                data.changed();
-                ModAdvancements.award(player, ModAdvancements.HOME_AGAIN);
-            }
-            return;
-        }
+        boolean inCemetery = CemeterySavedData.get(level).cemeteries().stream()
+                .anyMatch(cemetery -> cemetery.contains(pos));
+        if (!inCemetery || player.getPersistentData().getInt(DWELL_TAG) <= 0) return;
+        player.getPersistentData().remove(DWELL_TAG);
+        player.displayClientMessage(Component.translatable("message.endbound_ember.cemetery_disturbed"), true);
     }
 
     private static boolean isAllowedBiome(ServerLevel level, BlockPos pos) {
@@ -344,5 +342,4 @@ public final class CemeteryEvents {
     private record Candidate(ServerLevel level, ChunkPos chunk) {
         private String key() { return candidateKey(level, chunk.x, chunk.z); }
     }
-    private record CandleCheck(ServerLevel level, ServerPlayer player, BlockPos pos) {}
 }

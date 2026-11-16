@@ -2,6 +2,9 @@ package com.emberstar.endbounember.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import com.emberstar.endbounember.EndboundEmber;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -82,10 +85,18 @@ public final class ClientMusicPlayer {
     private static ResourceLocation activeId;
     private static SimpleSoundInstance activeInstance;
     private static List<Track> tracks = List.of();
+    private static boolean resourceReloading;
+    private static CompletableFuture<Void> resourceReload;
+    private static boolean refreshRequested;
+    private static int pendingImportedIndex = -1;
 
     private ClientMusicPlayer() {}
 
     public static void refresh() {
+        refreshTracks();
+    }
+
+    private static void refreshTracks() {
         List<Track> all = new ArrayList<>(VANILLA);
         List<java.nio.file.Path> imported = ClientMusicPack.importedTracks();
         for (int i = 0; i < imported.size(); i++) {
@@ -113,10 +124,60 @@ public final class ClientMusicPlayer {
 
     public static int currentIndex() { return index; }
 
+    public static void refreshResources() {
+        requestResourceReload(-1);
+    }
+
+    private static void requestResourceReload(int importedIndex) {
+        if (importedIndex >= 0) pendingImportedIndex = importedIndex;
+        refreshRequested = true;
+        if (resourceReloading) return;
+        resourceReloading = true;
+        stopSound();
+        playing = false;
+        if (!ClientMusicPack.refreshPack()) {
+            refreshRequested = false;
+            pendingImportedIndex = -1;
+            return;
+        }
+
+        Minecraft minecraft = Minecraft.getInstance();
+        try {
+            resourceReload = minecraft.reloadResourcePacks();
+            resourceReload.whenComplete((unused, error) -> minecraft.execute(() -> {
+                resourceReload = null;
+                resourceReloading = false;
+                boolean shouldRefresh = refreshRequested;
+                int selectedImportedIndex = pendingImportedIndex;
+                refreshRequested = false;
+                pendingImportedIndex = -1;
+                if (error != null) {
+                    EndboundEmber.LOGGER.warn("[音乐播放器] 重载客户端音乐资源失败", error);
+                    return;
+                }
+                if (!shouldRefresh) return;
+                refreshTracks();
+                if (selectedImportedIndex >= 0) {
+                    int selected = VANILLA.size() + selectedImportedIndex;
+                    if (selected < tracks.size()) {
+                        index = selected;
+                        play();
+                    }
+                }
+            }));
+        } catch (RuntimeException error) {
+            resourceReload = null;
+            refreshRequested = false;
+            pendingImportedIndex = -1;
+            EndboundEmber.LOGGER.warn("[音乐播放器] 重载客户端音乐资源失败", error);
+        }
+    }
+
     public static void select(int trackIndex) {
         refresh();
         if (trackIndex < 0 || trackIndex >= tracks.size()) return;
         index = trackIndex;
+        // 列表中的曲目已经在客户端资源包中注册，选择时直接播放，避免每次点击都触发资源重载。
         play();
     }
 

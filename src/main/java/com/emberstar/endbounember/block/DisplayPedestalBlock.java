@@ -469,11 +469,10 @@ public class DisplayPedestalBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
-    /** 尝试启动仪式：祭坛结构完整时开始并返回 true，否则在动作栏提示第一处不合格的坐标 */
+    /** 仅在祭坛结构完整时启动仪式。 */
     private static boolean tryStartRitual(Level level, BlockPos pos, Player player) {
         RitualAltar.Result result = RitualAltar.find(level, pos);
         if (!result.ok()) {
-            RitualAltar.report(player, level, result);
             return false;
         }
         RitualAltar.Match match = result.match();

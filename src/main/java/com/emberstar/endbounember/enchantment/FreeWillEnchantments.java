@@ -231,16 +231,22 @@ public final class FreeWillEnchantments {
         target.hurt(target.level().damageSources().source(VOID_SPARK, attacker), extra);
 
         if (target.level() instanceof ServerLevel levelObj) {
-            levelObj.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
-                    target.getX(), target.getY(0.6D), target.getZ(),
+            spawnEmberFlame(levelObj, target.getX(), target.getY(0.6D), target.getZ(),
                     20, 0.4D, 0.6D, 0.4D, 0.06D);
             levelObj.playSound(null, target.blockPosition(), SoundEvents.BLAZE_SHOOT,
                     SoundSource.PLAYERS, 1.0F, 0.6F);
         }
     }
 
+    /** 薪火粒子：两枚贴图同时出现，用于替换原灵魂火特效。 */
+    public static void spawnEmberFlame(ServerLevel level, double x, double y, double z,
+            int count, double dx, double dy, double dz, double speed) {
+        level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(), x, y, z, count, dx, dy, dz, speed);
+        level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(), x, y, z, count, dx, dy, dz, speed);
+    }
+
     /**
-     * 星火不灭的旧版特效：被星火燃尽的目标死亡时，灵魂火以双重扩散环向外炸开。
+     * 星火不灭的旧版特效：被星火燃尽的目标死亡时，薪火以双重扩散环向外炸开。
      */
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -257,7 +263,7 @@ public final class FreeWillEnchantments {
         spawnSparkSpread(level, dead.position(), SPARK_SPREAD_RADIUS);
     }
 
-    /** 旧版星火扩散动画：0.6 / 1.0 两道末地烛光环，外环叠加灵魂火，中心爆燃。 */
+    /** 旧版星火扩散动画：0.6 / 1.0 两道末地烛光环，外环叠加薪火，中心爆燃。 */
     private static void spawnSparkSpread(ServerLevel level, Vec3 center, double radius) {
         int perRing = 24;
         for (double ringScale : new double[]{0.6D, 1.0D}) {
@@ -269,13 +275,11 @@ public final class FreeWillEnchantments {
                 level.sendParticles(ParticleTypes.END_ROD,
                         x, center.y + 0.2D, z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 if (ringScale >= 1.0D) {
-                    level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
-                            x, center.y + 0.2D, z, 1, 0.0D, 0.05D, 0.0D, 0.05D);
+                    spawnEmberFlame(level, x, center.y + 0.2D, z, 1, 0.0D, 0.05D, 0.0D, 0.05D);
                 }
             }
         }
-        level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
-                center.x, center.y + 0.5D, center.z, 16, 0.3D, 0.3D, 0.3D, 0.1D);
+        spawnEmberFlame(level, center.x, center.y + 0.5D, center.z, 16, 0.3D, 0.3D, 0.3D, 0.1D);
     }
 
     /** 希望之花：低血量时近战伤害提升 50%。 */

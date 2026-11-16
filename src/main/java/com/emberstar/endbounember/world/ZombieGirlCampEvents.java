@@ -49,8 +49,8 @@ public final class ZombieGirlCampEvents {
             EndboundEmber.MODID, "zombie_girl_camp");
     private static final ResourceLocation CAMP_RESOURCE = ResourceLocation.fromNamespaceAndPath(
             EndboundEmber.MODID, "structures/zombie_girl_camp.nbt");
-    /** 普通营地候选间距：每 16×16 个区块确定一个候选，约每 256 格一个。 */
-    private static final int SPACING = 16;
+    /** 普通营地候选间距：每 20×20 个区块确定一个候选。 */
+    private static final int SPACING = 20;
     /** 普通营地与世界出生点的最小水平距离。 */
     private static final int MIN_SPAWN_DISTANCE = 100;
     /** 出生点营地目标区块偏移，保持在出生点附近。 */
@@ -59,15 +59,11 @@ public final class ZombieGirlCampEvents {
     private static final int SPAWN_CAMP_MIN_Y = 60;
     /** 两座营地包围盒之间额外保留的水平间隙。 */
     private static final int CAMP_GAP = 16;
-    /**
-     * 结构原点（最小角）相对地表高度图的下移格数。
-     * 结构第 0 层是填充泥土，第 1 层是草地/木板地面；下移 1 格后草地层正好替换原地表方块，
-     * 室内地面因此落在原地表上方一格，营地内部不会被地形穿插。
-     */
+    /** 结构第 0 层是填充泥土，第 1 层是草地/木板地面；下移 1 格后草地层正好替换原地表方块。 */
     private static final int ORIGIN_Y_OFFSET = -1;
-    /** 结构第 2 层是室内可站立地面（第 1 层为草地与木板道路）。 */
+    /** 结构第 2 层是室内可站立地面。 */
     private static final int CAMP_FLOOR_LAYER = 2;
-    /** 少女可站立的最高相对层；再向上是床铺与屋顶，属于家具或结构顶盖。 */
+    /** 少女可站立的最高相对层。 */
     private static final int CAMP_INTERIOR_HEIGHT = 4;
     /** 营地常驻少女数量（新营地共 8 张床）。 */
     private static final int CAMP_GIRL_COUNT = 6;

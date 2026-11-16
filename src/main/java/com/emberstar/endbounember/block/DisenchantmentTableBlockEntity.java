@@ -94,7 +94,7 @@ public class DisenchantmentTableBlockEntity extends BlockEntity implements MenuP
 
     public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state,
             DisenchantmentTableBlockEntity entity) {
-        if (!Config.DISENCHANTMENT_AUTOMATIC.get() || entity.hasLegacyRecovery()) {
+        if (entity.hasLegacyRecovery()) {
             entity.automaticProgress = 0;
             return;
         }

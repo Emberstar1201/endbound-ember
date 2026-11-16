@@ -72,6 +72,15 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("nether_meteor"));
 
+    /** 钢筋铁骨触发的引力黑洞：固定位置、无碰撞、只影响生物。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<StardustBlackHoleEntity>> STARDUST_BLACK_HOLE =
+            ENTITY_TYPES.register("stardust_black_hole",
+                    () -> EntityType.Builder.<StardustBlackHoleEntity>of(StardustBlackHoleEntity::new, MobCategory.MISC)
+                            .sized(0.2F, 0.2F)
+                            .clientTrackingRange(32)
+                            .updateInterval(1)
+                            .build("stardust_black_hole"));
+
     /** Herobrine：仪式召唤的自定义 Boss，人形模型，每个玩家一份战斗目标。 */
     public static final DeferredHolder<EntityType<?>, EntityType<Herobrine>> HEROBRINE =
             ENTITY_TYPES.register("herobrine",

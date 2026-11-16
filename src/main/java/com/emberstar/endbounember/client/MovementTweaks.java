@@ -77,8 +77,10 @@ public final class MovementTweaks {
         if (Config.MOVEMENT_AIR_CONTROL.get() && !onGround) {
             applyAirControl(player, forward, strafe);
         }
-        if (Config.MOVEMENT_BUNNY_HOP.get()) {
-            tryBunnyHop(player, onGround, minecraft.options.keyJump.isDown());
+        boolean jumpDown = minecraft.options.keyJump.isDown();
+        boolean multiJumpAvailable = Config.MULTI_JUMP_ENABLED.get() && Config.MULTI_JUMP_EXTRA_JUMPS.get() > 0;
+        if (Config.MOVEMENT_BUNNY_HOP.get() && !multiJumpAvailable) {
+            tryBunnyHop(player, onGround, jumpDown);
         }
 
         if (onGround) hopped = false;
