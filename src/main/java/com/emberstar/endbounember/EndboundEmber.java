@@ -1594,6 +1594,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.SwordParryPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.WindRipplePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.MultiJumpPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldAttackPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);

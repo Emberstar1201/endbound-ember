@@ -539,6 +539,15 @@ public final class DawnEnchantment {
             giveInitialBooks(player);
         }
 
+        /** 死亡重生会重建玩家实体，持久化数据不会自动继承，需手动搬运，否则会重复发放初始书。 */
+        @SubscribeEvent
+        public static void onClone(PlayerEvent.Clone event) {
+            CompoundTag source = event.getOriginal().getPersistentData();
+            CompoundTag target = event.getEntity().getPersistentData();
+            if (source.getBoolean(GUIDE_RECEIVED_TAG)) target.putBoolean(GUIDE_RECEIVED_TAG, true);
+            if (source.getBoolean(RECEIVED_TAG)) target.putBoolean(RECEIVED_TAG, true);
+        }
+
         @SubscribeEvent
         public static void deliverInitialBooksTick(PlayerTickEvent.Post event) {
             if (!(event.getEntity() instanceof ServerPlayer player)) return;

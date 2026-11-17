@@ -2,7 +2,6 @@ package com.emberstar.endbounember.world;
 
 import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
-import com.emberstar.endbounember.client.InnateMovementClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -21,7 +20,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class InnateMovement {
@@ -39,14 +37,14 @@ public final class InnateMovement {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         double multiplier = 1.0D;
-        if (Config.WIND_RIPPLE_ENABLED.get() && !player.isFallFlying() && !player.isPassenger() && !player.getAbilities().flying) {
+        boolean windRippleActive = Config.WIND_RIPPLE_ENABLED.get()
+                && WindRippleToggle.isEnabled(player);
+        if (windRippleActive && !player.isFallFlying() && !player.isPassenger() && !player.getAbilities().flying) {
             multiplier = moveOnSurface(player);
         }
         if (player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) return;
         manageSpeedModifier(serverPlayer, multiplier);
-        if (Config.WIND_RIPPLE_ENABLED.get()) {
-            player.getFoodData().setExhaustion(0.0F);
-        }
+        if (windRippleActive) player.getFoodData().setExhaustion(0.0F);
     }
 
     private static double moveOnSurface(Player player) {

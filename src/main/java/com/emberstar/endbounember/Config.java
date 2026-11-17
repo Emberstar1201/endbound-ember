@@ -148,10 +148,22 @@ public class Config {
             .comment("玩家移动机制总开关，关闭后惯性滑行、落地连跳与空中控制增强全部失效。")
             .define("movementTweaksEnabled", true);
 
-    /** 风踏涟漪：全局内置的陆地与水面移动能力。 */
+    /** 风踏涟漪：陆地与水面移动能力总开关，玩家可通过按键临时启用。 */
     public static final ModConfigSpec.BooleanValue WIND_RIPPLE_ENABLED = BUILDER
-            .comment("开启内置的陆地与水面移动加速。")
+            .comment("允许玩家使用风踏涟漪按键（默认数字键盘 7）启用陆地与水面移动加速。")
             .define("windRippleEnabled", true);
+
+    public static final ModConfigSpec.BooleanValue DEEP_SEA_RIPPLE_ENABLED = BUILDER
+            .comment("Enable underwater movement speed and 90% slower oxygen loss.")
+            .define("deepSeaRippleEnabled", true);
+
+    public static final ModConfigSpec.BooleanValue FEATHER_WING_ENABLED = BUILDER
+            .comment("Prevent damage from flying into walls.")
+            .define("featherWingEnabled", true);
+
+    public static final ModConfigSpec.BooleanValue SMOKELESS_DASH_ENABLED = BUILDER
+            .comment("Enable gliding thrust without fireworks.")
+            .define("smokelessDashEnabled", true);
 
     /** 惯性滑行：松开方向键或落地后保留水平速度，缓慢减速。 */
     public static final ModConfigSpec.BooleanValue MOVEMENT_MOMENTUM_GLIDE = BUILDER

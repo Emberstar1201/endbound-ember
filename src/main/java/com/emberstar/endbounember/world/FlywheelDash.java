@@ -146,7 +146,11 @@ public final class FlywheelDash {
         int totalTicks = Math.max(MIN_DASH_TICKS,
                 (int) Math.ceil(dashDistance / DASH_SPEED));
 
-        DashState state = new DashState(direction, totalTicks, player.isInvulnerable());
+        // 冲刺途中再次起跳时沿用最初的无敌状态，避免把冲刺自身提供的无敌当成原有状态，
+        // 否则收尾时不会解除无敌，玩家会永久保持无敌并导致怪物无法锁定。
+        DashState previous = DASHING.get(player.getUUID());
+        boolean wasInvulnerable = previous != null ? previous.wasInvulnerable : player.isInvulnerable();
+        DashState state = new DashState(direction, totalTicks, wasInvulnerable);
         DASHING.put(player.getUUID(), state);
 
         if (com.emberstar.endbounember.item.StardustWitchHaloEvents.wearingStardustHalo(player)
@@ -275,7 +279,8 @@ public final class FlywheelDash {
 
             float damage = impactDamage(state);
             double healthRatio = target.getHealth() / Math.max(1.0F, target.getMaxHealth());
-            if (target.hurt(player.damageSources().fellOutOfWorld(), damage)) {
+            if (target.hurt(player.damageSources().source(
+                    net.minecraft.world.damagesource.DamageTypes.FELL_OUT_OF_WORLD, player), damage)) {
                 // 沿冲刺方向击退并附加短暂减速
                 Vec3 dir = state.direction;
                 target.push(dir.x * IMPACT_KNOCKBACK, 0.28D, dir.z * IMPACT_KNOCKBACK);

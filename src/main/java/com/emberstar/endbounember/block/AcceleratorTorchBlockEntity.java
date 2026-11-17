@@ -63,6 +63,9 @@ public class AcceleratorTorchBlockEntity extends BlockEntity {
 
     /** 该位置是否处在某个加速火把的范围内；是则返回需要额外补跑的 tick 次数 */
     public static int extraTicksAt(Level level, BlockPos pos) {
+        if (level == null || pos == null) {
+            return 0;
+        }
         if (!Config.ACCELERATOR_TORCH_ENABLED.get()) {
             return 0;
         }
@@ -77,7 +80,12 @@ public class AcceleratorTorchBlockEntity extends BlockEntity {
             if (positions == null) {
                 return 0;
             }
-            for (BlockPos torch : positions) {
+            for (var iterator = positions.iterator(); iterator.hasNext();) {
+                BlockPos torch = iterator.next();
+                if (torch == null) {
+                    iterator.remove();
+                    continue;
+                }
                 if (torch.distSqr(pos) <= limit) {
                     return speed - 1;
                 }

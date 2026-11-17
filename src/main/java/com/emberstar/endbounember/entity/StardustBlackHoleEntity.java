@@ -4,14 +4,10 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.emberstar.endbounember.EndboundEmber;
-
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,13 +35,6 @@ public class StardustBlackHoleEntity extends Entity {
     /** 客户端渲染需要知道当前年龄，服务端每 tick 同步一次。 */
     private static final EntityDataAccessor<Integer> DATA_AGE =
             SynchedEntityData.defineId(StardustBlackHoleEntity.class, EntityDataSerializers.INT);
-    private static final ResourceKey<net.minecraft.world.damagesource.DamageType> PULSE_DAMAGE_TYPE =
-            ResourceKey.create(Registries.DAMAGE_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_black_hole"));
-    private static final ResourceKey<net.minecraft.world.damagesource.DamageType> COLLAPSE_DAMAGE_TYPE =
-            ResourceKey.create(Registries.DAMAGE_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_black_hole_collapse"));
-
     @Nullable
     private UUID ownerUuid;
     private int age;
@@ -94,7 +83,7 @@ public class StardustBlackHoleEntity extends Entity {
 
     private void tickDamagePulse() {
         if (age % 20 == 0) {
-            damageTargets(PULSE_DAMAGE, PULSE_DAMAGE_TYPE);
+            damageTargets(PULSE_DAMAGE);
         }
     }
 
@@ -109,18 +98,27 @@ public class StardustBlackHoleEntity extends Entity {
         }
     }
 
-    private void damageTargets(float amount, ResourceKey<net.minecraft.world.damagesource.DamageType> type) {
-        Entity owner = ownerEntity();
-        DamageSource source = owner == null
-                ? this.level().damageSources().source(type, this)
-                : this.level().damageSources().source(type, owner, this);
+    private void damageTargets(float amount) {
+        DamageSource source = voidDamageSource();
         for (LivingEntity target : targets()) {
             target.hurt(source, amount);
         }
     }
 
+    /**
+     * 构造虚空伤害源：伤害类型沿用原版“掉出世界”，
+     * 但把黑洞拥有者作为造成者、黑洞作为直接来源，保留击杀归属。
+     */
+    private DamageSource voidDamageSource() {
+        Entity owner = ownerEntity();
+        if (owner == null) {
+            return this.level().damageSources().fellOutOfWorld();
+        }
+        return this.level().damageSources().source(DamageTypes.FELL_OUT_OF_WORLD, owner, this);
+    }
+
     private void collapse() {
-        damageTargets(COLLAPSE_DAMAGE, COLLAPSE_DAMAGE_TYPE);
+        damageTargets(COLLAPSE_DAMAGE);
         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER,
                     this.getX(), this.getY() + 0.5D, this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
