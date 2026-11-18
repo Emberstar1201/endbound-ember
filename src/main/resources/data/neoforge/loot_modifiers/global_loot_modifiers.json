@@ -6,6 +6,7 @@
     "endbound_ember:craftsmanship",
     "endbound_ember:end_approaches_library",
     "endbound_ember:end_approaches_stronghold",
-    "endbound_ember:stardust"
+    "endbound_ember:stardust",
+    "endbound_ember:loot_boost"
   ]
 }

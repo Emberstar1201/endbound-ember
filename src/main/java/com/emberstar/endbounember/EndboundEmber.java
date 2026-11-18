@@ -125,6 +125,9 @@ public class EndboundEmber {
     // 方块实体类型注册
     public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    // 全局战利品修改器序列化器注册
+    public static final DeferredRegister<com.mojang.serialization.MapCodec<? extends net.neoforged.neoforge.common.loot.IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
+            DeferredRegister.create(net.neoforged.neoforge.registries.NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
 
     /** 展示台爆炸抗性：与原版黑曜石同级，TNT、苦力怕、末地水晶均无法炸毁，台面存放的物品随之保留 */
     public static final float DISPLAY_PEDESTAL_BLAST_RESISTANCE = 1200.0F;
@@ -1613,6 +1616,8 @@ public class EndboundEmber {
         MENU_TYPES.register(modEventBus);
         DATA_COMPONENTS.register(modEventBus);
         BLOCK_ENTITIES.register(modEventBus);
+        LOOT_MODIFIER_SERIALIZERS.register("loot_boost", () -> com.emberstar.endbounember.world.LootBoostModifier.CODEC);
+        LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         com.emberstar.endbounember.effect.ModEffects.MOB_EFFECTS.register(modEventBus);
         ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so entities get registered

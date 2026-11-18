@@ -252,6 +252,16 @@ public class Config {
             .comment("Prevent durability loss from additional chain-mined blocks. Server config only; protects at most 64 durability per operation.")
             .define("chainMiningDurabilityProtection", true);
 
+    /** 原版战利品表掉落倍率总开关；仅由服务器配置文件控制。 */
+    public static final ModConfigSpec.BooleanValue VANILLA_LOOT_BOOST_ENABLED = SERVER_BUILDER
+            .comment("Multiply item drops from all loot tables by 2.5. Server config only.")
+            .define("vanillaLootBoostEnabled", true);
+
+    /** 原版经验掉落倍率总开关；仅由服务器配置文件控制。 */
+    public static final ModConfigSpec.BooleanValue VANILLA_XP_BOOST_ENABLED = SERVER_BUILDER
+            .comment("Multiply experience dropped by mobs by 2.5. Server config only.")
+            .define("vanillaXpBoostEnabled", true);
+
     /** 耐久 HUD 客户端显示开关。 */
     public static final ModConfigSpec.BooleanValue DURABILITY_HUD_ENABLED = CLIENT_BUILDER
             .comment("在屏幕左侧显示装备和双手物品的剩余耐久。")
