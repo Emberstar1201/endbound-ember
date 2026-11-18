@@ -1589,6 +1589,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.DawnEnergyPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.CloudArrowVelocityPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.FlywheelDashPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.WindRipplePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeTurbulenceTogglePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeHaloSkillPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
