@@ -1594,11 +1594,12 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.EnchantmentPreviewPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.SwordParryPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.WallJumpPayload::register);
-        modEventBus.addListener(com.emberstar.endbounember.network.WindRipplePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.MultiJumpPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldAttackPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.BossMusicLengthPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.ChainMiningRequestPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.ChainMiningStatePayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -1623,6 +1624,7 @@ public class EndboundEmber {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
     }
 

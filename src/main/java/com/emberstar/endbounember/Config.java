@@ -11,6 +11,7 @@ import net.neoforged.neoforge.common.TranslatableEnum;
 
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ModConfigSpec.Builder SERVER_BUILDER = new ModConfigSpec.Builder();
     private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
 
     /** 时光光环时钟的时间来源，配置界面里以按钮形式循环切换 */
@@ -209,9 +210,9 @@ public class Config {
             .comment("剑右键格挡：手持剑按住右键进入格挡姿态，正面受到的伤害减半。")
             .define("swordBlockingEnabled", true);
 
-    /** 钢筋铁骨：默认按 R 朝准心突进；每 5 秒恢复 1 层，完成「绝处逢生」后上限提升到 8 层。 */
+    /** 钢筋铁骨：默认按 R 朝准心突进；每 12 秒恢复 1 层，完成「绝处逢生」后上限提升到 8 层。 */
     public static final ModConfigSpec.BooleanValue FLYWHEEL_DASH_ENABLED = BUILDER
-            .comment("钢筋铁骨：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物；陆地冲刺 15 格，空中冲刺 30 格。每 5 秒恢复一层充能，未完成成就「绝处逢生」时最多连续使用三次，完成后最多八次。")
+            .comment("钢筋铁骨：按冲刺键（默认 R，可在按键绑定中修改）朝准心高速突进，期间免疫伤害并可穿过生物；陆地冲刺 15 格，空中冲刺 30 格。每 12 秒恢复一层充能，未完成成就「绝处逢生」时最多连续使用三次，完成后最多八次。")
             .define("flywheelDashEnabled", true);
 
     /** 更好的村民交易总开关。 */
@@ -246,6 +247,11 @@ public class Config {
             .comment("Replace a broken main-hand hotbar item with an undamaged item of the same type from inventory.")
             .define("autoReplaceEnabled", true);
 
+    /** 连锁挖矿额外方块不消耗工具耐久；仅由服务器配置文件控制。 */
+    public static final ModConfigSpec.BooleanValue CHAIN_MINING_DURABILITY_PROTECTION = SERVER_BUILDER
+            .comment("Prevent durability loss from additional chain-mined blocks. Server config only; protects at most 64 durability per operation.")
+            .define("chainMiningDurabilityProtection", true);
+
     /** 耐久 HUD 客户端显示开关。 */
     public static final ModConfigSpec.BooleanValue DURABILITY_HUD_ENABLED = CLIENT_BUILDER
             .comment("在屏幕左侧显示装备和双手物品的剩余耐久。")
@@ -262,6 +268,7 @@ public class Config {
             .defineInRange("durabilityHudYOffset", -30, -2000, 2000);
 
     static final ModConfigSpec SPEC = BUILDER.build();
+    static final ModConfigSpec SERVER_SPEC = SERVER_BUILDER.build();
     static final ModConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

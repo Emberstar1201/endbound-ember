@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * 钢筋铁骨（原「飞轮效应」）：内置能力，默认按键 R（可在按键绑定中修改）。
  * 朝准心方向高速突进，期间免疫伤害并可穿过生物；撞墙会提前停下。
  * 强化点：扫掠命中、动能余速、动能冲击、动能释放。
- * 充能上限 8 层（需完成「绝处逢生」解锁，未解锁时为 3 层），每 5 秒恢复 1 层。
+ * 充能上限 8 层（需完成「绝处逢生」解锁，未解锁时为 3 层），每 12 秒恢复 1 层。
  */
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class FlywheelDash {
@@ -54,8 +54,8 @@ public final class FlywheelDash {
     private static final int MAX_CHARGES = 8;
     /** 未完成「绝处逢生」时的充能上限：可连续使用三次。 */
     private static final int BASE_CHARGES = 3;
-    /** 每 5 秒恢复 1 层充能。 */
-    private static final int CHARGE_RECHARGE_TICKS = 100;
+    /** 每 12 秒恢复 1 层充能。 */
+    private static final int CHARGE_RECHARGE_TICKS = 240;
     /** 「绝处逢生」：BOSS 血量占比不高于该值时被冲击终结才算达成。 */
     private static final double EXECUTE_HEALTH_RATIO = 0.10D;
     /** 「绝处逢生」：生命上限达到该值的生物视作 BOSS（覆盖模组 BOSS）。 */
@@ -73,7 +73,7 @@ public final class FlywheelDash {
     /** 动能余速：滑行初始速度相对冲刺速度的比例。 */
     private static final double COAST_SPEED_RATIO = 0.55D;
     /** 冲刺收尾的额外无敌帧。 */
-    private static final int END_INVULNERABLE_TICKS = 20;
+    private static final int END_INVULNERABLE_TICKS = 30;
     /** 空中冲刺结束后的下坠缓冲 tick 数。 */
     private static final int AIR_RELEASE_BUFFER_TICKS = 4;
     /** 空中缓冲与动能余速允许的最大下坠速度。 */
@@ -452,7 +452,7 @@ public final class FlywheelDash {
         player.getPersistentData().put(TAG_ROOT, data);
     }
 
-    /** 每 5 秒恢复 1 层充能，恢复后提示当前层数。 */
+    /** 每 12 秒恢复 1 层充能，恢复后提示当前层数。 */
     private static void tickRecharge(ServerPlayer player) {
         if (!Config.FLYWHEEL_DASH_ENABLED.get()) return;
 

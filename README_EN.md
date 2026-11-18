@@ -15,7 +15,7 @@
 
 Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the official remake of Enchant-expansion.
 
-**Current version: 1.2.1 beta-2.6 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
+**Current version: 1.2.1 beta-2.8 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
 
 ## ⚠️ Special Notice
 
@@ -29,7 +29,20 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 
 > **Multiplayer server warning:** This mod changes and adds vanilla mechanics, including movement, block placement, combat, enchantments and trading. Server anti-cheat systems may flag these changes and issue warnings, kicks or bans. Members and assistant admins should check the server rules and test cautiously only in an environment where the mod is permitted. The server staff's rules take precedence.
 
-### 1.2.1 beta-2.6 Changelog
+### 1.2.1 beta-2.8 Changelog
+
+#### Chain Mining
+
+- Press the grave/tilde key to toggle chain mining; hold `Shift` and scroll the mouse wheel to cycle modes.
+- Includes Vein, Tunnel, Stair Up, Stair Down and Farming modes. The server revalidates chain targets and processes up to 64 extra blocks.
+- Farming mode can till an 8×8 area from the clicked position and plant seeds across connected farmland.
+- The client previews the blocks affected by the current chain action with an outline colored `#F0F8FF`.
+
+#### Starlight Star
+
+- When held, placed in the offhand, or equipped in a Curios slot, grants Night Vision and 20% movement speed in areas with maximum local brightness ≤14.
+- Night Vision and the movement speed bonus remain for 8 minutes after leaving the qualifying conditions or unequipping the star.
+- Doubles experience from mob kills.
 
 #### Wind Ripple Made Innate
 
@@ -91,6 +104,8 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 
 ### Current Additional Mechanics
 
+- **Chain mining**: Vein, Tunnel, Stair Up/Down and Farming modes; toggle with the grave/tilde key, cycle with Shift+scroll, up to 64 extra blocks.
+- **Starlight Star**: grants Night Vision and 20% movement speed at maximum local brightness ≤14; both remain for 8 minutes after conditions end, and mob-kill XP is doubled.
 - **Enchanting table improvements**: improved enchantment candidates with previews, plus a configurable maximum number of enchantments per item.
 - **Enchantment compatibility**: adjusted compatibility between selected weapons and enchantments.
 - **Villager trading**: permanent discounts, rare Fool villagers, automatic and faster restocking, and profession reset changes.

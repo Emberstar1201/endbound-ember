@@ -1,6 +1,9 @@
 package com.emberstar.endbounember.item;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.emberstar.endbounember.EndboundEmber;
 
@@ -18,10 +21,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * 星辉之星：身处光照低于 5 的环境时获得星光庇护，并把击杀经验翻倍。
+ * 星辉之星：身处亮度不高于 14 的环境时获得星光庇护，并把击杀经验翻倍。
  */
 public class StarlightStarItem extends Item {
     private static final int COLOR = 0xFFE59A;
@@ -54,27 +58,50 @@ public class StarlightStarItem extends Item {
     public static class Events {
         private static final ResourceLocation NIGHT_SPEED_ID =
                 ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "starlight_star_night_speed");
-        /** 生效所需的光照上限：光照严格小于该值即触发。 */
-        private static final int LIGHT_THRESHOLD = 5;
+        /** 生效所需的最高光照等级（含）。 */
+        private static final int LIGHT_THRESHOLD = 14;
+        private static final int TAIL_EFFECT_TICKS = 8 * 60 * 20;
         /** 低光移速加成：最终移速 ×1.2。 */
         private static final double NIGHT_SPEED_BONUS = 0.20D;
         private static final int NIGHT_VISION_TICKS = 300;
         private static final int NIGHT_VISION_REFRESH = 220;
+        private static final Map<UUID, Integer> TAIL_EFFECTS = new HashMap<>();
 
         @SubscribeEvent
         public static void onPlayerTick(PlayerTickEvent.Post event) {
             Player player = event.getEntity();
             if (player.level().isClientSide) return;
 
+            UUID playerId = player.getUUID();
             boolean active = isDark(player) && hasStarlightStar(player);
-            updateNightSpeed(player, active);
-            if (!active) return;
-
-            MobEffectInstance current = player.getEffect(MobEffects.NIGHT_VISION);
-            if (current == null || current.getDuration() <= NIGHT_VISION_REFRESH) {
-                player.addEffect(new MobEffectInstance(
-                        MobEffects.NIGHT_VISION, NIGHT_VISION_TICKS, 0, false, false, true));
+            if (active) {
+                TAIL_EFFECTS.remove(playerId);
+                updateNightSpeed(player, true);
+                refreshNightVision(player);
+                return;
             }
+
+            Integer remaining = TAIL_EFFECTS.get(playerId);
+            if (remaining == null) {
+                if (!hasNightSpeed(player)) return;
+                remaining = TAIL_EFFECT_TICKS;
+                TAIL_EFFECTS.put(playerId, remaining);
+                player.addEffect(new MobEffectInstance(
+                        MobEffects.NIGHT_VISION, TAIL_EFFECT_TICKS, 0, false, false, true));
+            }
+            if (remaining <= 0) {
+                TAIL_EFFECTS.remove(playerId);
+                updateNightSpeed(player, false);
+                return;
+            }
+
+            TAIL_EFFECTS.put(playerId, remaining - 1);
+            updateNightSpeed(player, true);
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+            TAIL_EFFECTS.remove(event.getEntity().getUUID());
         }
 
         @SubscribeEvent
@@ -85,6 +112,11 @@ public class StarlightStarItem extends Item {
             int original = event.getDroppedExperience();
             if (original <= 0) return;
             event.setDroppedExperience(original * 2);
+        }
+
+        private static boolean hasNightSpeed(Player player) {
+            AttributeInstance instance = player.getAttribute(Attributes.MOVEMENT_SPEED);
+            return instance != null && instance.getModifier(NIGHT_SPEED_ID) != null;
         }
 
         private static void updateNightSpeed(Player player, boolean active) {
@@ -102,9 +134,17 @@ public class StarlightStarItem extends Item {
             }
         }
 
-        /** 以玩家所在位置的实际光照（含天光与方块光）判定，低于阈值即生效。 */
+        private static void refreshNightVision(Player player) {
+            MobEffectInstance current = player.getEffect(MobEffects.NIGHT_VISION);
+            if (current == null || current.getDuration() <= NIGHT_VISION_REFRESH) {
+                player.addEffect(new MobEffectInstance(
+                        MobEffects.NIGHT_VISION, NIGHT_VISION_TICKS, 0, false, false, true));
+            }
+        }
+
+        /** 以玩家所在位置的最大本地原始亮度判定，亮度不高于阈值即生效。 */
         private static boolean isDark(Player player) {
-            return player.level().getMaxLocalRawBrightness(player.blockPosition()) < LIGHT_THRESHOLD;
+            return player.level().getMaxLocalRawBrightness(player.blockPosition()) <= LIGHT_THRESHOLD;
         }
 
         private static boolean hasStarlightStar(Player player) {

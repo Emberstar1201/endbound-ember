@@ -4,10 +4,14 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.emberstar.endbounember.EndboundEmber;
+
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,10 +26,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 
-/**
- * 钢筋铁骨触发的引力黑洞：只影响生物，不破坏方块。
- * 实现参考并使用 Avaritia Reborn 代码（MIT License，版权归 IAFEnvoy 与 RainimatorModDev 所有），详见 THIRD-PARTY-NOTICES.md。
- */
+/** 钢筋铁骨触发的引力黑洞：只影响生物，不破坏方块。 */
 public class StardustBlackHoleEntity extends Entity {
     public static final int LIFETIME_TICKS = 20 * 20;
     public static final double EFFECT_RADIUS = 10.0D;
@@ -35,6 +36,13 @@ public class StardustBlackHoleEntity extends Entity {
     /** 客户端渲染需要知道当前年龄，服务端每 tick 同步一次。 */
     private static final EntityDataAccessor<Integer> DATA_AGE =
             SynchedEntityData.defineId(StardustBlackHoleEntity.class, EntityDataSerializers.INT);
+    private static final ResourceKey<net.minecraft.world.damagesource.DamageType> PULSE_DAMAGE_TYPE =
+            ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_black_hole"));
+    private static final ResourceKey<net.minecraft.world.damagesource.DamageType> COLLAPSE_DAMAGE_TYPE =
+            ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "stardust_black_hole_collapse"));
+
     @Nullable
     private UUID ownerUuid;
     private int age;
@@ -83,7 +91,7 @@ public class StardustBlackHoleEntity extends Entity {
 
     private void tickDamagePulse() {
         if (age % 20 == 0) {
-            damageTargets(PULSE_DAMAGE);
+            damageTargets(PULSE_DAMAGE, PULSE_DAMAGE_TYPE);
         }
     }
 
@@ -98,27 +106,18 @@ public class StardustBlackHoleEntity extends Entity {
         }
     }
 
-    private void damageTargets(float amount) {
-        DamageSource source = voidDamageSource();
+    private void damageTargets(float amount, ResourceKey<net.minecraft.world.damagesource.DamageType> type) {
+        Entity owner = ownerEntity();
+        DamageSource source = owner == null
+                ? this.level().damageSources().source(type, this)
+                : this.level().damageSources().source(type, owner, this);
         for (LivingEntity target : targets()) {
             target.hurt(source, amount);
         }
     }
 
-    /**
-     * 构造虚空伤害源：伤害类型沿用原版“掉出世界”，
-     * 但把黑洞拥有者作为造成者、黑洞作为直接来源，保留击杀归属。
-     */
-    private DamageSource voidDamageSource() {
-        Entity owner = ownerEntity();
-        if (owner == null) {
-            return this.level().damageSources().fellOutOfWorld();
-        }
-        return this.level().damageSources().source(DamageTypes.FELL_OUT_OF_WORLD, owner, this);
-    }
-
     private void collapse() {
-        damageTargets(COLLAPSE_DAMAGE);
+        damageTargets(COLLAPSE_DAMAGE, COLLAPSE_DAMAGE_TYPE);
         if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER,
                     this.getX(), this.getY() + 0.5D, this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -136,7 +135,6 @@ public class StardustBlackHoleEntity extends Entity {
     private boolean canAffect(LivingEntity target) {
         if (!target.isAlive() || target.isInvulnerable()) return false;
         if (target instanceof ZombieGirl zombieGirl && !zombieGirl.isTamed()) return false;
-        if (ZombieGirl.isProtectedMaid(target.getType())) return false;
         if (ownerUuid != null && ownerUuid.equals(target.getUUID())) return false;
         if (target instanceof Player player && player.isSpectator()) return false;
         UUID targetOwner = ownerUuidOf(target);
