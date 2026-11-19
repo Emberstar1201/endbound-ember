@@ -46,6 +46,16 @@ public final class ChainMiningEvents {
     private static final Set<Block> STONE_FAMILY = Set.of(
             Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE,
             Blocks.DEEPSLATE, Blocks.TUFF, Blocks.CALCITE);
+    /** 深板岩矿归一到对应的浅层矿，用于识别混搭矿脉中的同种矿石。 */
+    private static final Map<Block, Block> DEEPSLATE_ORE_BASES = Map.of(
+            Blocks.DEEPSLATE_COAL_ORE, Blocks.COAL_ORE,
+            Blocks.DEEPSLATE_IRON_ORE, Blocks.IRON_ORE,
+            Blocks.DEEPSLATE_COPPER_ORE, Blocks.COPPER_ORE,
+            Blocks.DEEPSLATE_GOLD_ORE, Blocks.GOLD_ORE,
+            Blocks.DEEPSLATE_REDSTONE_ORE, Blocks.REDSTONE_ORE,
+            Blocks.DEEPSLATE_LAPIS_ORE, Blocks.LAPIS_ORE,
+            Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DIAMOND_ORE,
+            Blocks.DEEPSLATE_EMERALD_ORE, Blocks.EMERALD_ORE);
     /** 水平四方向，用于连锁耕种时沿耕地扩散。 */
     private static final Direction[] HORIZONTAL = {
             Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
@@ -217,11 +227,14 @@ public final class ChainMiningEvents {
     }
 
     /**
-     * 连锁家族判定：同一种方块永远算一族；此外按用户需求开放三个“同类可连锁”家族：
-     * 石材（石头/花岗岩/闪长岩/安山岩/深板岩/凝灰岩/方解石）、树叶、植物。
+     * 连锁家族判定：同一种方块永远算一族；此外开放同种矿石、石材、树叶和植物家族。
+     * 普通矿与深板岩矿先归一到浅层矿，因此两者自然接壤形成混搭矿脉时可以连续扩散。
      */
     private static boolean sameFamily(BlockState target, BlockState candidate) {
         if (candidate.is(target.getBlock())) return true;
+        Block targetOre = DEEPSLATE_ORE_BASES.getOrDefault(target.getBlock(), target.getBlock());
+        Block candidateOre = DEEPSLATE_ORE_BASES.getOrDefault(candidate.getBlock(), candidate.getBlock());
+        if (targetOre == candidateOre) return true;
         if (STONE_FAMILY.contains(target.getBlock())) return STONE_FAMILY.contains(candidate.getBlock());
         if (target.is(BlockTags.LEAVES)) return candidate.is(BlockTags.LEAVES);
         if (isPlant(target)) return isPlant(candidate);

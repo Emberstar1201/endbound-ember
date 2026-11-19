@@ -15,7 +15,7 @@
 
 Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the official remake of Enchant-expansion.
 
-**Current version: 1.2.1 beta-2.8 (Beta)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
+**Current version: 1.2.1 (Release)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
 
 ## ⚠️ Special Notice
 
@@ -29,7 +29,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 
 > **Multiplayer server warning:** This mod changes and adds vanilla mechanics, including movement, block placement, combat, enchantments and trading. Server anti-cheat systems may flag these changes and issue warnings, kicks or bans. Members and assistant admins should check the server rules and test cautiously only in an environment where the mod is permitted. The server staff's rules take precedence.
 
-### 1.2.1 beta-2.8 Changelog
+### 1.2.1 Changelog
 
 #### Chain Mining
 
@@ -57,14 +57,13 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 - Successful air jumps broadcast cloud particles and a sweep sound from the server; the client prediction stays silent.
 - While multi-jump is enabled it takes precedence over bunny-hop so the two mechanics never compete for the same input; eligibility checks and jump power now live in one shared rule set.
 
-#### Other Fixes
+#### Other Fixes and Mechanics
 
 - Adds `zombieGirlNaturalSpawnMaxY` (default 100) to limit natural zombie-girl spawns, keeping them out of high-altitude farms.
 - Guide book entries in all four languages no longer list Wind Ripple as an enchantment conflicting with Depth Strider.
 - Fixes the ignored local-tool directory pattern in `.gitignore`.
 - Renders the black-hole sphere with a standard translucent entity material for shader compatibility and adds its display name, "Black Hole".
-
-### 1.2.1 beta-2.5 Changelog
+- Ironclad Frame has a longer dash while flying in Creative mode. Existing configurable features such as zoom, moving light, sword blocking, enchanting-table changes, and villager trading remain available.
 
 #### Bedrock Bridging Restored
 
@@ -97,10 +96,6 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 
 - Pedestals are assigned to pickaxe or axe mining categories by material: stone, brick, ore, snow brick, ice brick, and concrete variants use pickaxes; wood, bamboo, and hyphae variants use axes.
 - Glass slabs, stairs, vertical slabs, and panes require Silk Touch to drop themselves. Non-glass wood and stone vertical slabs retain their normal axe or pickaxe category.
-
-#### Other Mechanics
-
-- Ironclad Frame has a longer dash while flying in Creative mode. Existing configurable features such as zoom, moving light, sword blocking, enchanting-table changes, and villager trading remain available.
 
 ### Current Additional Mechanics
 
@@ -165,9 +160,7 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 - **Girls assist in defense**: all three girls (Zombie Girl, Drowned Girl, Human Girl) actively attack illagers and help players defend against raids, whether tamed or not.
 - **Time Turbulence biome**: adds a Time Turbulence dimension biome and re-attaches the biome during chunk loading so the map shows the correct dimension name.
 
-## 1.1.0 (Beta)
-
-> **⚠️ Important: 1.1.0 is still in beta.** The weapons, dimension and boss added in this version have not gone through complete balance validation, so **noticeable imbalance is expected** (possibly too strong, possibly too weak). Mechanics, drops and acquisition methods may also keep changing before the official release. Please treat it as a beta experience, and feedback is welcome.
+## 1.1.0
 
 ### Herobrine
 

@@ -16,8 +16,6 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.tags.BiomeTags;
-import net.neoforged.neoforge.common.Tags;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -25,28 +23,17 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
 import java.util.Optional;
 import net.minecraft.server.packs.resources.Resource;
 
 @EventBusSubscriber(modid = EndboundEmber.MODID)
 public final class CemeteryEvents {
     private static final ResourceLocation STRUCTURE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "cemetery");
-    private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "structures/cemetery.nbt");
-    private static final int SPACING = 30;
-    private static final Queue<Candidate> PENDING = new ArrayDeque<>();
-    private static final Set<String> ATTEMPTED = new HashSet<>();
-    private static final Set<String> QUEUED = new HashSet<>();
-    private static final java.util.Map<String, Integer> RETRIES = new java.util.HashMap<>();
+    private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID, "structure/cemetery.nbt");
     private static final String EFFECT_TAG = "EndboundEmberCemeteryEffect";
     private static final String DWELL_TAG = "EndboundEmberCemeteryDwell";
     /** 需要在墓园内安静停留的时间：60 秒。 */
@@ -95,107 +82,38 @@ public final class CemeteryEvents {
         return true;
     }
 
-    @SubscribeEvent
-    public static void onChunkLoad(ChunkEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel level) || level.dimension() != ServerLevel.OVERWORLD
-                || !(event.getChunk() instanceof net.minecraft.world.level.chunk.LevelChunk chunk)) return;
-        ChunkPos chunkPos = chunk.getPos();
-        if (!isCandidate(level.getSeed(), chunkPos.x, chunkPos.z)) return;
-        String key = candidateKey(level, chunkPos.x, chunkPos.z);
-        if (QUEUED.add(key)) PENDING.add(new Candidate(level, chunkPos));
-    }
-
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        int work = Math.min(1, PENDING.size());
-        List<Candidate> retry = new ArrayList<>();
-        while (work-- > 0) {
-            Candidate candidate = PENDING.poll();
-            if (candidate != null && !ATTEMPTED.contains(candidate.key())) {
-                if (tryCandidate(candidate)) {
-                    RETRIES.remove(candidate.key());
-                } else {
-                    int retries = RETRIES.merge(candidate.key(), 1, Integer::sum);
-                    if (retries < 1200) retry.add(candidate);
-                    else {
-                        RETRIES.remove(candidate.key());
-                        ATTEMPTED.add(candidate.key());
-                    }
-                }
-            }
-        }
-        PENDING.addAll(retry);
-    }
-
-    private static boolean tryCandidate(Candidate candidate) {
-        ServerLevel level = candidate.level();
-        ChunkPos chunk = candidate.chunk();
-        if (!level.hasChunk(chunk.x, chunk.z)) return false;
-        String key = candidate.key();
-        if (ATTEMPTED.contains(key)) return true;
-        BlockPos chunkCenter = new BlockPos(chunk.getMinBlockX() + 8, 0, chunk.getMinBlockZ() + 8);
-        for (int dx = -4; dx <= 4; dx++) {
-            for (int dz = -4; dz <= 4; dz++) {
-                if (!level.hasChunk(chunk.x + dx, chunk.z + dz)) return false;
-            }
-        }
-        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, chunkCenter.getX(), chunkCenter.getZ());
-        BlockPos surface = new BlockPos(chunkCenter.getX(), surfaceY - 1, chunkCenter.getZ());
-        if (!isAllowedBiome(level, surface) || level.getFluidState(surface).isSource()) {
-            ATTEMPTED.add(key);
-            return true;
-        }
-        CemeterySavedData data = CemeterySavedData.get(level);
-        if (data.cemeteries().stream().anyMatch(old -> {
-            long dx = (long) old.origin().getX() + 25 - chunkCenter.getX();
-            long dz = (long) old.origin().getZ() + 25 - chunkCenter.getZ();
-            return dx * dx + dz * dz <= 128L * 128L;
-        })) {
-            ATTEMPTED.add(key);
-            return true;
-        }
-
-        StructureTemplate template = loadTemplate(level);
-        if (template == null) return false;
+    /** 自然结构收尾：按原点去重，沿用旧存档的 LootInitialized / Awarded 状态。 */
+    static void finishNatural(ServerLevel level, ChunkPos chunk, FixedTemplateStructurePiece piece) {
+        BlockPos origin = piece.templateOrigin();
+        StructureTemplate template = piece.template();
         Vec3i size = template.getSize();
-        if (size.getX() != 51 || size.getY() != 9 || size.getZ() != 51) return true;
-        BlockPos origin = new BlockPos(chunkCenter.getX() - size.getX() / 2, surfaceY - 3,
-                chunkCenter.getZ() - size.getZ() / 2);
-        int minChunkX = origin.getX() >> 4;
-        int maxChunkX = (origin.getX() + 50) >> 4;
-        int minChunkZ = origin.getZ() >> 4;
-        int maxChunkZ = (origin.getZ() + 50) >> 4;
-        for (int cx = minChunkX; cx <= maxChunkX; cx++) for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
-            if (!level.hasChunk(cx, cz)) return false;
-        }
-        for (int dx = 0; dx < size.getX(); dx += 8) {
-            for (int dz = 0; dz < size.getZ(); dz += 8) {
-                BlockPos check = origin.offset(dx, 0, dz);
-                int checkY = level.getHeight(Heightmap.Types.WORLD_SURFACE, check.getX(), check.getZ());
-                BlockPos ground = new BlockPos(check.getX(), checkY - 1, check.getZ());
-                if (Math.abs(checkY - surfaceY) > 4 || !isAllowedBiome(level, ground)
-                        || level.getFluidState(ground).isSource()) {
-                    ATTEMPTED.add(key);
-                    return true;
-                }
-            }
-        }
-
-        StructurePlaceSettings settings = new StructurePlaceSettings().setKnownShape(true)
+        CemeterySavedData data = CemeterySavedData.get(level);
+        CemeterySavedData.Cemetery existing = data.cemeteries().stream()
+                .filter(c -> c.dimension().equals(level.dimension()) && c.origin().equals(origin))
+                .findFirst().orElse(null);
+        if (existing != null && existing.lootInitialized()) return;
+        StructurePlaceSettings settings = new StructurePlaceSettings()
                 .addProcessor(BlockIgnoreProcessor.AIR).addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
-        if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2)) return false;
         List<BlockPos> candles = new ArrayList<>();
         for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, settings, Blocks.CANDLE)) {
             candles.add(origin.offset(info.pos()).immutable());
         }
-        CemeterySavedData.Cemetery cemetery = new CemeterySavedData.Cemetery(level.dimension(), chunkCenter, origin, false, false, candles);
-        data.add(cemetery);
+        CemeterySavedData.Cemetery cemetery = new CemeterySavedData.Cemetery(level.dimension(),
+                existing == null ? new BlockPos(chunk.getMiddleBlockX(), origin.getY() + 3,
+                        chunk.getMiddleBlockZ()) : existing.village(), origin, false,
+                existing != null && existing.awarded(), candles);
+        int index;
+        if (existing == null) {
+            data.add(cemetery);
+            index = data.cemeteries().size() - 1;
+        } else {
+            index = data.cemeteries().indexOf(existing);
+            data.cemeteries().set(index, cemetery);
+            data.changed();
+        }
         fillContainers(level, origin, size);
-        int index = data.cemeteries().indexOf(cemetery);
         data.cemeteries().set(index, cemetery.withLootInitialized());
         data.changed();
-        ATTEMPTED.add(key);
-        return true;
     }
 
     private static void fillContainers(ServerLevel level, BlockPos origin, Vec3i size) {
@@ -322,24 +240,4 @@ public final class CemeteryEvents {
         player.displayClientMessage(Component.translatable("message.endbound_ember.cemetery_disturbed"), true);
     }
 
-    private static boolean isAllowedBiome(ServerLevel level, BlockPos pos) {
-        var biome = level.getBiome(pos);
-        return biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS);
-    }
-
-    private static boolean isCandidate(long seed, int chunkX, int chunkZ) {
-        int regionX = Math.floorDiv(chunkX, SPACING);
-        int regionZ = Math.floorDiv(chunkZ, SPACING);
-        long hash = seed * 128712L + regionX * 987541L + regionZ;
-        return chunkX - regionX * SPACING == Math.floorMod((int) hash, SPACING)
-                && chunkZ - regionZ * SPACING == Math.floorMod((int) (hash >>> 32), SPACING);
-    }
-
-    private static String candidateKey(ServerLevel level, int chunkX, int chunkZ) {
-        return level.dimension().location() + ":" + chunkX + ":" + chunkZ;
-    }
-
-    private record Candidate(ServerLevel level, ChunkPos chunk) {
-        private String key() { return candidateKey(level, chunk.x, chunk.z); }
-    }
 }

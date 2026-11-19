@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "endbound_ember:zombie_girl_camp",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 17384926,
+    "spacing": 20,
+    "separation": 8,
+    "spread_type": "linear"
+  }
+}

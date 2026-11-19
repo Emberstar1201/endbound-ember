@@ -18,6 +18,7 @@ public final class ZombieGirlCampSavedData extends SavedData {
     private static final String NAME = "endbound_ember_zombie_girl_camps";
     private final List<BlockPos> camps = new ArrayList<>();
     private final Set<Long> generatedChunks = new HashSet<>();
+    private final Set<Long> completedOrigins = new HashSet<>();
     private final Set<Long> protectedCropFarmland = new HashSet<>();
 
     public static ZombieGirlCampSavedData get(ServerLevel level) {
@@ -41,6 +42,9 @@ public final class ZombieGirlCampSavedData extends SavedData {
         for (long key : tag.getLongArray("GeneratedChunks")) {
             data.generatedChunks.add(key);
         }
+        for (long key : tag.getLongArray("CompletedOrigins")) {
+            data.completedOrigins.add(key);
+        }
         for (long key : tag.getLongArray("ProtectedCropFarmland")) {
             data.protectedCropFarmland.add(key);
         }
@@ -59,6 +63,7 @@ public final class ZombieGirlCampSavedData extends SavedData {
         }
         tag.put("Positions", positions);
         tag.putLongArray("GeneratedChunks", generatedChunks.stream().mapToLong(Long::longValue).toArray());
+        tag.putLongArray("CompletedOrigins", completedOrigins.stream().mapToLong(Long::longValue).toArray());
         tag.putLongArray("ProtectedCropFarmland", protectedCropFarmland.stream().mapToLong(Long::longValue).toArray());
         return tag;
     }
@@ -74,6 +79,18 @@ public final class ZombieGirlCampSavedData extends SavedData {
             camps.add(pos.immutable());
             setDirty();
         }
+    }
+
+    boolean hasFinishedCamp(BlockPos origin, BlockPos center) {
+        // 旧存档没有原点，使用精确中心兼容，不能用整个区块作去重键。
+        return completedOrigins.contains(origin.asLong()) || camps.contains(center);
+    }
+
+    void completeNaturalCamp(BlockPos origin, BlockPos center, ChunkPos chunk) {
+        completedOrigins.add(origin.asLong());
+        if (!camps.contains(center)) camps.add(center.immutable());
+        generatedChunks.add(chunk.toLong());
+        setDirty();
     }
 
     public void addProtectedCropFarmland(BlockPos pos) {

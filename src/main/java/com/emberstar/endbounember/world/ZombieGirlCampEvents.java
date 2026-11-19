@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.FluidTags;
@@ -22,12 +21,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -35,12 +36,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Optional;
 
 @EventBusSubscriber(modid = EndboundEmber.MODID)
@@ -48,17 +48,12 @@ public final class ZombieGirlCampEvents {
     private static final ResourceLocation CAMP = ResourceLocation.fromNamespaceAndPath(
             EndboundEmber.MODID, "zombie_girl_camp");
     private static final ResourceLocation CAMP_RESOURCE = ResourceLocation.fromNamespaceAndPath(
-            EndboundEmber.MODID, "structures/zombie_girl_camp.nbt");
-    /** 普通营地候选间距：每 20×20 个区块确定一个候选。 */
-    private static final int SPACING = 20;
-    /** 普通营地与世界出生点的最小水平距离。 */
-    private static final int MIN_SPAWN_DISTANCE = 100;
+            EndboundEmber.MODID, "structure/zombie_girl_camp.nbt");
     /** 出生点营地目标区块偏移，保持在出生点附近。 */
     private static final int SPAWN_CAMP_CHUNK_OFFSET = 5;
-    /** 出生点营地唯一的地形条件。 */
     private static final int SPAWN_CAMP_MIN_Y = 60;
-    /** 两座营地包围盒之间额外保留的水平间隙。 */
-    private static final int CAMP_GAP = 16;
+    private static final int SPAWN_CAMP_RETRY_INTERVAL = 20;
+    private static final int AUTOMATIC_BLOCK_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
     /** 结构第 0 层是填充泥土，第 1 层是草地/木板地面；下移 1 格后草地层正好替换原地表方块。 */
     private static final int ORIGIN_Y_OFFSET = -1;
     /** 结构第 2 层是室内可站立地面。 */
@@ -67,10 +62,9 @@ public final class ZombieGirlCampEvents {
     private static final int CAMP_INTERIOR_HEIGHT = 4;
     /** 营地常驻少女数量（新营地共 8 张床）。 */
     private static final int CAMP_GIRL_COUNT = 6;
-    private static final Set<Long> ATTEMPTED = new HashSet<>();
-    private static final Set<PendingCamp> PENDING = new HashSet<>();
-
-    private record PendingCamp(ServerLevel level, ChunkPos chunk) {}
+    // 只保留值，不静态持有 ServerLevel / MinecraftServer，避免单人游戏换档串服。
+    private static long nextSpawnCheck;
+    private static ChunkPos pendingSpawnChunk;
 
     private ZombieGirlCampEvents() {}
 
@@ -85,113 +79,79 @@ public final class ZombieGirlCampEvents {
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel level)
-                || level.dimension() != ServerLevel.OVERWORLD
-                || !(event.getChunk() instanceof LevelChunk chunk)) {
-            return;
+        if (!(event.getLevel() instanceof ServerLevel level) || !level.dimension().equals(ServerLevel.OVERWORLD)
+                || !(event.getChunk() instanceof LevelChunk chunk)) return;
+        if (chunk.getPos().equals(getSpawnCampChunk(level.getSharedSpawnPos()))) {
+            pendingSpawnChunk = chunk.getPos();
         }
-        ChunkPos pos = chunk.getPos();
-        BlockPos spawnPos = level.getSharedSpawnPos();
-        ChunkPos spawnCampChunk = getSpawnCampChunk(spawnPos);
-        boolean spawnCamp = pos.equals(spawnCampChunk);
-        if (!spawnCamp && !isCandidate(level.getSeed(), pos.x, pos.z)) {
-            return;
-        }
-        // 出生点营地独立于普通营地生成，并不受出生点距离、群系或水体条件限制。
-        if (!spawnCamp) {
-            long dx = pos.getMinBlockX() + 8 - spawnPos.getX();
-            long dz = pos.getMinBlockZ() + 8 - spawnPos.getZ();
-            if (dx * dx + dz * dz < (long) MIN_SPAWN_DISTANCE * MIN_SPAWN_DISTANCE) {
-                return;
-            }
-        }
-        long key = ChunkPos.asLong(pos.x, pos.z);
-        if (!ATTEMPTED.add(key)) {
-            if (spawnCamp) {
-                EndboundEmber.LOGGER.warn("[营地生成] 出生点营地区块 {} 本次运行已尝试过，跳过", pos);
-            }
-            return;
-        }
-        if (ZombieGirlCampSavedData.get(level).hasGenerated(pos)) {
-            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 存档已记录营地，跳过（旧存档需删除 data/endbound_ember_zombie_girl_camps.dat 才能重新生成）", pos);
-            return;
-        }
-        // 入队延迟执行：不在此处调用 placeInWorld，避免递归区块加载导致死锁。
-        EndboundEmber.LOGGER.info("[营地生成] 区块 {} 进入待生成队列（出生点营地={}）", pos, spawnCamp);
-        PENDING.add(new PendingCamp(level, pos));
     }
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
-        if (!PENDING.isEmpty()) {
-            PendingCamp pending = PENDING.iterator().next();
-            PENDING.remove(pending);
-            start(pending);
+        ChunkPos chunk = pendingSpawnChunk;
+        long tick = event.getServer().getTickCount();
+        if (chunk == null || tick < nextSpawnCheck) return;
+        nextSpawnCheck = tick + SPAWN_CAMP_RETRY_INTERVAL;
+        ServerLevel level = event.getServer().overworld();
+        if (!chunk.equals(getSpawnCampChunk(level.getSharedSpawnPos())) || start(level, chunk)) {
+            pendingSpawnChunk = null;
         }
     }
 
-    private static void start(PendingCamp pending) {
-        ServerLevel level = pending.level();
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        nextSpawnCheck = 0;
+        pendingSpawnChunk = null;
+    }
+
+    /** false 表示等待自然加载/模板恢复；不设置永久 attempted 标记。 */
+    private static boolean start(ServerLevel level, ChunkPos chunk) {
+        LevelChunk loaded = level.getChunkSource().getChunkNow(chunk.x, chunk.z);
+        if (loaded == null) return false;
+        if (ZombieGirlCampSavedData.get(level).hasGenerated(chunk)) return true;
         StructureTemplate template = loadTemplate(level);
-        if (template == null) {
-            return;
-        }
-
-        ChunkPos chunk = pending.chunk();
-        int x = chunk.getMinBlockX() + 8;
-        int z = chunk.getMinBlockZ() + 8;
-        int y = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
-        BlockPos surface = new BlockPos(x, y, z);
-        boolean spawnCamp = chunk.equals(getSpawnCampChunk(level.getSharedSpawnPos()));
-        if (spawnCamp) {
-            if (y < SPAWN_CAMP_MIN_Y) {
-                EndboundEmber.LOGGER.warn("[营地生成] 出生点营地被拦截：地表高度 Y={} 低于 {}", y, SPAWN_CAMP_MIN_Y);
-                return;
-            }
-        } else if (!isAllowedBiome(level, surface)) {
-            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被群系拦截：{}", chunk,
-                    level.getBiome(surface).unwrapKey().map(k -> k.location().toString()).orElse("未知"));
-            return;
-        } else if (level.getFluidState(surface).isSource()) {
-            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：地表 {} 是水源", chunk, surface);
-            return;
-        }
-
+        if (template == null) return false;
         Vec3i size = template.getSize();
-        // 结构以区块中心为中心，原点是最小角；垂直方向按 ORIGIN_Y_OFFSET 让草地层替换原地表。
-        BlockPos origin = surface.offset(-size.getX() / 2, ORIGIN_Y_OFFSET, -size.getZ() / 2);
-        BlockPos center = campCenter(origin, size);
-        ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
-        // 作物保护：营地一旦盖在农田上就会把作物顶掉，命中即放弃这块候选。
-        if (hasCropsAround(level, origin, size)) {
-            EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：结构范围内存在农田或作物，位置 {}", chunk, origin);
-            return;
-        }
-        // 营地互斥：以营地中心为基准，按结构水平对角线 + 间隙判定，保证两座营地不会重叠或相接。
-        if (!spawnCamp) {
-            int minDistance = minCampDistance(size);
-            BlockPos spawnCampCenter = getSpawnCampCenter(level.getSharedSpawnPos());
-            if (data.isNearCamp(center, minDistance)
-                    || isTooCloseHorizontally(center, spawnCampCenter, minDistance)) {
-                EndboundEmber.LOGGER.warn("[营地生成] 区块 {} 被拦截：与已有营地（或出生点营地保留位置）距离小于 {} 格",
-                        chunk, minDistance);
-                return;
-            }
-        }
-
+        int x = chunk.getMiddleBlockX();
+        int z = chunk.getMiddleBlockZ();
+        int minX = x - size.getX() / 2;
+        int minZ = z - size.getZ() / 2;
+        // 模板放置的水涝处理可能读取相邻方块，连模板外一格也只接受已加载区块。
+        if (!NaturalStructureEvents.allChunksLoaded(level, new BoundingBox(minX - 1, 0, minZ - 1,
+                minX + size.getX(), 0, minZ + size.getZ()))) return false;
+        if (loaded.getAllStarts().entrySet().stream().anyMatch(entry ->
+                CAMP.equals(level.registryAccess().registryOrThrow(Registries.STRUCTURE).getKey(entry.getKey()))
+                        && entry.getValue().isValid())) return true;
+        int y = loaded.getHeight(Heightmap.Types.WORLD_SURFACE, x & 15, z & 15);
+        if (y < SPAWN_CAMP_MIN_Y) return true;
+        BlockPos origin = new BlockPos(minX, y + ORIGIN_Y_OFFSET, minZ);
+        if (hasCropsAround(level, origin, size)) return true;
         StructurePlaceSettings settings = new StructurePlaceSettings()
-                .setIgnoreEntities(false)
-                .setKnownShape(true)
-                // 导出结构时嵌进去的 structure_block 不能带进世界，放置时直接忽略。
+                .setIgnoreEntities(false).setKnownShape(true)
                 .addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
-        if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2)) {
-            EndboundEmber.LOGGER.error("[营地生成] placeInWorld 返回 false，位置 {}（出生点营地={}）", origin, spawnCamp);
-            return;
+        if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), AUTOMATIC_BLOCK_FLAGS)) {
+            return false;
         }
         protectCampCrops(level, origin, size);
         patchStructureBlocks(level, template, settings, origin);
-        EndboundEmber.LOGGER.info("[营地生成] 营地已放置于 {}，区块 {}（出生点营地={}）", origin, chunk, spawnCamp);
-        finish(level, chunk, origin, size, level.getRandom());
+        finish(level, origin, size, level.getRandom());
+        ZombieGirlCampSavedData.get(level).addCamp(campCenter(origin, size), chunk);
+        return true;
+    }
+
+    static boolean hasFinishedNatural(ServerLevel level, FixedTemplateStructurePiece piece) {
+        BlockPos origin = piece.templateOrigin();
+        return ZombieGirlCampSavedData.get(level).hasFinishedCamp(origin, campCenter(origin, piece.template().getSize()));
+    }
+
+    /** 原版自然结构已经放置完成；这里只做保护、少女与战利品收尾。 */
+    static void finishNatural(ServerLevel level, ChunkPos chunk, FixedTemplateStructurePiece piece) {
+        if (hasFinishedNatural(level, piece)) return;
+        BlockPos origin = piece.templateOrigin();
+        Vec3i size = piece.template().getSize();
+        protectCampCrops(level, origin, size);
+        finish(level, origin, size, level.getRandom());
+        ZombieGirlCampSavedData.get(level).completeNaturalCamp(origin, campCenter(origin, size), chunk);
     }
 
     /** 保护结构中的作物和耕地，防止营地生物踩踏农田。 */
@@ -209,7 +169,7 @@ public final class ZombieGirlCampEvents {
             BlockState farmland = level.getBlockState(farmlandPos);
             if (farmland.is(Blocks.FARMLAND)) {
                 data.addProtectedCropFarmland(farmlandPos);
-                level.setBlock(farmlandPos, farmland.setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), 3);
+                level.setBlock(farmlandPos, farmland.setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), AUTOMATIC_BLOCK_FLAGS);
                 protectedCrops++;
             }
         }
@@ -231,7 +191,7 @@ public final class ZombieGirlCampEvents {
                 : template.filterBlocks(BlockPos.ZERO, settings, Blocks.STRUCTURE_BLOCK)) {
             BlockPos pos = origin.offset(info.pos());
             if (level.getBlockState(pos).isAir()) {
-                level.setBlock(pos, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
+                level.setBlock(pos, Blocks.GRASS_BLOCK.defaultBlockState(), AUTOMATIC_BLOCK_FLAGS);
             }
         }
     }
@@ -286,14 +246,12 @@ public final class ZombieGirlCampEvents {
         protectCampCrops(level, origin, size);
         patchStructureBlocks(level, template, settings, origin);
         EndboundEmber.LOGGER.info("[营地生成] 测试指令已在 {} 放置营地", origin);
-        finish(level, new ChunkPos(origin), origin, size, level.getRandom());
+        finish(level, origin, size, level.getRandom());
+        ZombieGirlCampSavedData.get(level).addCamp(campCenter(origin, size), new ChunkPos(origin));
         return true;
     }
 
-    private static void finish(ServerLevel level, ChunkPos chunk, BlockPos origin,
-                               Vec3i size, RandomSource random) {
-        ZombieGirlCampSavedData data = ZombieGirlCampSavedData.get(level);
-        data.addCamp(campCenter(origin, size), chunk);
+    private static void finish(ServerLevel level, BlockPos origin, Vec3i size, RandomSource random) {
         BlockPos end = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
         BlockPos min = new BlockPos(Math.min(origin.getX(), end.getX()), Math.min(origin.getY(), end.getY()),
                 Math.min(origin.getZ(), end.getZ()));
@@ -452,28 +410,6 @@ public final class ZombieGirlCampEvents {
                 spawnPos.getZ() >> 4);
     }
 
-    /** 出生点营地的确定性保留中心，用于普通营地避让。 */
-    private static BlockPos getSpawnCampCenter(BlockPos spawnPos) {
-        ChunkPos chunk = getSpawnCampChunk(spawnPos);
-        return new BlockPos(chunk.getMinBlockX() + 8, 0, chunk.getMinBlockZ() + 8);
-    }
-
-    /**
-     * 两座营地中心之间的最小水平距离：结构水平对角线向上取整，再加上 {@link #CAMP_GAP} 的间隙。
-     * 以营地中心为基准比较，可保证两个包围盒既不相交也不贴边。
-     */
-    private static int minCampDistance(Vec3i size) {
-        return (int) Math.ceil(Math.sqrt((double) size.getX() * size.getX()
-                + (double) size.getZ() * size.getZ())) + CAMP_GAP;
-    }
-
-    /** 两个位置的水平距离（忽略高度）是否小于给定值。 */
-    private static boolean isTooCloseHorizontally(BlockPos a, BlockPos b, int minDistance) {
-        long dx = (long) a.getX() - b.getX();
-        long dz = (long) a.getZ() - b.getZ();
-        return dx * dx + dz * dz < (long) minDistance * minDistance;
-    }
-
     /**
      * 结构将要覆盖的体积内是否存在农田或作物。结构草地层已经替换原地表方块，
      * 作物只可能出现在原点下方一格以内，因此从原点下一格起扫。
@@ -493,21 +429,4 @@ public final class ZombieGirlCampEvents {
         return false;
     }
 
-    /** 每 4×4 个区块分区保证一个确定性候选，不再额外以概率跳过。 */
-    private static boolean isCandidate(long seed, int chunkX, int chunkZ) {
-        int regionX = Math.floorDiv(chunkX, SPACING);
-        int regionZ = Math.floorDiv(chunkZ, SPACING);
-        long hash = seed * 128712L + regionX * 987541L + regionZ;
-        int offsetX = Math.floorMod((int) hash, SPACING);
-        int offsetZ = Math.floorMod((int) (hash >>> 32), SPACING);
-        return chunkX - regionX * SPACING == offsetX
-                && chunkZ - regionZ * SPACING == offsetZ;
-    }
-
-    private static boolean isAllowedBiome(ServerLevel level, BlockPos pos) {
-        return level.getBiome(pos).is(BiomeTags.IS_OVERWORLD)
-                && !level.getBiome(pos).is(BiomeTags.IS_OCEAN)
-                && !level.getBiome(pos).is(BiomeTags.IS_RIVER)
-                && !level.getBiome(pos).is(BiomeTags.IS_MOUNTAIN);
-    }
 }

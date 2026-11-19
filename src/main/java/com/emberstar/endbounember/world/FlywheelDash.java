@@ -36,7 +36,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
  * 钢筋铁骨（原「飞轮效应」）：内置能力，默认按键 R（可在按键绑定中修改）。
- * 朝准心方向高速突进，期间免疫伤害并可穿过生物；撞墙会提前停下。
+ * 朝准心方向高速突进，期间免疫伤害并可穿过生物；冲刺中可随时用 WASD 自由转向，
+ * 撞墙不会被硬控，可立即变向脱离。
  * 强化点：扫掠命中、动能余速、动能冲击、动能释放。
  * 充能上限 8 层（需完成「绝处逢生」解锁，未解锁时为 3 层），每 12 秒恢复 1 层。
  */
@@ -79,9 +80,9 @@ public final class FlywheelDash {
     /** 空中缓冲与动能余速允许的最大下坠速度。 */
     private static final double MAX_COAST_FALL_SPEED = -0.2D;
 
-    /** 动能冲击：伤害区间（越早命中越高）。 */
-    private static final double IMPACT_MIN_DAMAGE = 2.0D;
-    private static final double IMPACT_MAX_DAMAGE = 4.0D;
+    /** 动能冲击：伤害区间（越早命中越高）。最大 20 点（10 颗心），随命中时机与多目标衰减。 */
+    private static final double IMPACT_MIN_DAMAGE = 10.0D;
+    private static final double IMPACT_MAX_DAMAGE = 20.0D;
     /** 动能冲击：额外击退强度。 */
     private static final double IMPACT_KNOCKBACK = 0.75D;
     /** 动能冲击：短暂减速时长（tick）。 */
@@ -106,7 +107,7 @@ public final class FlywheelDash {
 
     /** 单次冲刺的运行时状态。 */
     private static final class DashState {
-        private final Vec3 direction;
+        private Vec3 direction;
         private final int totalTicks;
         private final boolean wasInvulnerable;
         private final Set<UUID> hitEntities = new HashSet<>();
@@ -220,9 +221,20 @@ public final class FlywheelDash {
 
         state.ticksElapsed++;
 
+        // 冲刺方向每 tick 跟随玩家输入：水平方向由 WASD 决定，垂直分量跟随准心，
+        // 实现冲刺期间自由转向；无水平输入时保持原有水平方向继续突进。
+        Vec3 moveDir = movementInputDirection(player);
+        double lookY = Mth.clamp(player.getLookAngle().y, -MAX_VERTICAL, MAX_VERTICAL);
+        state.direction = moveDir != null
+                ? new Vec3(moveDir.x, lookY, moveDir.z)
+                : new Vec3(state.direction.x, lookY, state.direction.z);
+
         if (isInsideWall(player)) {
+            // 撞墙不再硬控进入收尾：仅清零本 tick 速度，保留冲刺状态与无敌，
+            // 玩家可立即转向脱离，避免被钉在墙上导致手感僵硬。
             player.setDeltaMovement(Vec3.ZERO);
-            beginEnding(player, state, false);
+            player.setInvulnerable(true);
+            player.hurtMarked = true;
             return;
         }
 
@@ -241,9 +253,17 @@ public final class FlywheelDash {
 
     /** 动能余速：冲刺结束后保留一部分速度并逐步衰减，便于衔接跳跃与墙跳。 */
     private static void updateCoast(ServerPlayer player, DashState state) {
+        // 余速阶段同样允许自由转向：有水平输入时跟随输入方向，无输入保持原方向。
+        Vec3 moveDir = movementInputDirection(player);
+        if (moveDir != null) {
+            state.direction = new Vec3(moveDir.x, state.direction.y, moveDir.z);
+        }
+
         if (isInsideWall(player)) {
+            // 撞墙不硬控：清零本 tick 速度，保留余速状态与无敌，可立即转向脱离。
             player.setDeltaMovement(Vec3.ZERO);
-            beginEnding(player, state, false);
+            player.setInvulnerable(true);
+            player.hurtMarked = true;
             return;
         }
 
@@ -384,6 +404,17 @@ public final class FlywheelDash {
         player.setInvulnerable(true);
         // 告知客户端位置已被服务端修正，避免被判定为异常移动
         player.hurtMarked = true;
+    }
+
+    /**
+     * 读取玩家本 tick 的水平移动输入方向（已按朝向转换为世界坐标），无输入返回 null。
+     * 等价于原版 Player#getInputVector 的水平分量：用 xxa/zza 结合 yaw 旋转得到世界方向。
+     */
+    private static Vec3 movementInputDirection(Player player) {
+        Vec3 input = new Vec3(player.xxa, 0.0D, player.zza)
+                .yRot(-player.getYRot() * (float) (Math.PI / 180.0F));
+        if (input.x * input.x + input.z * input.z < 1.0E-4D) return null;
+        return new Vec3(input.x, 0.0D, input.z).normalize();
     }
 
     /** 脚、身体中心、头部任一位置被阻挡即视为撞墙。 */

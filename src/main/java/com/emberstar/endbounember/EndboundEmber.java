@@ -1632,6 +1632,8 @@ public class EndboundEmber {
         ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so entities get registered
         ModEntities.ENTITY_TYPES.register(modEventBus);
+        com.emberstar.endbounember.world.ModStructures.STRUCTURE_TYPES.register(modEventBus);
+        com.emberstar.endbounember.world.ModStructures.STRUCTURE_PIECES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (EndboundEmber) to respond directly to events.

@@ -1,0 +1,11 @@
+{
+  "type": "endbound_ember:zombie_girl_camp",
+  "biomes": "#minecraft:is_overworld",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "template": "endbound_ember:zombie_girl_camp",
+  "y_offset": -1,
+  "maximum_corner_height_difference": -1,
+  "overworld_surface": true
+}

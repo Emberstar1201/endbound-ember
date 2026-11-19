@@ -1,0 +1,11 @@
+{
+  "type": "endbound_ember:cemetery",
+  "biomes": "#minecraft:is_overworld",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "template": "endbound_ember:cemetery",
+  "y_offset": -3,
+  "maximum_corner_height_difference": 4,
+  "forest_or_plains": true
+}

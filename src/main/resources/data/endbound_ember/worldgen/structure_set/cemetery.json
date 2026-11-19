@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "endbound_ember:cemetery",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 76290411,
+    "spacing": 30,
+    "separation": 12,
+    "spread_type": "linear"
+  }
+}
