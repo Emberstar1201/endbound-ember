@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "endbound_ember:item/dawn_break"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pulling": 1
+      },
+      "model": "endbound_ember:item/dawn_break_pulling_0"
+    },
+    {
+      "predicate": {
+        "pull": 0.65,
+        "pulling": 1
+      },
+      "model": "endbound_ember:item/dawn_break_pulling_1"
+    },
+    {
+      "predicate": {
+        "pull": 0.9,
+        "pulling": 1
+      },
+      "model": "endbound_ember:item/dawn_break_pulling_2"
+    }
+  ]
+}

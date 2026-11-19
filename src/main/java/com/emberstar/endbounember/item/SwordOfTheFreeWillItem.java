@@ -1,13 +1,22 @@
 package com.emberstar.endbounember.item;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.block.DoomPillarBlock;
+import com.emberstar.endbounember.block.DoomPillarBlockEntity;
+import com.emberstar.endbounember.compat.FriendlyMobs;
 import com.emberstar.endbounember.enchantment.DawnEnchantment;
 import com.emberstar.endbounember.enchantment.FreeWillEnchantments;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
+import com.emberstar.endbounember.network.ShockwaveVisualPayload;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -24,6 +33,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,12 +49,17 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * 人权剑 / 人权剑·星火永燃。
@@ -75,6 +93,12 @@ public class SwordOfTheFreeWillItem extends Item {
     /** 星火不灭抵挡致命伤害的冷却：300 秒。 */
     public static final int ETERNAL_SPARK_COOLDOWN_TICKS = 6000;
     private static final String SPARK_COOLDOWN_TAG = "EndboundEmberEternalSparkCooldown";
+
+    /** 冲击波在十个 tick 内从施法位置扩散到十格，每个目标只受伤一次。 */
+    private static final double SHOCKWAVE_RADIUS = 10.0D;
+    private static final float SHOCKWAVE_DAMAGE = 50.0F;
+    private static final List<Shockwave> SHOCKWAVES = new ArrayList<>();
+    private static final String LAST_SHOCKWAVE_TICK_TAG = "EndboundEmberLastShockwaveTick";
 
     private final boolean enhanced;
 
@@ -116,6 +140,13 @@ public class SwordOfTheFreeWillItem extends Item {
     public Component getName(ItemStack stack) {
         return Component.translatable(getDescriptionId(stack))
                 .withStyle(style -> style.withColor(this.enhanced ? ENHANCED_COLOR : BASE_COLOR));
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
+        tooltip.add(Component.translatable("item.endbound_ember.sword_of_the_free_will.shockwave")
+                .withStyle(style -> style.withColor(this.enhanced ? ENHANCED_COLOR : BASE_COLOR)));
     }
 
     /**
@@ -189,9 +220,137 @@ public class SwordOfTheFreeWillItem extends Item {
         level.addFreshEntity(qi);
     }
 
-    /** 凋灵掉落：首次击杀给人权剑并点亮第一阶段成就，之后夜间第二次击杀点亮终章成就并停止掉落。 */
+    /** 只启动技能，不消费右键事件，后续的剑格挡与拂晓技能继续照常处理。 */
+    private void castShockwave(ServerPlayer player) {
+        long time = player.level().getGameTime();
+        var data = player.getPersistentData();
+        // 双手与方块交互可能在同一 tick 派发多个事件，只合并同一次输入。
+        if (data.contains(LAST_SHOCKWAVE_TICK_TAG) && data.getLong(LAST_SHOCKWAVE_TICK_TAG) == time) return;
+        data.putLong(LAST_SHOCKWAVE_TICK_TAG, time);
+        ServerLevel level = player.serverLevel();
+        SHOCKWAVES.add(new Shockwave(level, player.getUUID(), player.position(), this.enhanced));
+        level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(),
+                SoundSource.PLAYERS, 1.0F, 1.3F);
+    }
+
+    private static final class Shockwave {
+        private final ServerLevel level;
+        private final UUID owner;
+        private final Vec3 origin;
+        private final boolean blue;
+        private final Set<UUID> hit = new HashSet<>();
+        private final List<BlockPos> pillars = new ArrayList<>();
+        private int age;
+
+        private Shockwave(ServerLevel level, UUID owner, Vec3 origin, boolean blue) {
+            this.level = level;
+            this.owner = owner;
+            this.origin = origin;
+            this.blue = blue;
+            // 只枚举已加载区块的方块实体，既不强加载区块，也不逐格扫描整个球体。
+            int minX = net.minecraft.util.Mth.floor(origin.x - SHOCKWAVE_RADIUS) >> 4;
+            int maxX = net.minecraft.util.Mth.floor(origin.x + SHOCKWAVE_RADIUS) >> 4;
+            int minZ = net.minecraft.util.Mth.floor(origin.z - SHOCKWAVE_RADIUS) >> 4;
+            int maxZ = net.minecraft.util.Mth.floor(origin.z + SHOCKWAVE_RADIUS) >> 4;
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    var chunk = level.getChunkSource().getChunkNow(x, z);
+                    if (chunk == null) continue;
+                    for (var blockEntity : chunk.getBlockEntities().values()) {
+                        if (blockEntity instanceof DoomPillarBlockEntity pillar
+                                && pillarDistance(pillar.getBlockPos()) <= SHOCKWAVE_RADIUS * SHOCKWAVE_RADIUS) {
+                            this.pillars.add(pillar.getBlockPos().immutable());
+                        }
+                    }
+                }
+            }
+        }
+
+        /** 按柱子的整个三格碰撞高度计算距离，站在柱顶旁也能完整清柱。 */
+        private double pillarDistance(BlockPos pos) {
+            AABB box = new AABB(pos.getX(), pos.getY(), pos.getZ(),
+                    pos.getX() + 1.0D, pos.getY() + DoomPillarBlock.HEIGHT, pos.getZ() + 1.0D);
+            return box.distanceToSqr(this.origin);
+        }
+
+        private boolean tick(ServerPlayer player) {
+            double radius = ++this.age;
+            double radiusSqr = radius * radius;
+            // 保留击杀归属但不伪装成玩家直接近战，避免拂晓成长和暴击放大固定的 50 点伤害。
+            DamageSource source = new DamageSource(this.level.registryAccess()
+                    .registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(FreeWillEnchantments.VOID_SPARK),
+                    null, player);
+            for (LivingEntity target : this.level.getEntitiesOfClass(LivingEntity.class,
+                    new AABB(this.origin, this.origin).inflate(radius), candidate -> candidate.isAlive()
+                            && !candidate.isSpectator() && !FriendlyMobs.isProtected(candidate)
+                            && !player.isAlliedTo(candidate)
+                            && (candidate instanceof Enemy || candidate instanceof EnderDragon
+                                    || candidate.getType().getCategory() == MobCategory.MONSTER))) {
+                if (this.hit.contains(target.getUUID())
+                        || target.getBoundingBox().distanceToSqr(this.origin) > radiusSqr) continue;
+                this.hit.add(target.getUUID());
+                target.invulnerableTime = 0;
+                target.hurt(source, SHOCKWAVE_DAMAGE);
+                // 直接设置径向冲量，保证击飞效果不被怪物的击退抗性完全抵消。
+                Vec3 away = target.position().subtract(this.origin).multiply(1.0D, 0.0D, 1.0D);
+                if (away.lengthSqr() < 1.0E-6D) away = player.getLookAngle().multiply(1.0D, 0.0D, 1.0D);
+                if (away.lengthSqr() < 1.0E-6D) away = new Vec3(1.0D, 0.0D, 0.0D);
+                Vec3 impulse = away.normalize().scale(1.6D);
+                target.setDeltaMovement(impulse.x, 0.8D, impulse.z);
+                target.hurtMarked = true;
+            }
+            // 清柱走原有碎裂路径，血条、三段方块与 Boss 分摊判定都会正常清理。
+            this.pillars.removeIf(pos -> {
+                if (pillarDistance(pos) > radiusSqr) return false;
+                if (this.level.hasChunkAt(pos)
+                        && this.level.getBlockEntity(pos) instanceof DoomPillarBlockEntity pillar) {
+                    pillar.applyDamage(DoomPillarBlockEntity.MAX_HEALTH);
+                }
+                return true;
+            });
+            if (this.age == 1) {
+                // 只发送一次：由同一批火焰向外运动，不再逐 tick 留下一圈静止粒子。
+                PacketDistributor.sendToPlayersNear(this.level, null,
+                        this.origin.x, this.origin.y, this.origin.z, 32.0D,
+                        new ShockwaveVisualPayload(this.origin.x, this.origin.y + 0.4D, this.origin.z,
+                                this.blue, SHOCKWAVE_RADIUS));
+            }
+            return radius >= SHOCKWAVE_RADIUS;
+        }
+    }
+
+    /** 人权剑攻击、技能与掉落事件。 */
     @EventBusSubscriber(modid = EndboundEmber.MODID)
     public static class Events {
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onShockwaveUse(PlayerInteractEvent.RightClickItem event) {
+            tryShockwave(event.getEntity(), event.getItemStack());
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onShockwaveBlockUse(PlayerInteractEvent.RightClickBlock event) {
+            tryShockwave(event.getEntity(), event.getItemStack());
+        }
+
+        private static void tryShockwave(Player player, ItemStack stack) {
+            if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || player.isUsingItem()) return;
+            if (stack.getItem() instanceof SwordOfTheFreeWillItem sword) sword.castShockwave(serverPlayer);
+        }
+
+        @SubscribeEvent
+        public static void onShockwaveTick(ServerTickEvent.Post event) {
+            SHOCKWAVES.removeIf(wave -> {
+                if (wave.level.getServer() != event.getServer()) return false;
+                ServerPlayer player = event.getServer().getPlayerList().getPlayer(wave.owner);
+                return player == null || !player.isAlive() || player.level() != wave.level || wave.tick(player);
+            });
+        }
+
+        @SubscribeEvent
+        public static void onServerStopped(ServerStoppedEvent event) {
+            SHOCKWAVES.removeIf(wave -> wave.level.getServer() == event.getServer());
+        }
+
         /** 持剑时受到伤害减免 25%；星火不灭抵挡一次致命伤害，冷却 300 秒。 */
         @SubscribeEvent
         public static void onIncomingDamage(LivingIncomingDamageEvent event) {

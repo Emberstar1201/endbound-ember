@@ -45,6 +45,13 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("emberstar_sorceress"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<DawnArrowEntity>> DAWN_ARROW =
+            ENTITY_TYPES.register("dawn_arrow", () -> EntityType.Builder.<DawnArrowEntity>of(DawnArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(8)
+                    .updateInterval(1)
+                    .build("dawn_arrow"));
+
     /** 「刺破长夜的黎明」剑气。 */
     public static final DeferredHolder<EntityType<?>, EntityType<DawnSwordQiEntity>> DAWN_SWORD_QI =
             ENTITY_TYPES.register("dawn_sword_qi",

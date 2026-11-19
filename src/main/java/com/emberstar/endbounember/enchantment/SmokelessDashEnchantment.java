@@ -2,8 +2,8 @@ package com.emberstar.endbounember.enchantment;
 
 import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.world.MovementSpeedState;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,8 +20,6 @@ public final class SmokelessDashEnchantment {
     private static final double THRUST = 0.045D;
     /** 疾跑时的额外推进倍率。 */
     private static final double SPRINT_BONUS = 1.8D;
-    /** 水平速度上限，避免无限叠加。 */
-    private static final double MAX_HORIZONTAL_SPEED = 1.6D;
     /** 垂直速度上限。 */
     private static final double MAX_VERTICAL_SPEED = 1.0D;
 
@@ -39,8 +37,10 @@ public final class SmokelessDashEnchantment {
         Vec3 motion = player.getDeltaMovement().add(look.scale(thrust));
 
         double horizontal = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-        if (horizontal > MAX_HORIZONTAL_SPEED) {
-            double scale = MAX_HORIZONTAL_SPEED / horizontal;
+        // 档位仅改变水平速度上限，推进力、疾跑倍率和垂直限制保持原值。
+        double horizontalLimit = MovementSpeedState.soaringHorizontalLimit(player);
+        if (horizontal > horizontalLimit) {
+            double scale = horizontalLimit / horizontal;
             motion = new Vec3(motion.x * scale, motion.y, motion.z * scale);
         }
         if (motion.y > MAX_VERTICAL_SPEED) {

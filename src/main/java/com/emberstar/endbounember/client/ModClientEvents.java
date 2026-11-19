@@ -70,6 +70,7 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.HUMAN_GIRL.get(), HumanGirlRenderer::new);
         event.registerEntityRenderer(ModEntities.EMBERSTAR_SORCERESS.get(), EmberStarSorceressRenderer::new);
         event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
+        event.registerEntityRenderer(ModEntities.DAWN_ARROW.get(), DawnArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
         event.registerEntityRenderer(ModEntities.NETHER_METEOR.get(), NetherMeteorRenderer::new);

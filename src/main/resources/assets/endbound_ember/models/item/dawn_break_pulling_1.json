@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "endbound_ember:item/dawn_break_1"
+  }
+}

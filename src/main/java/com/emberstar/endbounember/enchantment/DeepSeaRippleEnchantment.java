@@ -2,6 +2,7 @@ package com.emberstar.endbounember.enchantment;
 
 import com.emberstar.endbounember.Config;
 import com.emberstar.endbounember.EndboundEmber;
+import com.emberstar.endbounember.world.MovementSpeedState;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,9 +22,6 @@ public final class DeepSeaRippleEnchantment {
     private static final ResourceLocation SPEED_ID = ResourceLocation.fromNamespaceAndPath(EndboundEmber.MODID,
             "deep_sea_ripple_speed");
 
-    /** 水中潜行时的移速倍率。 */
-    private static final double WATER_MULTIPLIER = 1.6D;
-
     private DeepSeaRippleEnchantment() {
     }
 
@@ -33,7 +31,8 @@ public final class DeepSeaRippleEnchantment {
         if (player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) return;
 
         boolean active = Config.DEEP_SEA_RIPPLE_ENABLED.get() && player.isInWater() && !player.isPassenger();
-        manageSpeedModifier(serverPlayer, active ? WATER_MULTIPLIER : 1.0D);
+        // 只调整移动倍率，最低档仍保留原来的缓慢耗氧效果。
+        manageSpeedModifier(serverPlayer, active ? MovementSpeedState.waterMultiplier(player) : 1.0D);
         if (active && player.getAirSupply() < player.getMaxAirSupply() && player.getAirSupply() > 0
                 && player.tickCount % 10 != 0) {
             player.setAirSupply(player.getAirSupply() + 1);

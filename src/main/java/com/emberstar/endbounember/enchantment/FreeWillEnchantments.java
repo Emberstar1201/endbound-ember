@@ -241,8 +241,8 @@ public final class FreeWillEnchantments {
     /** 薪火粒子：两枚贴图同时出现，用于替换原灵魂火特效。 */
     public static void spawnEmberFlame(ServerLevel level, double x, double y, double z,
             int count, double dx, double dy, double dz, double speed) {
-        level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(), x, y, z, count, dx, dy, dz, speed);
-        level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(), x, y, z, count, dx, dy, dz, speed);
+        level.sendParticles(EndboundEmber.FLAME_OF_THE_TORCH_0.get(), x, y, z, count, dx, dy, dz, speed);
+        level.sendParticles(EndboundEmber.FLAME_OF_THE_TORCH_1.get(), x, y, z, count, dx, dy, dz, speed);
     }
 
     /**

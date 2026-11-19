@@ -9,8 +9,10 @@ import java.util.UUID;
 import com.emberstar.endbounember.EndboundEmber;
 import com.emberstar.endbounember.client.DawnEnergyClient;
 import com.emberstar.endbounember.compat.FriendlyMobs;
+import com.emberstar.endbounember.entity.DawnArrowEntity;
 import com.emberstar.endbounember.entity.DawnSwordQiEntity;
 import com.emberstar.endbounember.entity.Herobrine;
+import com.emberstar.endbounember.item.DawnBreakBowItem;
 import com.emberstar.endbounember.item.SwordOfTheFreeWillItem;
 import com.emberstar.endbounember.network.DawnEnergyPayload;
 
@@ -31,6 +33,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -229,7 +232,8 @@ public final class DawnEnchantment {
     }
 
     public static boolean hasFullEnergy(Player player) {
-        return levelOf(player) > 0 && energy(player) >= MAX_ENERGY;
+        return !(player.getMainHandItem().getItem() instanceof DawnBreakBowItem)
+                && levelOf(player) > 0 && energy(player) >= MAX_ENERGY;
     }
 
     private static int energy(Player player) {
@@ -262,7 +266,7 @@ public final class DawnEnchantment {
 
     /** 快捷键或自动触发的入口：只有满能量时才会真正释放。 */
     public static void tryCast(ServerPlayer player) {
-        if (levelOf(player) <= 0) return;
+        if (player.getMainHandItem().getItem() instanceof DawnBreakBowItem || levelOf(player) <= 0) return;
         if (energy(player) < MAX_ENERGY) {
             player.displayClientMessage(Component.translatable("endbound_ember.dawn.not_ready",
                     String.valueOf(energy(player)), String.valueOf(MAX_ENERGY)), true);
@@ -275,7 +279,8 @@ public final class DawnEnchantment {
     private static boolean tryCastFromMainHand(Player entity, InteractionHand hand) {
         if (hand != InteractionHand.MAIN_HAND) return false;
         // 人权剑的剑气随普攻挥出，右键不触发拂晓技能
-        if (entity.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem) return false;
+        if (entity.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem
+                || entity.getMainHandItem().getItem() instanceof DawnBreakBowItem) return false;
         if (!(entity instanceof ServerPlayer player)) return false;
         if (levelOf(player) <= 0) return false;
         if (energy(player) < MAX_ENERGY) return false;
@@ -376,7 +381,8 @@ public final class DawnEnchantment {
                 migrateLegacyLevel(player, player.getInventory().offhand.get(0));
             }
             // 人权剑同样会随击杀成长，但不参与拂晓的攻击距离与技能系统
-            if (player.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem) {
+            if (player.getMainHandItem().getItem() instanceof SwordOfTheFreeWillItem
+                    || player.getMainHandItem().getItem() instanceof DawnBreakBowItem) {
                 updateRange(player, 0);
                 return;
             }
@@ -413,7 +419,7 @@ public final class DawnEnchantment {
             }
         }
 
-        /** 近战命中：四维伤害加成、暴击与能量积累。 */
+        /** 近战获得伤害、暴击和能量收益，黎明圣裁弓只结算远程伤害与暴击。 */
         @SubscribeEvent
         public static void onIncomingDamage(LivingIncomingDamageEvent event) {
             if (event.getEntity().level().isClientSide) return;
@@ -422,9 +428,16 @@ public final class DawnEnchantment {
             if (source.is(FreeWillEnchantments.BLUE_FLAME)) return;
             if (source.is(FreeWillEnchantments.FREE_WILL_LIGHT)) return;
             if (!(source.getEntity() instanceof ServerPlayer player)) return;
-            if (source.getDirectEntity() != player) return;
-
-            int level = levelOf(player);
+            boolean ranged = source.is(DamageTypes.ARROW) && source.getDirectEntity() instanceof DawnArrowEntity;
+            int level;
+            if (ranged) {
+                ItemStack weapon = source.getWeaponItem();
+                if (weapon == null || !(weapon.getItem() instanceof DawnBreakBowItem)) return;
+                level = levelOf(weapon);
+            } else {
+                if (source.getDirectEntity() != player || player.getMainHandItem().getItem() instanceof DawnBreakBowItem) return;
+                level = levelOf(player);
+            }
             if (level <= 0) return;
 
             double multiplier = damageMultiplier(level);
@@ -432,8 +445,8 @@ public final class DawnEnchantment {
             if (crit) multiplier *= critMultiplier(level);
             event.setAmount((float) (event.getAmount() * multiplier));
 
-            addEnergy(player, ENERGY_PER_HIT);
-            if (crit && player.level() instanceof ServerLevel levelObj) {
+            if (!ranged) addEnergy(player, ENERGY_PER_HIT);
+            if (!ranged && crit && player.level() instanceof ServerLevel levelObj) {
                 LivingEntity target = event.getEntity();
                 levelObj.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,
                         target.getX(), target.getY(0.5D), target.getZ(), 12, 0.3D, 0.3D, 0.3D, 0.2D);
@@ -449,7 +462,17 @@ public final class DawnEnchantment {
             if (dead.level().isClientSide) return;
             if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
 
+            DamageSource source = event.getSource();
+            ItemStack snapshot = source.getWeaponItem();
             ItemStack weapon = player.getMainHandItem();
+            boolean ranged = false;
+            if (source.getDirectEntity() instanceof DawnArrowEntity arrow
+                    && snapshot != null && snapshot.getItem() instanceof DawnBreakBowItem) {
+                ranged = true;
+                weapon = arrow.heldOriginatingBow(player);
+            } else if (weapon.getItem() instanceof DawnBreakBowItem) {
+                return;
+            }
             int level = levelOf(weapon);
             if (level <= 0) return;
 
@@ -465,7 +488,7 @@ public final class DawnEnchantment {
                             SoundSource.PLAYERS, 0.8F, 1.4F);
                 }
             }
-            addEnergy(player, ENERGY_PER_KILL);
+            if (!ranged) addEnergy(player, ENERGY_PER_KILL);
         }
 
         /** 物品提示：在拂晓附魔行之后追加四维数值与技能说明。 */
@@ -475,8 +498,8 @@ public final class DawnEnchantment {
             int level = levelOf(stack);
             if (level <= 0) return;
             List<Component> tooltip = event.getToolTip();
-            // 人权剑只显示拂晓成长数值，不显示拂晓的通用技能说明；原有附魔仍由原版正常显示。
-            if (stack.getItem() instanceof SwordOfTheFreeWillItem) {
+            // 人权剑和黎明圣裁弓只显示成长数值。
+            if (stack.getItem() instanceof SwordOfTheFreeWillItem || stack.getItem() instanceof DawnBreakBowItem) {
                 appendGrowthTooltip(tooltip, level);
                 return;
             }

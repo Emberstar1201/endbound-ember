@@ -1,0 +1,25 @@
+{
+  "name": "Dawn Verdict",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:dawn_break",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_break",
+      "title": "Dawn Verdict",
+      "text": "§lCrafting: §r Smithing Table: Dawn Template + Bow + Iron Ingot.$(br2)§lAmmo: §r Only Dawn Arrows (8 Arrows + Torch → 8 Dawn Arrows). Fired Dawn Arrows can be recovered.$(br2)§lStats: §r 5000 durability; full draw in 1.25s, 40 damage (20 hearts) at full draw; arrow speed is double vanilla.$(br2)§lBuilt-in enchantments: §r Power XII, Flame, Experience Gift, Smite XII, Looting XII, Made in China, Dawn."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Extra Abilities",
+      "text": "§lVerdict Lightning: §r 20% chance on hit to deal 40 additional sourced void damage.$(br2)§lDawnfall: §r ×2.5 damage to undead, ×3.4 damage to bosses."
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_break",
+      "title": "Forging",
+      "text": "Template slot: Dawn Template$(br)Base slot: Bow$(br)Addition slot: Iron Ingot"
+    }
+  ]
+}

@@ -24,6 +24,8 @@ import com.emberstar.endbounember.enchantment.ShockwaveEnchantment;
 import com.emberstar.endbounember.enchantment.SkywardSlamEnchantment;
 import com.emberstar.endbounember.enchantment.SpringHarvestEnchantment;
 import com.emberstar.endbounember.entity.ModEntities;
+import com.emberstar.endbounember.item.DawnArrowItem;
+import com.emberstar.endbounember.item.DawnBreakBowItem;
 import com.emberstar.endbounember.item.EndStarItem;
 import com.emberstar.endbounember.item.HomeBellItem;
 import com.emberstar.endbounember.item.LifeStarItem;
@@ -183,10 +185,10 @@ public class EndboundEmber {
             PARTICLE_TYPES.register("accelerator_flame", () -> new net.minecraft.core.particles.SimpleParticleType(false));
 
     /** 星火剑气：两枚自定义火焰粒子同时出现 */
-    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_YHE_TORCH_0 =
-            PARTICLE_TYPES.register("flame_of_yhe_torch_0", () -> new net.minecraft.core.particles.SimpleParticleType(false));
-    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_YHE_TORCH_1 =
-            PARTICLE_TYPES.register("flame_of_yhe_torch_1", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_THE_TORCH_0 =
+            PARTICLE_TYPES.register("flame_of_the_torch_0", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+    public static final DeferredHolder<net.minecraft.core.particles.ParticleType<?>, net.minecraft.core.particles.SimpleParticleType> FLAME_OF_THE_TORCH_1 =
+            PARTICLE_TYPES.register("flame_of_the_torch_1", () -> new net.minecraft.core.particles.SimpleParticleType(false));
 
     public static final DeferredHolder<Block, com.emberstar.endbounember.block.AcceleratorTorchBlock> ACCELERATOR_TORCH =
             BLOCKS.registerBlock("accelerator_torch",
@@ -1257,6 +1259,10 @@ public class EndboundEmber {
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
                     .attributes(SwordOfTheFreeWillItem.attributes(29.0D, 0.5D, 100.0D, 25.0D))));
 
+    public static final DeferredItem<DawnBreakBowItem> DAWN_BREAK = ITEMS.registerItem("dawn_break",
+            DawnBreakBowItem::new, new Item.Properties().durability(2500).rarity(Rarity.EPIC));
+    public static final DeferredItem<DawnArrowItem> DAWN_ARROW = ITEMS.registerItem("dawn_arrow", DawnArrowItem::new);
+
     // 晨曦之星：击败 Herobrine 后掉落，锻造升级素材
     public static final DeferredItem<Item> DAWN_STAR = ITEMS.registerSimpleItem("dawn_star",
             new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant());
@@ -1339,6 +1345,8 @@ public class EndboundEmber {
                         output.accept(VOID_EMBERSTAR.get());
                         output.accept(SWORD_OF_THE_FREE_WILL.get());
                         output.accept(SWORD_OF_THE_FREE_WILL_ENHANCED.get());
+                        output.accept(DawnBreakBowItem.applyDefaultEnchantments(new ItemStack(DAWN_BREAK.get()), parameters.holders()));
+                        output.accept(DAWN_ARROW.get());
                         output.accept(DAWN_STAR.get());
                         output.accept(DAWN_TEMPLATE.get());
                         output.accept(DAWN_AMULET.get());
@@ -1591,6 +1599,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.DawnSkillPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.DawnEnergyPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.CloudArrowVelocityPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.ShockwaveVisualPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.FlywheelDashPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.WindRipplePayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.TimeTurbulenceTogglePayload::register);
@@ -1603,6 +1612,7 @@ public class EndboundEmber {
         modEventBus.addListener(com.emberstar.endbounember.network.DualWieldCooldownPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.BossMusicLengthPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.ChainMiningRequestPayload::register);
+        modEventBus.addListener(com.emberstar.endbounember.network.MovementSpeedAdjustPayload::register);
         modEventBus.addListener(com.emberstar.endbounember.network.ChainMiningStatePayload::register);
 
         // Register the Deferred Register to the mod event bus so blocks get registered

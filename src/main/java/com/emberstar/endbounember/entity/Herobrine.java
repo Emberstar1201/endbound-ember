@@ -197,9 +197,9 @@ public class Herobrine extends Monster implements RangedAttackMob {
     private static final int PHASE_TWO_GRACE_TICKS = 60;
     /** 二阶段呼唤亡灵时场上精锐的上限，覆盖词条提供的召唤上限 */
     private static final int PHASE_TWO_SUMMON_CAP = 20;
-    /** 亡者之柱：同时存活上限、补召间隔（tick）与召唤半径（格） */
+    /** 亡者之柱：同时存活上限、补召间隔（tick，10 分钟）与召唤半径（格） */
     private static final int DOOM_PILLAR_COUNT = 5;
-    private static final int DOOM_PILLAR_RESPAWN_INTERVAL = 200;
+    private static final int DOOM_PILLAR_RESPAWN_INTERVAL = 12000;
     private static final double DOOM_PILLAR_RADIUS = 7.5D;
     /** 只剩 1 根柱子时的分摊比例，每多存活 1 根按 {@link #DOOM_PILLAR_SHARE_STEP} 递增 */
     private static final float DOOM_PILLAR_SHARE = 0.6F;

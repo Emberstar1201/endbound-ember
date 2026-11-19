@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.emberstar.endbounember.Config;
+import com.emberstar.endbounember.entity.EmberStarSorceressEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -95,9 +96,10 @@ public final class ChainMiningEvents {
 
                 List<ItemStack> drops = creativeMode ? List.of()
                         : Block.getDrops(state, level, pos, null, player, tool);
-                level.removeBlock(pos, false);
+                if (!level.removeBlock(pos, false)) continue;
                 level.levelEvent(2001, pos, Block.getId(state));
                 for (ItemStack drop : drops) Block.popResource(level, pos, drop);
+                EmberStarSorceressEvents.addMinedBlocks(player, 1);
                 // 每个额外连锁方块消耗 0.01 点饱和度；只在服务端实际破坏成功后收取。
                 if (!creativeMode) {
                     player.getFoodData().setSaturation(

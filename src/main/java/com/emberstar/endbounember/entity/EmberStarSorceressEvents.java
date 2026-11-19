@@ -551,16 +551,20 @@ public final class EmberStarSorceressEvents {
         }
     }
 
-    /** 挖掘试炼：破坏方块时累计进度。 */
-    @SubscribeEvent
-    public static void onTrialMine(BlockEvent.BreakEvent event) {
-        if (!(event.getPlayer() instanceof ServerPlayer player)) {
-            return;
-        }
+    /** 挖掘试炼：累计实际破坏的方块数，供原版事件与连锁挖掘共用。 */
+    public static void addMinedBlocks(ServerPlayer player, int count) {
+        if (count <= 0) return;
         Trial trial = ACTIVE_TRIALS.get(player.getUUID());
         if (trial != null && trial.type == TrialType.MINE) {
-            trial.progress++;
+            trial.progress += count;
             showProgress(player, trial);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTrialMine(BlockEvent.BreakEvent event) {
+        if (event.getPlayer() instanceof ServerPlayer player) {
+            addMinedBlocks(player, 1);
         }
     }
 

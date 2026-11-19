@@ -125,10 +125,10 @@ public class DawnSwordQiEntity extends Projectile {
                 .add(up.scale(upOffset));
         if (soulFire) {
             // 星火剑气：两枚自定义火焰粒子同时出现
-            level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(),
+            level.sendParticles(EndboundEmber.FLAME_OF_THE_TORCH_0.get(),
                     particlePosition.x, particlePosition.y, particlePosition.z,
                     1, 0.03D, 0.03D, 0.03D, 0.01D);
-            level.sendParticles(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(),
+            level.sendParticles(EndboundEmber.FLAME_OF_THE_TORCH_1.get(),
                     particlePosition.x, particlePosition.y, particlePosition.z,
                     1, 0.03D, 0.03D, 0.03D, 0.01D);
             return;

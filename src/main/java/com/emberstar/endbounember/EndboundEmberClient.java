@@ -9,6 +9,7 @@ import com.emberstar.endbounember.compat.ysm.YsmAdapter;
 import com.emberstar.endbounember.compat.ysm.YsmHeadCapture;
 import com.emberstar.endbounember.compat.ysm.YsmHaloRenderer;
 import com.emberstar.endbounember.entity.HerobrineBossMusic;
+import com.emberstar.endbounember.item.DawnBreakBowItem;
 import com.emberstar.endbounember.network.BossMusicLengthPayload;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,8 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -57,13 +60,59 @@ public class EndboundEmberClient {
     @SubscribeEvent
     static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(EndboundEmber.ACCELERATOR_FLAME.get(), FlameParticle.Provider::new);
-        event.registerSpriteSet(EndboundEmber.FLAME_OF_YHE_TORCH_0.get(), FlameParticle.Provider::new);
-        event.registerSpriteSet(EndboundEmber.FLAME_OF_YHE_TORCH_1.get(), FlameParticle.Provider::new);
+        event.registerSpriteSet(EndboundEmber.FLAME_OF_THE_TORCH_0.get(), FlameParticle.Provider::new);
+        event.registerSpriteSet(EndboundEmber.FLAME_OF_THE_TORCH_1.get(), FlameParticle.Provider::new);
+    }
+
+    /** 一次生成一个环；直接校正提供器生成的粒子，避免随机初速与寿命留下内圈。 */
+    public static void spawnShockwaveRing(double x, double y, double z, boolean enhanced, double radius) {
+        var minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        int travelTicks = 9;
+        double startRadius = 1.0D;
+        // FlameParticle / RisingParticle 的阻力是 0.96F、重力为零。
+        // 第九次移动到达最大半径，随后移除，避免继续漂出十格。
+        double friction = (double) 0.96F;
+        double speed = (radius - startRadius) * (1.0D - friction)
+                / (1.0D - Math.pow(friction, travelTicks));
+        int points = Math.max(24, (int) (radius * 12));
+        for (int i = 0; i < points; i++) {
+            double angle = Math.PI * 2.0D * i / points;
+            double dx = Math.cos(angle);
+            double dz = Math.sin(angle);
+            if (enhanced) {
+                spawnShockwaveFlame(minecraft, EndboundEmber.FLAME_OF_THE_TORCH_0.get(),
+                        x + dx * startRadius, y, z + dz * startRadius, dx * speed, dz * speed, travelTicks);
+                spawnShockwaveFlame(minecraft, EndboundEmber.FLAME_OF_THE_TORCH_1.get(),
+                        x + dx * startRadius, y, z + dz * startRadius, dx * speed, dz * speed, travelTicks);
+            } else {
+                spawnShockwaveFlame(minecraft, net.minecraft.core.particles.ParticleTypes.FLAME,
+                        x + dx * startRadius, y, z + dz * startRadius, dx * speed, dz * speed, travelTicks);
+            }
+        }
+    }
+
+    private static void spawnShockwaveFlame(Minecraft minecraft,
+            net.minecraft.core.particles.SimpleParticleType type, double x, double y, double z,
+            double vx, double vz, int travelTicks) {
+        // 不走 sendParticles 的随机散射分支；提供器构造后再覆盖随机位置、速度和寿命。
+        var particle = minecraft.particleEngine.createParticle(type, x, y, z, 0.0D, 0.0D, 0.0D);
+        if (particle == null) return;
+        particle.setPos(x, y, z);
+        particle.setParticleSpeed(vx, 0.0D, vz);
+        // Particle.tick 在 age++ >= lifetime 时移除，恰好允许 travelTicks 次移动。
+        particle.setLifetime(travelTicks);
     }
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            var dawnBow = EndboundEmber.DAWN_BREAK.get();
+            ItemProperties.register(dawnBow, ResourceLocation.withDefaultNamespace("pulling"),
+                    (stack, level, entity, seed) -> entity != null && entity.getUseItem() == stack ? 1.0F : 0.0F);
+            ItemProperties.register(dawnBow, ResourceLocation.withDefaultNamespace("pull"),
+                    (stack, level, entity, seed) -> entity != null && entity.getUseItem() == stack
+                            ? Math.min(1.0F, (float) entity.getTicksUsingItem() / DawnBreakBowItem.FULL_DRAW_TICKS) : 0.0F);
             for (var block : EndboundEmber.SEAMLESS_GLASS_BLOCKS) {
                 // 与原版保持一致：普通玻璃 cutout，染色与遮光玻璃 translucent
                 RenderType renderType = block == EndboundEmber.SEAMLESS_GLASS

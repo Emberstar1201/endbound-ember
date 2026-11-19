@@ -1,0 +1,25 @@
+{
+  "name": "黎明圣裁",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:dawn_break",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:dawn_break",
+      "title": "黎明圣裁",
+      "text": "§l合成：§r 锻造台：晨曦模板 + 弓 + 铁锭。$(br2)§l弹药：§r 只吃黎明之箭（箭 ×8 + 火把 → 黎明之箭 ×8），射出的黎明之箭可以回收。$(br2)§l数值：§r 耐久 5000；蓄力 1.25 秒满弦，满弦伤害 40（20 颗心）；箭速为原版 2 倍。$(br2)§l自带附魔：§r 力量 XII、火矢、经验馈赠、亡灵杀手 XII、抢夺 XII、中国制造、拂晓。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "额外技能",
+      "text": "§l判罚之雷：§r 命中时有 20% 概率追加 40 点有来源的虚空伤害。$(br2)§l黎明到来：§r 对亡灵生物伤害 ×2.5，对 BOSS 类生物伤害 ×3.4。"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "endbound_ember:dawn_break",
+      "title": "锻造",
+      "text": "模板槽：晨曦模板$(br)底材槽：弓$(br)添加物槽：铁锭"
+    }
+  ]
+}
