@@ -35,14 +35,15 @@ public class StardustBlackHoleRenderer extends EntityRenderer<StardustBlackHoleE
 
         pose.pushPose();
         pose.translate(0.0D, 1.0D, 0.0D);
-        drawPortalSphere(pose, buffers.getBuffer(RenderType.endPortal()), radius);
+        // 使用普通实体渲染层，让光影包按实体处理黑洞球体。
+        drawBlackSphere(pose, buffers.getBuffer(RenderType.entityTranslucent(TEXTURE)), radius);
 
         float time = (entity.getAgeTicks() + partialTick) * 0.035F;
         drawLensRings(pose, buffers, radius, fade, time, packedLight);
         pose.popPose();
     }
 
-    private static void drawPortalSphere(PoseStack pose, VertexConsumer consumer, float radius) {
+    private static void drawBlackSphere(PoseStack pose, VertexConsumer consumer, float radius) {
         PoseStack.Pose matrix = pose.last();
         for (int latitude = 0; latitude < LATITUDES; latitude++) {
             float v0 = latitude / (float) LATITUDES;
@@ -58,18 +59,24 @@ public class StardustBlackHoleRenderer extends EntityRenderer<StardustBlackHoleE
                 float u1 = (longitude + 1) / (float) LONGITUDES;
                 float theta0 = u0 * (float) (Math.PI * 2.0);
                 float theta1 = u1 * (float) (Math.PI * 2.0);
-                addPortalVertex(consumer, matrix, radius, ring0, y0, theta0);
-                addPortalVertex(consumer, matrix, radius, ring1, y1, theta0);
-                addPortalVertex(consumer, matrix, radius, ring1, y1, theta1);
-                addPortalVertex(consumer, matrix, radius, ring0, y0, theta1);
+                addSphereVertex(consumer, matrix, radius, ring0, y0, theta0, u0, v0);
+                addSphereVertex(consumer, matrix, radius, ring1, y1, theta0, u0, v1);
+                addSphereVertex(consumer, matrix, radius, ring1, y1, theta1, u1, v1);
+                addSphereVertex(consumer, matrix, radius, ring0, y0, theta1, u1, v0);
             }
         }
     }
 
-    private static void addPortalVertex(VertexConsumer consumer, PoseStack.Pose pose, float radius,
-            float ring, float y, float theta) {
-        consumer.addVertex(pose, radius * ring * (float) Math.cos(theta), radius * y,
-                radius * ring * (float) Math.sin(theta));
+    private static void addSphereVertex(VertexConsumer consumer, PoseStack.Pose pose, float radius,
+            float ring, float y, float theta, float u, float v) {
+        float x = ring * (float) Math.cos(theta);
+        float z = ring * (float) Math.sin(theta);
+        consumer.addVertex(pose, radius * x, radius * y, radius * z)
+                .setColor(0.02F, 0.0F, 0.05F, 1.0F)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+                .setNormal(pose, x, y, z);
     }
 
     private static void drawLensRings(PoseStack pose, MultiBufferSource buffers, float radius,

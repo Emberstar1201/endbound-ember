@@ -95,15 +95,13 @@ public final class ChainMiningEvents {
 
         PROCESSING.set(true);
         try {
-            int durability = 0;
+            boolean durabilityCharged = false;
+            boolean durabilityProtection = Config.CHAIN_MINING_DURABILITY_PROTECTION.get();
             for (BlockPos pos : candidates) {
                 if (!creativeMode && !player.mayUseItemAt(pos, Direction.UP, tool)) continue;
                 BlockState state = level.getBlockState(pos);
                 if (!sameFamily(target, state) || !isEligible(state, level, pos)
                         || (!creativeMode && state.requiresCorrectToolForDrops() && !tool.isCorrectToolForDrops(state))) continue;
-                if (!creativeMode && !Config.CHAIN_MINING_DURABILITY_PROTECTION.get()
-                        && durability >= MAX_EXTRA_BLOCKS) break;
-
                 List<ItemStack> drops = creativeMode ? List.of()
                         : Block.getDrops(state, level, pos, null, player, tool);
                 if (!level.removeBlock(pos, false)) continue;
@@ -115,10 +113,15 @@ public final class ChainMiningEvents {
                     player.getFoodData().setSaturation(
                             Math.max(0.0F, player.getFoodData().getSaturationLevel() - SATURATION_COST_PER_BLOCK));
                 }
-                if (!creativeMode && !Config.CHAIN_MINING_DURABILITY_PROTECTION.get()) {
-                    tool.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-                    durability++;
-                    if (tool.isEmpty()) break;
+                if (!creativeMode && !durabilityCharged) {
+                    // 只在首次成功连锁破坏后逐点结算，保留原版耐久附魔与逐次免耗判定。
+                    int durabilityCost = durabilityProtection ? MAX_EXTRA_BLOCKS / 2 : MAX_EXTRA_BLOCKS;
+                    for (int point = 0; point < durabilityCost; point++) {
+                        if (player.getMainHandItem() != tool || tool.isEmpty()) break;
+                        tool.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+                    }
+                    durabilityCharged = true;
+                    if (player.getMainHandItem() != tool || tool.isEmpty()) break;
                 }
             }
         } finally {

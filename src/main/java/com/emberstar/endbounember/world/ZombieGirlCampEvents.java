@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -122,10 +123,12 @@ public final class ZombieGirlCampEvents {
         if (loaded.getAllStarts().entrySet().stream().anyMatch(entry ->
                 CAMP.equals(level.registryAccess().registryOrThrow(Registries.STRUCTURE).getKey(entry.getKey()))
                         && entry.getValue().isValid())) return true;
-        int y = loaded.getHeight(Heightmap.Types.WORLD_SURFACE, x & 15, z & 15);
+        // 用忽略树叶的高度图取地表，避免原点直接落在树冠顶部。
+        int y = loaded.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x & 15, z & 15);
         if (y < SPAWN_CAMP_MIN_Y) return true;
         BlockPos origin = new BlockPos(minX, y + ORIGIN_Y_OFFSET, minZ);
         if (hasCropsAround(level, origin, size)) return true;
+        if (hasObstructions(level, origin, size)) return true;
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false).setKnownShape(true)
                 .addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
@@ -365,6 +368,10 @@ public final class ZombieGirlCampEvents {
                 if (pos == null) continue;
                 girl.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, random.nextFloat() * 360.0F, 0.0F);
                 girl.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
+                if (girl instanceof com.emberstar.endbounember.entity.ZombieGirl zombieGirl) {
+                    zombieGirl.setCampGuardCenter(new BlockPos(
+                            (min.getX() + max.getX()) / 2, 0, (min.getZ() + max.getZ()) / 2));
+                }
                 level.addFreshEntity(girl);
                 spawned++;
                 break;
@@ -408,6 +415,39 @@ public final class ZombieGirlCampEvents {
         // 向东偏移 5 区块，中心距离出生点约 80 格。
         return new ChunkPos((spawnPos.getX() >> 4) + SPAWN_CAMP_CHUNK_OFFSET,
                 spawnPos.getZ() >> 4);
+    }
+
+    /**
+     * 结构体积内是否存在树木或已生成的其他结构。出生点营地是直接放进已生成世界的，
+     * 必须避开树冠和灾厄哨塔这类建筑，否则营地会骑在它们上面。
+     */
+    private static boolean hasObstructions(ServerLevel level, BlockPos origin, Vec3i size) {
+        BlockPos end = origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
+        for (BlockPos pos : BlockPos.betweenClosed(origin, end)) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS)) {
+                return true;
+            }
+        }
+        return hasStructureOverlap(level, origin, size);
+    }
+
+    /** 营地体积是否与已生成的其他结构重叠；只统计同区块已完整生成的结构起点。 */
+    private static boolean hasStructureOverlap(ServerLevel level, BlockPos origin, Vec3i size) {
+        BoundingBox box = BoundingBox.fromCorners(origin,
+                origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1));
+        for (int chunkX = box.minX() >> 4; chunkX <= box.maxX() >> 4; chunkX++) {
+            for (int chunkZ = box.minZ() >> 4; chunkZ <= box.maxZ() >> 4; chunkZ++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
+                if (chunk == null) continue;
+                for (StructureStart start : chunk.getAllStarts().values()) {
+                    if (start.isValid() && start.getBoundingBox().intersects(box)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

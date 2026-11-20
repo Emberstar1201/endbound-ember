@@ -83,7 +83,8 @@ public class Config {
     /** 加速火把总开关 */
     public static final ModConfigSpec.BooleanValue ACCELERATOR_TORCH_ENABLED = BUILDER
             .comment("Enable the accelerator torch.",
-                    "It speeds up random ticks and block entities inside its radius.")
+                    "It speeds up random ticks and block entities inside its radius, including campfire cooking and modded machines that use standard server-side block entity ticks.",
+                    "Machines that rely on absolute-time checks or independent schedulers need their own compatibility; not every modded machine is guaranteed to accelerate.")
             .define("acceleratorTorchEnabled", true);
 
     /** 加速火把作用半径（水平与垂直方向都是该格数） */
@@ -247,15 +248,21 @@ public class Config {
             .comment("Replace a broken main-hand hotbar item with an undamaged item of the same type from inventory.")
             .define("autoReplaceEnabled", true);
 
-    /** 连锁挖矿额外方块不消耗工具耐久；仅由服务器配置文件控制。 */
+    /** 连锁挖矿耐久保护：成功破坏额外方块后固定逐点扣 32 点而非 64 点；仅由服务器配置文件控制。 */
     public static final ModConfigSpec.BooleanValue CHAIN_MINING_DURABILITY_PROTECTION = SERVER_BUILDER
-            .comment("Prevent durability loss from additional chain-mined blocks. Server config only; protects at most 64 durability per operation.")
+            .comment("After at least one additional block is broken, charge 32 durability points instead of 64, one point per call. Unbreaking and Made in China may reduce the actual loss. Server config only.")
             .define("chainMiningDurabilityProtection", true);
 
-    /** 原版战利品表掉落倍率总开关；仅由服务器配置文件控制。 */
+    /** 实体死亡与矿石方块掉落倍率开关，排除远古残骸。仅由服务器配置文件控制。 */
     public static final ModConfigSpec.BooleanValue VANILLA_LOOT_BOOST_ENABLED = SERVER_BUILDER
-            .comment("Multiply item drops from all loot tables by 2.5. Server config only.")
+            .comment("Multiply entity death and c:ores block loot by 3. Ancient debris and items in vanillaLootBoostExcludedItems keep their original counts. Server config only.")
             .define("vanillaLootBoostEnabled", true);
+
+    /** 不参与战利品倍率的物品注册表 ID；默认排除藏宝图、探险家地图等已绘制地图。 */
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> VANILLA_LOOT_BOOST_EXCLUDED_ITEMS = SERVER_BUILDER
+            .comment("Item registry IDs excluded from the loot multiplier; their original counts are preserved.",
+                    "Defaults to minecraft:filled_map (including buried treasure and explorer maps), not blank maps. An empty list removes only item ID exclusions. Server config only.")
+            .defineListAllowEmpty("vanillaLootBoostExcludedItems", List.of("minecraft:filled_map"), () -> "", Config::validateItemName);
 
     /** 原版经验掉落倍率总开关；仅由服务器配置文件控制。 */
     public static final ModConfigSpec.BooleanValue VANILLA_XP_BOOST_ENABLED = SERVER_BUILDER

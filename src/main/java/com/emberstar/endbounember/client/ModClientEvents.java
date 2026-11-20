@@ -7,6 +7,7 @@ import com.emberstar.endbounember.entity.HumanGirl;
 import com.emberstar.endbounember.entity.Herobrine;
 import com.emberstar.endbounember.entity.ZombieGirl;
 import com.emberstar.endbounember.entity.EmberStarSorceress;
+import com.emberstar.endbounember.entity.DawnJudgementThunder;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -29,6 +30,8 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LightningBoltRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -71,6 +74,9 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.EMBERSTAR_SORCERESS.get(), EmberStarSorceressRenderer::new);
         event.registerEntityRenderer(ModEntities.DAWN_SWORD_QI.get(), DawnSwordQiRenderer::new);
         event.registerEntityRenderer(ModEntities.DAWN_ARROW.get(), DawnArrowRenderer::new);
+        // 判罚之雷复用原版落雷渲染器，只因实体类型不同而需要显式转型。
+        event.registerEntityRenderer(ModEntities.DAWN_JUDGEMENT_THUNDER.get(),
+                context -> (EntityRenderer<DawnJudgementThunder>) (EntityRenderer) new LightningBoltRenderer(context));
         event.registerEntityRenderer(ModEntities.MOTHER_WITHER_SKULL.get(), MotherWitherSkullRenderer::new);
         event.registerEntityRenderer(ModEntities.HEROBRINE.get(), HerobrineRenderer::new);
         event.registerEntityRenderer(ModEntities.NETHER_METEOR.get(), NetherMeteorRenderer::new);

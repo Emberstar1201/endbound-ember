@@ -12,6 +12,7 @@ import com.emberstar.endbounember.item.DawnBreakBowItem;
 
 import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -107,11 +108,23 @@ public final class DawnArrowEntity extends AbstractArrow {
             if (!confirmedDamage || random.nextFloat() >= 0.2F) return;
             Entity owner = getOwner();
             var spark = damageSources().source(FreeWillEnchantments.VOID_SPARK, this, owner != null ? owner : this);
-            hit.getEntity().hurt(spark, 40.0F);
+            Entity target = hit.getEntity();
+            target.hurt(spark, 40.0F);
+            // 判罚之雷的额外伤害生效时落下一道纯表现闪电，让玩家知道这次触发了。
+            spawnJudgementThunder(target);
         } finally {
             resolvingHit = false;
             confirmedDamage = false;
         }
+    }
+
+    /** 在目标位置生成一道不点火、不伤害的落雷，用于表现判罚之雷的额外伤害。 */
+    private void spawnJudgementThunder(Entity target) {
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+        DawnJudgementThunder thunder = ModEntities.DAWN_JUDGEMENT_THUNDER.get().create(serverLevel);
+        if (thunder == null) return;
+        thunder.moveTo(target.getX(), target.getY(), target.getZ());
+        serverLevel.addFreshEntity(thunder);
     }
 
     private static boolean hasBossBar(LivingEntity target) {

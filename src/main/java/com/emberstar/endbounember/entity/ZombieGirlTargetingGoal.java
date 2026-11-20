@@ -5,6 +5,8 @@ import java.util.EnumSet;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
@@ -46,6 +48,9 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
         }
         this.cooldown = 20;
         this.potentialTarget = findHatedTarget();
+        if (this.potentialTarget == null && this.mob instanceof ZombieGirl girl && girl.isCampGuard()) {
+            this.potentialTarget = findNearestCampEnemy(girl);
+        }
         return this.potentialTarget != null;
     }
 
@@ -76,6 +81,24 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
 
         // 优先级 4：自身附近的天生仇视目标（仅亡灵）
         return findNearestValid(this.mob.getBoundingBox().inflate(this.getFollowDistance(), 4.0D, this.getFollowDistance()), true);
+    }
+
+    @Nullable
+    private LivingEntity findNearestCampEnemy(ZombieGirl girl) {
+        AABB area = girl.getBoundingBox().inflate(24.0D, 8.0D, 24.0D);
+        LivingEntity best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (LivingEntity candidate : this.mob.level().getEntitiesOfClass(LivingEntity.class, area,
+                entity -> entity instanceof Enemy && isValidTarget(entity, true)
+                        && girl.isInsideCampGuardRange(entity))) {
+            if (!TargetingConditions.forCombat().ignoreLineOfSight().test(this.mob, candidate)) continue;
+            double distance = this.mob.distanceToSqr(candidate);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = candidate;
+            }
+        }
+        return best;
     }
 
     @Nullable
@@ -122,6 +145,17 @@ public class ZombieGirlTargetingGoal extends TargetGoal {
         return ZombieGirl.isProtectedMaid(entity.getType());
     }
 
+
+    @Override
+    public boolean canContinueToUse() {
+        LivingEntity target = this.mob.getTarget();
+        if (this.mob instanceof ZombieGirl girl && girl.isCampGuard()
+                && target instanceof Enemy && !girl.isInsideCampGuardRange(target)) {
+            this.mob.setTarget(null);
+            return false;
+        }
+        return super.canContinueToUse();
+    }
 
     @Override
     public void start() {

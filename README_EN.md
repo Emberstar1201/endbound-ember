@@ -15,7 +15,7 @@
 
 Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the official remake of Enchant-expansion.
 
-**Current version: 1.2.1 (Release)** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
+**Current version: 1.2.2 Beta** | **Mod icon:** `icon_mod.png` | **In-game menu banner:** `logo_mod.png`
 
 ## ⚠️ Special Notice
 
@@ -74,7 +74,8 @@ Endbound Ember is a vanilla-expansion mod for Minecraft 1.21.1 NeoForge and the 
 
 #### Accelerator Torch
 
-- Adds a crafting recipe. The common config can enable or disable the torch and adjust its effect radius and speed multiplier.
+- Adds a crafting recipe. The common config can enable or disable the torch and adjust its effect radius and speed multiplier; the multiplier advances the original recipe time, so a 30-second recipe takes about 15 seconds at 2x or 7.5 seconds at 4x (20 TPS).
+- Speeds random ticks, campfire cooking, and modded work blocks that use standard server-side block entity ticks. Machines based on absolute time or independent schedulers need separate compatibility, so not every modded machine is guaranteed to accelerate.
 - Can be placed upright on the ground or mounted on any of the four horizontal walls. It is removed when its support is broken, following torch behavior.
 - Uses a dedicated flame particle, so vanilla fire is unaffected. Item, block, and particle textures can be edited independently.
 

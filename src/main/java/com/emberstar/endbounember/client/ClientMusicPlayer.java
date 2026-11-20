@@ -11,11 +11,12 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.SelectMusicEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT)
 public final class ClientMusicPlayer {
@@ -82,7 +83,6 @@ public final class ClientMusicPlayer {
     private static int index;
     private static Mode mode = Mode.LIST;
     private static boolean playing;
-    private static ResourceLocation activeId;
     private static SimpleSoundInstance activeInstance;
     private static List<Track> tracks = List.of();
     private static boolean resourceReloading;
@@ -210,11 +210,12 @@ public final class ClientMusicPlayer {
         if (tracks.isEmpty()) return;
         Track track = tracks.get(index);
         stopSound();
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!playing) minecraft.getMusicManager().stopPlaying();
         SoundEvent sound = SoundEvent.createVariableRangeEvent(track.id());
         activeInstance = SimpleSoundInstance.forMusic(sound);
-        Minecraft.getInstance().getSoundManager().play(activeInstance);
-        activeId = track.id();
         playing = true;
+        minecraft.getSoundManager().play(activeInstance);
     }
 
     public static void pause() {
@@ -245,9 +246,14 @@ public final class ClientMusicPlayer {
     }
 
     private static void stopSound() {
-        if (activeId != null) Minecraft.getInstance().getSoundManager().stop(activeId, SoundSource.MUSIC);
-        activeId = null;
+        if (activeInstance != null) Minecraft.getInstance().getSoundManager().stop(activeInstance);
         activeInstance = null;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void suppressBackgroundMusic(SelectMusicEvent event) {
+        // 整段播放期间阻止原版重新选曲，切换曲目或循环时也不交回控制权。
+        if (playing) event.overrideMusic(null);
     }
 
     @SubscribeEvent
@@ -262,7 +268,7 @@ public final class ClientMusicPlayer {
             play();
         } else {
             playing = false;
-            activeId = null;
+            activeInstance = null;
         }
     }
 }

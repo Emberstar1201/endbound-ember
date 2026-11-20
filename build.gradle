@@ -63,7 +63,7 @@ repositories {
     mavenCentral()
 }
 base {
-    // 产物文件名前加官方中文名，形如 [终界余烬]endbound_ember-1.2.1.jar
+    // 产物文件名前加官方中文名，形如 [终界余烬]endbound_ember-1.2.2-beta.jar
     archivesName = "[终界余烬]${mod_id}"
 }
 

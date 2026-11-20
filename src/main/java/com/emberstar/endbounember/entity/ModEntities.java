@@ -52,6 +52,15 @@ public class ModEntities {
                     .updateInterval(1)
                     .build("dawn_arrow"));
 
+    /** 黎明圣裁「判罚之雷」的纯表现落雷：不点火、不伤害，也不会烧毁掉落物。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<DawnJudgementThunder>> DAWN_JUDGEMENT_THUNDER =
+            ENTITY_TYPES.register("dawn_judgement_thunder",
+                    () -> EntityType.Builder.<DawnJudgementThunder>of(DawnJudgementThunder::new, MobCategory.MISC)
+                            .sized(0.2F, 0.2F)
+                            .clientTrackingRange(16)
+                            .updateInterval(1)
+                            .build("dawn_judgement_thunder"));
+
     /** 「刺破长夜的黎明」剑气。 */
     public static final DeferredHolder<EntityType<?>, EntityType<DawnSwordQiEntity>> DAWN_SWORD_QI =
             ENTITY_TYPES.register("dawn_sword_qi",

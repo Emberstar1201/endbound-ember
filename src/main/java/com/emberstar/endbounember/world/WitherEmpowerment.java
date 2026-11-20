@@ -9,7 +9,6 @@ import com.emberstar.endbounember.entity.MotherWitherSkull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,7 +30,6 @@ import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -56,7 +54,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  *   <li>地面狂暴：公牛式直线冲撞并摧毁沿途非基岩方块，持续召唤强化凋零骷髅。</li>
  *   <li>吸血与回血：击杀非亡灵生物回血；自身回血快于原版，被亡灵杀手武器命中时回血受挫。</li>
  *   <li>凋零威压：附近玩家持续黑暗，每 15 秒一次 3 秒凋零 II。</li>
- *   <li>下界限定：主世界等其他维度召唤会被阻止并提示玩家。</li>
  *   <li>击杀奖励：被击杀时掉落 10000 点经验。</li>
  * </ul>
  */
@@ -142,20 +139,13 @@ public final class WitherEmpowerment {
     }
 
     // ------------------------------------------------------------------
-    // 生成：下界限定 + 属性强化
+    // 生成：属性强化
     // ------------------------------------------------------------------
 
     @SubscribeEvent
     public static void onWitherJoin(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide()) return;
         if (!(event.getEntity() instanceof WitherBoss wither)) return;
-
-        // 凋零只能在下界召唤：其他维度直接取消生成并提示最近的玩家
-        if (event.getLevel().dimension() != Level.NETHER) {
-            event.setCanceled(true);
-            notifyNetherOnly(wither);
-            return;
-        }
 
         applyAttributes(wither);
         CompoundTag data = wither.getPersistentData();
@@ -174,19 +164,6 @@ public final class WitherEmpowerment {
             if (wither.getHealth() > wither.getMaxHealth()) {
                 wither.setHealth(wither.getMaxHealth());
             }
-        }
-    }
-
-    /** 主世界召唤被阻止时，给附近玩家一条提示。 */
-    private static void notifyNetherOnly(WitherBoss wither) {
-        Component message = Component.translatable("entity.endbound_ember.wither.nether_only");
-        for (Player player : wither.level().getEntitiesOfClass(Player.class,
-                wither.getBoundingBox().inflate(48.0D))) {
-            player.displayClientMessage(message, false);
-        }
-        if (wither.level() instanceof ServerLevel level) {
-            level.sendParticles(ParticleTypes.SMOKE,
-                    wither.getX(), wither.getY() + 1.0D, wither.getZ(), 40, 1.5D, 1.0D, 1.5D, 0.02D);
         }
     }
 

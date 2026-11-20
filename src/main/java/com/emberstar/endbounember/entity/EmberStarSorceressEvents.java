@@ -27,7 +27,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -325,7 +327,7 @@ public final class EmberStarSorceressEvents {
     /** 魔女生成后随机触发一次事件：神秘试炼、短暂指引，也可能什么都不发生。 */
     private static void rollSorceressEvent(ServerLevel level, ServerPlayer player, EmberStarSorceress sorceress) {
         if (level.random.nextFloat() < TRIAL_CHANCE) {
-            startMysteriousTrial(level, player);
+            startMysteriousTrial(level, player, sorceress);
             return;
         }
         if (level.random.nextFloat() < GUIDANCE_CHANCE) {
@@ -349,7 +351,7 @@ public final class EmberStarSorceressEvents {
     }
 
     /** 开启一场神秘试炼：先弹出挑战内容，完成后在玩家眼前凝成奖励箱。 */
-    private static void startMysteriousTrial(ServerLevel level, ServerPlayer player) {
+    private static void startMysteriousTrial(ServerLevel level, ServerPlayer player, EmberStarSorceress sorceress) {
         if (ACTIVE_TRIALS.containsKey(player.getUUID())) {
             return;
         }
@@ -365,6 +367,21 @@ public final class EmberStarSorceressEvents {
         Trial trial = new Trial(type, seconds, target, now, now + seconds * 20L, player.position());
         ACTIVE_TRIALS.put(player.getUUID(), trial);
         announceTrial(player, trial);
+
+        if (type == TrialType.KILL) {
+            // 击杀试炼的敌人由女巫在原地召来，数量与试炼目标严格一致。
+            Vec3 spawnPos = sorceress.position();
+            for (int i = 0; i < target; i++) {
+                Husk husk = net.minecraft.world.entity.EntityType.HUSK.create(level);
+                if (husk == null) {
+                    continue;
+                }
+                husk.moveTo(spawnPos.x, spawnPos.y, spawnPos.z, level.random.nextFloat() * 360.0F, 0.0F);
+                husk.finalizeSpawn(level, level.getCurrentDifficultyAt(sorceress.blockPosition()), MobSpawnType.EVENT, null);
+                husk.setTarget(player);
+                level.addFreshEntity(husk);
+            }
+        }
 
         Vec3 pos = player.position();
         level.sendParticles(ParticleTypes.WITCH, pos.x, pos.y + 1.0D, pos.z, 24, 0.6D, 1.0D, 0.6D, 0.1D);

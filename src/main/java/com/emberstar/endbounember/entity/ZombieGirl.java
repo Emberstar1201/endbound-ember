@@ -101,6 +101,9 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     private static final String AFFECTION_DAY_TAG = "AffectionDay";
     private static final String COMPANIONSHIP_DAY_TAG = "CompanionshipDay";
     private static final String DAILY_AFFECTION_TAG = "DailyAffection";
+    private static final String CAMP_GUARD_X_TAG = "EndboundCampGuardX";
+    private static final String CAMP_GUARD_Z_TAG = "EndboundCampGuardZ";
+    private static final double CAMP_GUARD_RADIUS = 24.0D;
     /** 每日好感度上限：陪伴、助战、喂食共用同一份额度。 */
     private static final int DAILY_AFFECTION_LIMIT = 5;
     private static final double COMPANIONSHIP_DISTANCE_SQR = 16.0D * 16.0D;
@@ -114,6 +117,7 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
     private long affectionDay = -1L;
     private long companionshipDay = -1L;
     private int dailyAffection;
+    @Nullable private BlockPos campGuardCenter;
     /** 仅保存 64 格背包；前 6 格菜单槽位是实体实际装备槽的代理。 */
     protected final ItemStackHandler companionInventory = new ItemStackHandler(64);
     private int tridentCooldown;
@@ -169,6 +173,10 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         tag.putLong(AFFECTION_DAY_TAG, this.affectionDay);
         tag.putLong(COMPANIONSHIP_DAY_TAG, this.companionshipDay);
         tag.putInt(DAILY_AFFECTION_TAG, this.dailyAffection);
+        if (this.campGuardCenter != null) {
+            tag.putInt(CAMP_GUARD_X_TAG, this.campGuardCenter.getX());
+            tag.putInt(CAMP_GUARD_Z_TAG, this.campGuardCenter.getZ());
+        }
         tag.put(COMPANION_INVENTORY_TAG, this.companionInventory.serializeNBT(this.registryAccess()));
     }
 
@@ -182,6 +190,8 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
         this.affectionDay = tag.contains(AFFECTION_DAY_TAG) ? tag.getLong(AFFECTION_DAY_TAG) : -1L;
         this.companionshipDay = tag.contains(COMPANIONSHIP_DAY_TAG) ? tag.getLong(COMPANIONSHIP_DAY_TAG) : -1L;
         this.dailyAffection = tag.contains(DAILY_AFFECTION_TAG) ? tag.getInt(DAILY_AFFECTION_TAG) : 0;
+        this.campGuardCenter = tag.contains(CAMP_GUARD_X_TAG) && tag.contains(CAMP_GUARD_Z_TAG)
+                ? new BlockPos(tag.getInt(CAMP_GUARD_X_TAG), 0, tag.getInt(CAMP_GUARD_Z_TAG)) : null;
         if (tag.contains(COMPANION_INVENTORY_TAG)) this.companionInventory.deserializeNBT(this.registryAccess(), tag.getCompound(COMPANION_INVENTORY_TAG));
     }
 
@@ -1171,6 +1181,20 @@ public class ZombieGirl extends Zombie implements RangedAttackMob, CrossbowAttac
                 mob.tridentCooldown = 40;
             }
         }
+    }
+
+    public void setCampGuardCenter(BlockPos center) {
+        this.campGuardCenter = center == null ? null : center.immutable();
+    }
+
+    public boolean isCampGuard() {
+        return this.campGuardCenter != null;
+    }
+
+    public boolean isInsideCampGuardRange(net.minecraft.world.entity.Entity entity) {
+        return this.campGuardCenter != null
+                && entity.distanceToSqr(this.campGuardCenter.getX() + 0.5D, entity.getY(),
+                        this.campGuardCenter.getZ() + 0.5D) <= CAMP_GUARD_RADIUS * CAMP_GUARD_RADIUS;
     }
 
     public static boolean isHated(EntityType<?> type) { return type.is(ModTags.EntityTypes.ZOMBIE_GIRL_ENEMIES); }

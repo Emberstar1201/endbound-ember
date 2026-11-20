@@ -29,6 +29,7 @@
     "RaidVictoryMixin",
     "FoolVillagerTradesMixin",
     "VillageSiegeZombieMixin",
+    "WitherBossDawnArrowMixin",
     "AnvilMechanicsMixin"
   ],
   "client": [
