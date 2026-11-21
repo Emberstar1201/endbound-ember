@@ -522,7 +522,6 @@
   "hud.endbound_ember.chain_mining.mode.tunnel": "通道模式",
   "hud.endbound_ember.chain_mining.mode.stairs_up": "樓梯上行",
   "hud.endbound_ember.chain_mining.mode.stairs_down": "樓梯下行",
-  "hud.endbound_ember.chain_mining.mode.farming": "耕種模式",
   "endbound_ember.hope_bloom.saved": "希望之花：即死效果被免疫",
   "endbound_ember.eternal_spark.saved": "星火不滅：致命傷害被抵擋",
   "endbound_ember.end_approaches.ward": "攻擊強化末影龍時，最多削弱 %s 顆水晶的共鳴減傷",

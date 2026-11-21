@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.emberstar.endbounember.Config;
+import com.emberstar.endbounember.enchantment.CraftsmanshipEnchantment;
 import com.emberstar.endbounember.entity.EmberStarSorceressEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,6 +29,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -108,6 +111,8 @@ public final class ChainMiningEvents {
                 level.levelEvent(2001, pos, Block.getId(state));
                 for (ItemStack drop : drops) Block.popResource(level, pos, drop);
                 EmberStarSorceressEvents.addMinedBlocks(player, 1);
+                // 连锁破坏不走 BlockEvent.BreakEvent，需手动累计匠心传承（含中国制造）的破坏数
+                CraftsmanshipEnchantment.addBreaks(player, tool, 1);
                 // 每个额外连锁方块消耗 0.01 点饱和度；只在服务端实际破坏成功后收取。
                 if (!creativeMode) {
                     player.getFoodData().setSaturation(
@@ -135,23 +140,30 @@ public final class ChainMiningEvents {
     }
 
     /**
-     * 耕种模式的右键入口：只接管“右键方块”这一动作，且仅在服务端执行。
-     * 手持锄头 → 一键开垦 8×8 耕地；手持种子 → 把种子沿附近耕地扩散播种。
+     * 耕种右键入口：只接管“右键方块”这一动作，且仅在服务端执行。
+     * 该行为不再单独占用一个模式，只要连锁挖掘处于开启状态，任何挖掘模式下都生效：
+     * 右键成熟作物 → 收下周围成熟作物并直接补种；手持锄头 → 一键开垦 8×8 耕地；
+     * 手持种子 → 把种子沿附近耕地扩散播种。
      * 不取消事件，让原版逻辑在已被占用的位置自然失败即可。
      */
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.isCanceled()) return;
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || !(event.getLevel() instanceof ServerLevel level)) return;
         if (player.isSpectator() || !player.getAbilities().mayBuild) return;
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
 
         ChainMiningState.State state = ChainMiningState.get(player);
-        if (!state.enabled() || state.mode() != ChainMiningState.Mode.FARMING) return;
+        if (!state.enabled()) return;
 
         BlockPos origin = event.getPos();
+        BlockState clicked = level.getBlockState(origin);
         ItemStack held = player.getMainHandItem();
-        if (held.getItem() instanceof HoeItem) {
+        // 成熟作物优先：手里拿着对应种子/作物时也要能触发收获，而不是被播种分支拦下
+        if (clicked.getBlock() instanceof CropBlock crop && crop.isMaxAge(clicked)) {
+            harvestArea(level, player, origin, held);
+        } else if (held.getItem() instanceof HoeItem) {
             tillArea(level, player, origin, held);
         } else if (SEED_CROPS.containsKey(held.getItem())) {
             plantArea(level, player, origin, held);
@@ -177,6 +189,81 @@ public final class ChainMiningEvents {
                 }
             }
         }
+    }
+
+    /** 一键收获：右键成熟作物时，沿相连耕地收取所有成熟作物，并原地补种。 */
+    private static void harvestArea(ServerLevel level, ServerPlayer player, BlockPos origin, ItemStack tool) {
+        BlockPos farmland = origin.below();
+        if (!level.getBlockState(farmland).is(Blocks.FARMLAND)) return;
+
+        boolean creative = player.isCreative();
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        Set<BlockPos> visited = new HashSet<>();
+        visited.add(farmland);
+        queue.addLast(farmland);
+
+        int harvested = 0;
+        while (!queue.isEmpty() && harvested < MAX_EXTRA_BLOCKS) {
+            // 扫描上限，避免在超大农田上无限扩散拖慢服务端
+            if (visited.size() > MAX_FARM_SCAN) break;
+            BlockPos current = queue.removeFirst();
+
+            BlockPos cropPos = current.above();
+            BlockState cropState = level.getBlockState(cropPos);
+            if (cropState.getBlock() instanceof CropBlock crop && crop.isMaxAge(cropState)) {
+                harvestAndReplant(level, player, cropPos, cropState, crop, tool, creative);
+                harvested++;
+            }
+
+            for (Direction direction : HORIZONTAL) {
+                BlockPos next = current.relative(direction);
+                if (!visited.add(next) || !level.hasChunkAt(next)) continue;
+                if (level.getBlockState(next).is(Blocks.FARMLAND)) queue.addLast(next);
+            }
+        }
+    }
+
+    /**
+     * 收下一株成熟作物并直接补种：先按原版方式播报破坏特效、把收获物掉在原地，
+     * 再从这株自己的掉落物里留一颗种子补种，不够时从背包扣；创造模式不消耗种子。
+     * 拿不到种子就只收获、不补种。
+     */
+    private static void harvestAndReplant(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state,
+            CropBlock crop, ItemStack tool, boolean creative) {
+        List<ItemStack> drops = Block.getDrops(state, level, pos, null, player, tool);
+        Item seed = seedFor(crop);
+        boolean replanted = false;
+        if (seed != null) {
+            for (ItemStack drop : drops) {
+                if (drop.is(seed) && !drop.isEmpty()) {
+                    drop.shrink(1);
+                    replanted = true;
+                    break;
+                }
+            }
+            if (!replanted && creative) replanted = true;
+            if (!replanted && consumeSeed(player, seed)) replanted = true;
+        }
+
+        // 破坏粒子与音效，收获物以掉落物形式留在原地，而不是直接进背包
+        level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(state));
+        for (ItemStack drop : drops) {
+            if (!drop.isEmpty()) Block.popResource(level, pos, drop);
+        }
+
+        if (replanted) {
+            level.setBlock(pos, crop.getStateForAge(0), 3);
+        } else {
+            level.destroyBlock(pos, false);
+        }
+    }
+
+    /** 作物对应的种子物品：沿用播种表反查，表里没有的作物不自动补种。 */
+    private static Item seedFor(CropBlock crop) {
+        for (Map.Entry<Item, BlockState> entry : SEED_CROPS.entrySet()) {
+            if (entry.getValue().getBlock() == crop) return entry.getKey();
+        }
+        return null;
     }
 
     /** 一键播种：从点击的耕地出发，水平四方向 BFS，最多播种 64 株，生存模式逐株消耗背包种子。 */
@@ -267,8 +354,6 @@ public final class ChainMiningEvents {
             case TUNNEL -> tunnelCandidates(level, player, origin, target, MAX_EXTRA_BLOCKS);
             case STAIRS_UP -> stairCandidates(level, player, origin, target, true, MAX_EXTRA_BLOCKS);
             case STAIRS_DOWN -> stairCandidates(level, player, origin, target, false, MAX_EXTRA_BLOCKS);
-            // 耕种模式不参与连锁挖掘
-            case FARMING -> List.of();
         };
     }
 

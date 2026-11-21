@@ -1,4 +1,6 @@
 {
+  "item.endbound_ember.kilo_snatch": "Kilo Snatch",
+  "effect.endbound_ember.program_loot": "Program Loot",
   "block.endbound_ember.disenchantment_table": "Disenchantment Table",
   "block.endbound_ember.accelerator_torch": "Accelerator Torch",
   "container.endbound_ember.disenchantment_table": "Disenchantment Table",
@@ -469,7 +471,6 @@
   "hud.endbound_ember.chain_mining.mode.tunnel": "Tunnel",
   "hud.endbound_ember.chain_mining.mode.stairs_up": "Stairs Up",
   "hud.endbound_ember.chain_mining.mode.stairs_down": "Stairs Down",
-  "hud.endbound_ember.chain_mining.mode.farming": "Farming",
   "endbound_ember.hope_bloom.saved": "Hope Bloom: instant death negated",
   "endbound_ember.eternal_spark.saved": "Eternal Spark: fatal damage negated",
   "endbound_ember.end_approaches.ward": "When attacking the empowered Ender Dragon, weakens resonance from up to %s crystals",

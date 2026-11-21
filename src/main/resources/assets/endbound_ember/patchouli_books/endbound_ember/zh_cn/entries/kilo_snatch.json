@@ -1,0 +1,25 @@
+{
+  "name": "千位劫取",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:kilo_snatch",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:kilo_snatch",
+      "title": "千位劫取",
+      "text": "§l武器数值：§r 攻击伤害 +20、攻击速度 +1、触及距离 +3.5；史诗品质，不可堆叠，抗火。$(br2)§l程序劫掠：§r 命中时有 44% 概率为目标附加「程序劫掠」，持续 10 秒，最多叠加 5 层。每层使其攻击伤害、护甲与最大生命值降低 10%。$(br2)$(italic)安装 Better Combat 时会按双手巨剑姿态持握。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "主动技能：引爆",
+      "text": "§l潜行 + 右键：§r 引爆身边 8 格内所有存活生物身上的程序劫掠，并清除该效果。$(br2)§l伤害：§r 每层程序劫掠、以及目标身上每多一种其他药水效果，各额外扣除其最大生命值的 2%，最高 44%。$(br2)§l冷却：§r 10 秒。$(br2)即使目标没有程序劫掠，只要身上有其他药水效果也会受到引爆伤害。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:kilo_snatch",
+      "title": "合成",
+      "text": "工作台：上下中列依次为哭泣的黑曜石、下界之星、下界合金锭，左右两侧为黑曜石。"
+    }
+  ]
+}

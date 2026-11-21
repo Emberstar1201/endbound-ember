@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public final class ChainMiningState {
     public enum Mode {
-        VEIN, TUNNEL, STAIRS_UP, STAIRS_DOWN, FARMING;
+        VEIN, TUNNEL, STAIRS_UP, STAIRS_DOWN;
 
         public Mode next() {
             return values()[(ordinal() + 1) % values().length];

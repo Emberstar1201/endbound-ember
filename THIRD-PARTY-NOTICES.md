@@ -163,6 +163,45 @@ SOFTWARE.
 
 ---
 
+## 千位劫取（KiloSnatch）
+
+- 项目名称：千位劫取（KiloSnatch）
+- 作者：lianviolent
+- 来源版本：1.0.0（Minecraft 1.21.1 / NeoForge）
+- 上游许可：MIT License（上游 `neoforge.mods.toml` 声明）
+
+### 本项目中的使用范围
+
+大剑属性、程序劫掠效果及其命中叠层、范围引爆和冷却逻辑依据 KiloSnatch 1.0.0 反编译源码移植并适配到 `endbound_ember` 命名空间。对应实现位于 `item/KiloSnatchItem.java`、`item/KiloSnatchAbilities.java` 与 `effect/ModEffects.java`。原作者署名保留为 lianviolent
+
+### MIT License
+
+```text
+MIT License
+
+Copyright (c) dsh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
 ## Yes Steve Model（YSM）
 
 - 项目名称：Yes Steve Model

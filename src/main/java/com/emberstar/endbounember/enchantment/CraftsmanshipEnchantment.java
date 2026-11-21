@@ -93,13 +93,22 @@ public final class CraftsmanshipEnchantment {
         Player player = event.getPlayer();
         if (player.level().isClientSide()) return;
 
-        ItemStack tool = player.getMainHandItem();
-        if (!hasEffect(tool)) return;
+        addBreaks(player, player.getMainHandItem(), 1);
+    }
 
-        int count = countOf(tool) + 1;
+    /**
+     * 为工具累计破坏的方块数。
+     * 连锁挖掘是直接移除方块的，不会触发 BlockEvent.BreakEvent，必须由连锁逻辑显式调用这里，
+     * 否则一次连锁只会被算作破坏了一个方块。每跨过一档只提示一次。
+     */
+    public static void addBreaks(Player player, ItemStack tool, int amount) {
+        if (amount <= 0 || tool.isEmpty() || !hasEffect(tool)) return;
+
+        int before = countOf(tool);
+        int count = before + amount;
         tool.set(EndboundEmber.CRAFTSMANSHIP_COUNT.get(), count);
 
-        if (count % BLOCKS_PER_STEP == 0) {
+        if (count / BLOCKS_PER_STEP != before / BLOCKS_PER_STEP) {
             player.displayClientMessage(Component.translatable("endbound_ember.craftsmanship.grow",
                     String.format(java.util.Locale.ROOT, "%.0f", bonus(count) * 100.0D)), true);
         }

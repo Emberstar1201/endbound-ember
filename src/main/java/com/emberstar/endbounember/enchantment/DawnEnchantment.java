@@ -43,6 +43,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -585,13 +586,13 @@ public final class DawnEnchantment {
 
             if (!guideReceived) {
                 ItemStack guideBook = EndboundEmber.createGuideBookForGift();
-                if (!guideBook.isEmpty() && player.getInventory().add(guideBook)) {
+                if (!guideBook.isEmpty() && giveToSpareSlot(player, guideBook)) {
                     data.putBoolean(GUIDE_RECEIVED_TAG, true);
                 }
             }
             if (!dawnReceived) {
                 ItemStack dawnBook = createEnchantedBook(player, 1);
-                if (player.getInventory().add(dawnBook)) {
+                if (giveToSpareSlot(player, dawnBook)) {
                     data.putBoolean(RECEIVED_TAG, true);
                     var server = player.getServer();
                     if (server != null) {
@@ -600,6 +601,39 @@ public final class DawnEnchantment {
                     }
                 }
             }
+        }
+
+        /**
+         * 自己找空位发放：先并入已有同类堆叠，再从背包主区末尾往前找空格，最后才占用快捷栏，
+         * 避免抢先占掉其他模组开局物品常用的位置。没有任何空位时返回 false，交给每秒重试等玩家腾出空间。
+         */
+        private static boolean giveToSpareSlot(ServerPlayer player, ItemStack stack) {
+            Inventory inventory = player.getInventory();
+            // 0~8 为快捷栏，9~35 为主背包区
+            for (int slot = 0; slot < 36; slot++) {
+                ItemStack existing = inventory.getItem(slot);
+                if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, stack)
+                        && existing.getCount() < existing.getMaxStackSize()) {
+                    int moved = Math.min(stack.getCount(), existing.getMaxStackSize() - existing.getCount());
+                    existing.grow(moved);
+                    stack.shrink(moved);
+                    inventory.setChanged();
+                    if (stack.isEmpty()) return true;
+                }
+            }
+            for (int slot = 35; slot >= 9; slot--) {
+                if (inventory.getItem(slot).isEmpty()) {
+                    inventory.setItem(slot, stack);
+                    return true;
+                }
+            }
+            for (int slot = 8; slot >= 0; slot--) {
+                if (inventory.getItem(slot).isEmpty()) {
+                    inventory.setItem(slot, stack);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

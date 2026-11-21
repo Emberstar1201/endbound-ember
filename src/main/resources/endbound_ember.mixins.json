@@ -30,6 +30,7 @@
     "FoolVillagerTradesMixin",
     "VillageSiegeZombieMixin",
     "WitherBossDawnArrowMixin",
+    "GoetyApostleFlightMixin",
     "AnvilMechanicsMixin"
   ],
   "client": [
@@ -38,7 +39,8 @@
     "ClientLevelTimeStopMixin",
     "ParticleEngineTimeStopMixin",
     "SwordBlockingMovementMixin",
-    "SwordBlockingRenderMixin"
+    "SwordBlockingRenderMixin",
+    "KiloSnatchItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

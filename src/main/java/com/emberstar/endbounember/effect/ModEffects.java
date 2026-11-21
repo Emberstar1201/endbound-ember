@@ -14,6 +14,8 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -41,7 +43,24 @@ public final class ModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> CALM =
             MOB_EFFECTS.register("calm", () -> new TimeMarker(0x9BBD8A));
 
+    /** 千位劫取施加的程序劫掠：随效果等级降低攻击伤害、护甲与最大生命值。 */
+    public static final DeferredHolder<MobEffect, MobEffect> PROGRAM_LOOT =
+            MOB_EFFECTS.register("program_loot", ProgramLoot::new);
+
     private ModEffects() {
+    }
+
+    /** 程序劫掠的减益属性修饰符；每级沿用上游 -10% 的乘算数值。 */
+    private static final class ProgramLoot extends MobEffect {
+        private ProgramLoot() {
+            super(MobEffectCategory.HARMFUL, 0x3A6F56);
+            addAttributeModifier(Attributes.ATTACK_DAMAGE, EndboundEmber.id("loot_attack"),
+                    -0.1D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+            addAttributeModifier(Attributes.ARMOR, EndboundEmber.id("loot_armor"),
+                    -0.1D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+            addAttributeModifier(Attributes.MAX_HEALTH, EndboundEmber.id("loot_health"),
+                    -0.1D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        }
     }
 
     /** 无实际结算的标记类效果，光环渲染读取它来决定秒针速度 */

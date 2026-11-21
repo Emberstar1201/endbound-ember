@@ -45,12 +45,15 @@ public final class SwordBlocking {
 
     /** 判断这个物品能不能当盾牌举着，剑类物品统一走剑标签。 */
     public static boolean isBlockingSword(ItemStack stack) {
-        return !stack.isEmpty() && stack.is(ItemTags.SWORDS);
+        return !stack.isEmpty()
+                && (stack.is(ItemTags.SWORDS) || stack.is(EndboundEmber.KILO_SNATCH.get()));
     }
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
+        // 潜行右键由千位劫取物品执行引爆，不应被剑格挡事件取消。
+        if (player.isShiftKeyDown() && event.getItemStack().is(EndboundEmber.KILO_SNATCH.get())) return;
         if (!Config.SWORD_BLOCKING_ENABLED.get()) return;
         if (player.isSpectator() || player.isUsingItem()) return;
         if (DawnEnchantment.hasFullEnergy(player)) return;

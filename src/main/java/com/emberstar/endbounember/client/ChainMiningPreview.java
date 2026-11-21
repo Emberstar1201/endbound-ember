@@ -121,8 +121,6 @@ public final class ChainMiningPreview {
     public static void onRenderHighlight(RenderHighlightEvent.Block event) {
         if (!ChainMiningClientState.enabled()) return;
         ChainMiningState.Mode mode = ChainMiningClientState.mode();
-        // 耕种模式破坏不连锁，没有可预览的方块
-        if (mode == ChainMiningState.Mode.FARMING) return;
 
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;

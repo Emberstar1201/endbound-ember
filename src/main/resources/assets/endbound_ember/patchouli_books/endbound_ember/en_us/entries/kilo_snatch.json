@@ -1,0 +1,25 @@
+{
+  "name": "Kilo Snatch",
+  "category": "endbound_ember:weapons",
+  "icon": "endbound_ember:kilo_snatch",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "endbound_ember:kilo_snatch",
+      "title": "Kilo Snatch",
+      "text": "§lStats: §r Attack damage +20, attack speed +1, entity interaction range +3.5; epic rarity, unstackable, fire resistant.$(br2)§lProgram Loot: §r Hits have a 44% chance to inflict Program Loot for 10 seconds, stacking up to 5 times. Each stack reduces the target's attack damage, armor and max health by 10%.$(br2)$(italic)With Better Combat installed, it is held as a two-handed greatsword."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Active Skill: Detonate",
+      "text": "§lSneak + right-click: §r Detonates Program Loot on every living entity within 8 blocks and removes the effect.$(br2)§lDamage: §r Each stack of Program Loot, plus each other potion effect on the target, deals 2% of its max health, capped at 44%.$(br2)§lCooldown: §r 10 seconds.$(br2)Targets without Program Loot still take damage if they have other potion effects."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "endbound_ember:kilo_snatch",
+      "title": "Crafting",
+      "text": "Crafting table: middle column is Crying Obsidian, Nether Star and Netherite Ingot from top to bottom; Obsidian on both sides of the Nether Star."
+    }
+  ]
+}

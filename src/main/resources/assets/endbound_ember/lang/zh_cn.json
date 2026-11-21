@@ -1,4 +1,6 @@
 {
+  "item.endbound_ember.kilo_snatch": "千位劫取",
+  "effect.endbound_ember.program_loot": "程序劫掠",
   "block.endbound_ember.disenchantment_table": "祛魔台",
   "block.endbound_ember.accelerator_torch": "加速火把",
   "container.endbound_ember.disenchantment_table": "祛魔台",
@@ -512,7 +514,6 @@
   "hud.endbound_ember.chain_mining.mode.tunnel": "通道模式",
   "hud.endbound_ember.chain_mining.mode.stairs_up": "楼梯上行",
   "hud.endbound_ember.chain_mining.mode.stairs_down": "楼梯下行",
-  "hud.endbound_ember.chain_mining.mode.farming": "耕种模式",
   "endbound_ember.hope_bloom.saved": "希望之花：即死效果被免疫",
   "endbound_ember.eternal_spark.saved": "星火不灭：致命伤害被抵挡",
   "endbound_ember.end_approaches.ward": "攻击强化末影龙时，最多削弱 %s 颗水晶的共鸣减伤",

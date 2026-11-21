@@ -29,6 +29,7 @@ import com.emberstar.endbounember.item.DawnBreakBowItem;
 import com.emberstar.endbounember.item.EndStarItem;
 import com.emberstar.endbounember.item.HomeBellItem;
 import com.emberstar.endbounember.item.LifeStarItem;
+import com.emberstar.endbounember.item.KiloSnatchItem;
 import com.emberstar.endbounember.item.LuoHongyuItem;
 import com.emberstar.endbounember.item.ModArmorMaterials;
 import com.emberstar.endbounember.item.OceanStarItem;
@@ -1259,6 +1260,10 @@ public class EndboundEmber {
                     .stacksTo(1).rarity(Rarity.EPIC).fireResistant()
                     .attributes(SwordOfTheFreeWillItem.attributes(29.0D, 0.5D, 100.0D, 25.0D))));
 
+    /** 千位劫取：原作者 dsh 的程序劫掠大剑（MIT，来源声明见 THIRD-PARTY-NOTICES.md）。 */
+    public static final DeferredItem<KiloSnatchItem> KILO_SNATCH = ITEMS.registerItem("kilo_snatch",
+            KiloSnatchItem::new, KiloSnatchItem.properties());
+
     public static final DeferredItem<DawnBreakBowItem> DAWN_BREAK = ITEMS.registerItem("dawn_break",
             DawnBreakBowItem::new, new Item.Properties().durability(2500).rarity(Rarity.EPIC));
     public static final DeferredItem<DawnArrowItem> DAWN_ARROW = ITEMS.registerItem("dawn_arrow", DawnArrowItem::new);
@@ -1663,6 +1668,7 @@ public class EndboundEmber {
         }
 
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(KILO_SNATCH.get());
             event.accept(COPPER_SWORD.get());
             event.accept(COPPER_HELMET.get());
             event.accept(COPPER_CHESTPLATE.get());
